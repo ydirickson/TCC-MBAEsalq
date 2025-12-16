@@ -1,0 +1,10 @@
+# 1. Contexto e objetivo do experimento
+[← Voltar ao índice](./README.md)
+
+Este projeto simula um ecossistema com quatro serviços acadêmicos independentes, cada um com seu próprio domínio e base de dados. Na primeira etapa, esses serviços estarão **acoplados via replicação baseada em banco de dados** (ex.: triggers, procedures, jobs internos, views materializadas, etc.). Na segunda etapa, o acoplamento será reduzido por meio de **replicação assíncrona via Apache Kafka**, visando medir diferenças de desempenho, escalabilidade e impacto arquitetural (latência, consistência, custo operacional, etc.).
+
+Serviços simulados:
+1. **Graduação**
+2. **Pós-graduação**
+3. **Diplomas**
+4. **Assinatura eletrônica**
