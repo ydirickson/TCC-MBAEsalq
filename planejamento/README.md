@@ -1,6 +1,8 @@
 # Planejamento do TCC (Replicação acoplada vs Kafka)
 
-Documentos divididos por seção para navegação no GitHub:
+O presente documento representa a documentação técnica e planejamento da programação do ambiente simulado do meu TCC para o MBA de Engenharia de Computação da ESALq, feito de 2025 a 2026.
+
+Os documentos existentes aqui serão atualizados conforme o andamento do projeto através de novas branches e pull requests.
 
 - [1. Contexto e objetivo do experimento](./contexto.md)
 - [2. Premissas de modelagem](./premissas.md)
