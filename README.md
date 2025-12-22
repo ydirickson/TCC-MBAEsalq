@@ -47,3 +47,13 @@ Repositório do TCC que compara um acoplamento via replicação de banco com uma
 - Evitar reverter mudanças de planejamento sem alinhamento prévio.
 - Registrar decisões arquiteturais em `planejamento/pontos-abertos.md` ou ADRs futuros.
 - Em dúvidas sobre ownership de dados ou contratos de evento, alinhar primeiro no planejamento antes de codificar.
+
+## Plano inicial de tarefas
+- Infraestrutura: montar `docker-compose` com bancos (por serviço) e Kafka/ZooKeeper; criar scripts de bootstrap de tópicos.
+- Modelagem: definir schema inicial de Pessoa e VinculoAcademico em SQL; tabelas de histórico e pedidos de diploma/assinatura.
+- Contratos de eventos: descrever payload mínimo de cada evento em `planejamento/regras-replicacao.md` (id, versão/timestamp, origem).
+- Serviços: scaffolds para Graduação, Pós, Diplomas e Assinatura com APIs REST básicas e produtores/consumidores Kafka.
+- Replicação acoplada: implementar triggers/jobs para replicar Pessoa/Vínculo/PedidoDiploma/Assinatura na fase 1.
+- Replicação desacoplada: implementar produtores/consumidores Kafka para os mesmos fluxos na fase 2.
+- Métricas e testes: scripts de carga e medição (latência, throughput); testes de idempotência e de atraso/duplicidade de eventos.
+- Topologia de bancos (sugestão): iniciar com **um PostgreSQL e schemas por serviço** para montar rápido triggers/ETL; numa segunda fase, evoluir para **múltiplos PostgreSQL (um por serviço)** para medir latência de rede, isolação e custos operacionais de replicação.
