@@ -1,6 +1,6 @@
 # TCC-MBA Esalq — Simulação de Replicação vs Kafka
 
-Repositório do meu Tabalho de Conclusão de Curso (TCC) em Engenharia da Computação em 2025 e 2026. O tema deste TCC é propor uma solução de replicação de dados corporativos baseados em uma arquitetura distribuída e _event driven_, utilizando o Apache Kafka como peça central, possibilitando uma flexibildiade maior na comunicação e replicação deste dados com os diversos serviços que os consomem.
+Repositório do meu Trabalho de Conclusão de Curso (TCC) em Engenharia da Computação em 2025 e 2026. O tema deste TCC é propor uma solução de replicação de dados corporativos baseados em uma arquitetura distribuída e _event driven_, utilizando o Apache Kafka como peça central, possibilitando uma flexibildiade maior na comunicação e replicação deste dados com os diversos serviços que os consomem.
 
 ## Introdução e Contexto Resumidos
 
