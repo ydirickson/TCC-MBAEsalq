@@ -1,6 +1,12 @@
-# TCC-MBAEsalq — Simulação de Replicação vs Kafka
+# TCC-MBA Esalq — Simulação de Replicação vs Kafka
 
-Repositório do TCC que compara um acoplamento via replicação de banco com uma alternativa desacoplada via Kafka, em um cenário de quatro serviços acadêmicos (graduação, pós, diplomas, assinatura eletrônica).
+Repositório do meu Tabalho de Conclusão de Curso (TCC) em Engenharia da Computação em 2025 e 2026. O tema deste TCC é propor uma solução de replicação de dados corporativos baseados em uma arquitetura distribuída e _event driven_, utilizando o Apache Kafka como peça central, possibilitando uma flexibildiade maior na comunicação e replicação deste dados com os diversos serviços que os consomem.
+
+## Introdução e Contexto Resumidos
+
+Vindo de um ambiente altamento acoplado de diversos sistemas/serviços corporativos, uma das estratégias mais clássicas para replicação de dados é utilizando algum mecanismo próprios dos Sistemas Gerenciadores de Banco de Dados (SGBDs) que permita que os dados presentes nesses bancos sejam replicados para outros locais de mesmo banco, seja por motivo de reduncância, seja por motivos de compartilhamento desses dados.
+
+A partir desse contexto, a ideia é propor uma solução que retire a dependência nas soluções proprietárias e/ou centralizadas desses SGBDs para uma arquitetura distribuída, garantindo assim que os dados sejam replicados da mesma forma e com a mesma segurança e desempenho, ganhando também maior flexibilidade em como os diversos sistemas irão consumir ou utilizar esses dados.
 
 ## Visão geral
 - Objetivo: medir latência, throughput e impacto arquitetural ao migrar de replicação baseada em banco para replicação por eventos (Kafka).
