@@ -27,9 +27,10 @@ A partir desse contexto, a ideia é propor uma solução que retire a dependênc
 
 ## Como executar (rascunho)
 1. Pré-requisitos esperados: Docker/Docker Compose, JDK 17+, Node 18+ (ajustar quando os serviços forem implementados).
-2. Subir infraestrutura (dbs + Kafka): `docker compose up -d` (a definir).
-3. Rodar serviços locais (grad/pós/diplomas/assinatura): comandos serão detalhados por serviço.
-4. Coleta de métricas: scripts serão adicionados em `scripts/` (a criar).
+2. Infra inicial (PostgreSQL + pgAdmin): copie `.env.example` para `.env`, ajuste senhas se quiser e rode `docker compose up -d postgres pgadmin`.
+3. Postgres ficará em `localhost:${POSTGRES_PORT:-5432}`; pgAdmin em `http://localhost:${PGADMIN_PORT:-8080}` (login padrão em `.env`). pgAdmin já sobe com o servidor `TCC Postgres` cadastrado a partir de `pgadmin/servers.json` (requer volume `pgadmin_data` limpo na primeira vez).
+4. Rodar serviços locais (grad/pós/diplomas/assinatura): comandos serão detalhados por serviço.
+5. Coleta de métricas: scripts serão adicionados em `scripts/` (a criar).
 
 ## Convenções de implementação
 - Identificadores numéricos (long) para Pessoa e VinculoAcademico; evitar chaves compostas.
