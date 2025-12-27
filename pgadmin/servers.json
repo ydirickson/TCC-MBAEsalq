@@ -1,0 +1,14 @@
+{
+  "Servers": {
+    "1": {
+      "Name": "TCC Postgres",
+      "Group": "TCC",
+      "Host": "postgres",
+      "Port": 5432,
+      "MaintenanceDB": "tccdb",
+      "Username": "tcc",
+      "SSLMode": "prefer",
+      "Comment": "Configuração inicial para o compose (ajuste conforme .env)"
+    }
+  }
+}
