@@ -36,6 +36,10 @@ services:
       postgres:
         condition: service_healthy
 
+networks:
+  tcc-network:
+    driver: bridge
+
 volumes:
   postgres_data:
   pgadmin_data:
