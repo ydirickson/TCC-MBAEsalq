@@ -8,9 +8,9 @@
     <relativePath/> <!-- lookup parent from repository -->
   </parent>
 
-  <groupId>com.tcc</groupId>
+  <groupId>br.com.tcc</groupId>
   <artifactId>graduacao</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>1.0.0-SNAPSHOT</version>
   <name>graduacao</name>
   <description>Serviço de Graduação - CRUD REST para simulação de replicação</description>
 
