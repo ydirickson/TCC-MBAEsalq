@@ -8,17 +8,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.tcc.graduacao.api.dto.CursoRequest;
 import com.tcc.graduacao.api.mapper.CursoMapper;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class CursoGraduacaoService {
 
   private final CursoGraduacaoRepository repository;
   private final CursoMapper mapper;
-
-  public CursoGraduacaoService(CursoGraduacaoRepository repository, CursoMapper mapper) {
-    this.repository = repository;
-    this.mapper = mapper;
-  }
 
   @Transactional
   public CursoGraduacao criarCurso(CursoRequest request) {

@@ -11,7 +11,14 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Getter
+@Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "aluno_graduacao")
 public class AlunoGraduacao {
@@ -34,50 +41,10 @@ public class AlunoGraduacao {
   @Column(nullable = false, length = 30)
   private SituacaoAcademica status;
 
-  protected AlunoGraduacao() {
-    // JPA only
-  }
-
   public AlunoGraduacao(Long pessoaId, CursoGraduacao curso, LocalDate dataIngresso, SituacaoAcademica status) {
     this.pessoaId = pessoaId;
     this.curso = curso;
     this.dataIngresso = dataIngresso;
-    this.status = status;
-  }
-
-  public Long getId() {
-    return id;
-  }
-
-  public Long getPessoaId() {
-    return pessoaId;
-  }
-
-  public void setPessoaId(Long pessoaId) {
-    this.pessoaId = pessoaId;
-  }
-
-  public CursoGraduacao getCurso() {
-    return curso;
-  }
-
-  public void setCurso(CursoGraduacao curso) {
-    this.curso = curso;
-  }
-
-  public LocalDate getDataIngresso() {
-    return dataIngresso;
-  }
-
-  public void setDataIngresso(LocalDate dataIngresso) {
-    this.dataIngresso = dataIngresso;
-  }
-
-  public SituacaoAcademica getStatus() {
-    return status;
-  }
-
-  public void setStatus(SituacaoAcademica status) {
     this.status = status;
   }
 }

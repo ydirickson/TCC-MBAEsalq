@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -22,15 +23,11 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
 @RequestMapping("/alunos")
+@RequiredArgsConstructor
 public class AlunoGraduacaoController {
 
   private final AlunoGraduacaoService service;
   private final AlunoGraduacaoMapper mapper;
-
-  public AlunoGraduacaoController(AlunoGraduacaoService service, AlunoGraduacaoMapper mapper) {
-    this.service = service;
-    this.mapper = mapper;
-  }
 
   @PostMapping
   public ResponseEntity<AlunoGraduacaoResponse> criar(@Valid @RequestBody AlunoGraduacaoRequest request, UriComponentsBuilder uriBuilder) {
