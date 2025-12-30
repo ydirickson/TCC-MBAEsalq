@@ -14,7 +14,7 @@ spring:
       ddl-auto: update
     properties:
       hibernate:
-        format_sql: true
+        '[format_sql]': true
     open-in-view: false
   h2:
     console:
@@ -23,4 +23,4 @@ spring:
 
 logging:
   level:
-    org.springframework.web: INFO
+    '[org.springframework.web]': INFO
