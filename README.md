@@ -16,6 +16,9 @@ A partir desse contexto, a ideia é propor uma solução que retire a dependênc
 ## Estrutura do repositório
 - `planejamento/` — documentos de contexto, premissas e regras (ver índice em `planejamento/README.md`).
 - `planejamento/modulos/` — visão por serviço e conceitos compartilhados.
+- `docker-compose.yml` — infraestrutura atual do banco centralizado + pgAdmin.
+- `.env.example` — variáveis para parametrizar as imagens e portas do compose.
+- `pgadmin/servers.json` — cadastro do servidor Postgres no pgAdmin (carregado no start).
 - `docs/` — reservado para diagramas/artefatos gerados (a criar).
 - `src/` — código da simulação (a criar: serviços grad/pós/diplomas/assinatura).
 
@@ -25,11 +28,16 @@ A partir desse contexto, a ideia é propor uma solução que retire a dependênc
 - Entidades e intersecções: `planejamento/entidades-interseccoes.md`.
 - Módulos por serviço: `planejamento/modulos/`.
 
-## Como executar (rascunho)
-1. Pré-requisitos esperados: Docker/Docker Compose, JDK 17+, Node 18+ (ajustar quando os serviços forem implementados).
-2. Subir infraestrutura (dbs + Kafka): `docker compose up -d` (a definir).
-3. Rodar serviços locais (grad/pós/diplomas/assinatura): comandos serão detalhados por serviço.
-4. Coleta de métricas: scripts serão adicionados em `scripts/` (a criar).
+## Como executar — banco centralizado (fase 1)
+1. Pré-requisitos: Docker/Docker Compose instalados (JDK/Node ainda não usados nesta fase).
+2. Copie o arquivo de variáveis: `cp .env.example .env` e ajuste senhas/portas se necessário.
+3. Suba a infraestrutura: `docker compose up -d postgres pgadmin`.
+4. Verifique se está saudável: `docker compose ps` deve mostrar `healthy` no Postgres; em caso de dúvida, `docker compose logs -f postgres` até ver `database system is ready to accept connections`.
+5. Acessos:
+   - Postgres: `localhost:${POSTGRES_PORT:-5432}` (usuário/senha definidos em `.env`). CLI rápida: `docker compose exec postgres psql -U "$POSTGRES_USER" -d "$POSTGRES_DB"`.
+   - pgAdmin: `http://localhost:${PGADMIN_PORT:-8080}` com o login de `.env`. O servidor `TCC Postgres` já vem cadastrado via `pgadmin/servers.json`. Se não aparecer, limpe o volume `pgadmin_data` (`docker volume ls | grep pgadmin_data` para conferir o nome e remover).
+6. Serviços locais (grad/pós/diplomas/assinatura): serão detalhados quando os serviços forem implementados.
+7. Métricas: scripts serão adicionados em `scripts/` (a criar).
 
 ## Convenções de implementação
 - Identificadores numéricos (long) para Pessoa e VinculoAcademico; evitar chaves compostas.
