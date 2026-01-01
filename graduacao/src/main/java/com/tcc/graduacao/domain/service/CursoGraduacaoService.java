@@ -1,21 +1,24 @@
 package com.tcc.graduacao.domain.service;
 
+import com.tcc.graduacao.api.dto.CursoRequest;
+import com.tcc.graduacao.api.mapper.CursoMapper;
 import com.tcc.graduacao.domain.model.CursoGraduacao;
 import com.tcc.graduacao.domain.repository.CursoGraduacaoRepository;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.tcc.graduacao.api.dto.CursoRequest;
-import com.tcc.graduacao.api.mapper.CursoMapper;
-import lombok.RequiredArgsConstructor;
 
 @Service
-@RequiredArgsConstructor
 public class CursoGraduacaoService {
 
   private final CursoGraduacaoRepository repository;
   private final CursoMapper mapper;
+
+  public CursoGraduacaoService(CursoGraduacaoRepository repository, CursoMapper mapper) {
+    this.repository = repository;
+    this.mapper = mapper;
+  }
 
   @Transactional
   public CursoGraduacao criarCurso(CursoRequest request) {

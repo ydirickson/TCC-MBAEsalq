@@ -2,15 +2,28 @@ package com.tcc.graduacao.api.mapper;
 
 import com.tcc.graduacao.api.dto.AlunoGraduacaoResponse;
 import com.tcc.graduacao.domain.model.AlunoGraduacao;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.ReportingPolicy;
+import com.tcc.graduacao.domain.model.CursoGraduacao;
+import org.springframework.stereotype.Component;
 
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
-public interface AlunoGraduacaoMapper {
+@Component
+public class AlunoGraduacaoMapper {
 
-  @Mapping(target = "cursoId", source = "curso.id")
-  @Mapping(target = "cursoCodigo", source = "curso.codigo")
-  @Mapping(target = "cursoNome", source = "curso.nome")
-  AlunoGraduacaoResponse toResponse(AlunoGraduacao entity);
+  public AlunoGraduacaoResponse toResponse(AlunoGraduacao entity) {
+    if (entity == null) {
+      return null;
+    }
+    CursoGraduacao curso = entity.getCurso();
+    Long cursoId = curso != null ? curso.getId() : null;
+    String cursoCodigo = curso != null ? curso.getCodigo() : null;
+    String cursoNome = curso != null ? curso.getNome() : null;
+
+    return new AlunoGraduacaoResponse(
+        entity.getId(),
+        entity.getPessoaId(),
+        cursoId,
+        cursoCodigo,
+        cursoNome,
+        entity.getDataIngresso(),
+        entity.getStatus());
+  }
 }

@@ -8,16 +8,19 @@ import com.tcc.graduacao.domain.repository.CursoGraduacaoRepository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@RequiredArgsConstructor
 public class AlunoGraduacaoService {
 
   private final AlunoGraduacaoRepository alunoRepository;
   private final CursoGraduacaoRepository cursoRepository;
+
+  public AlunoGraduacaoService(AlunoGraduacaoRepository alunoRepository, CursoGraduacaoRepository cursoRepository) {
+    this.alunoRepository = alunoRepository;
+    this.cursoRepository = cursoRepository;
+  }
 
   @Transactional
   public Optional<AlunoGraduacao> criar(Long pessoaId, Long cursoId, LocalDate dataIngresso, SituacaoAcademica status) {

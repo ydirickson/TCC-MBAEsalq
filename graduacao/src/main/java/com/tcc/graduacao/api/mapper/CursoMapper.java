@@ -3,16 +3,39 @@ package com.tcc.graduacao.api.mapper;
 import com.tcc.graduacao.api.dto.CursoRequest;
 import com.tcc.graduacao.api.dto.CursoResponse;
 import com.tcc.graduacao.domain.model.CursoGraduacao;
-import org.mapstruct.Mapper;
-import org.mapstruct.ReportingPolicy;
-import org.mapstruct.MappingTarget;
+import org.springframework.stereotype.Component;
 
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
-public interface CursoMapper {
+@Component
+public class CursoMapper {
 
-  CursoGraduacao toEntity(CursoRequest request);
+  public CursoGraduacao toEntity(CursoRequest request) {
+    if (request == null) {
+      return null;
+    }
+    CursoGraduacao entity = new CursoGraduacao();
+    entity.setCodigo(request.codigo());
+    entity.setNome(request.nome());
+    entity.setCargaHoraria(request.cargaHoraria());
+    return entity;
+  }
 
-  CursoResponse toResponse(CursoGraduacao entity);
+  public CursoResponse toResponse(CursoGraduacao entity) {
+    if (entity == null) {
+      return null;
+    }
+    return new CursoResponse(
+        entity.getId(),
+        entity.getCodigo(),
+        entity.getNome(),
+        entity.getCargaHoraria());
+  }
 
-  void updateEntityFromRequest(CursoRequest request, @MappingTarget CursoGraduacao entity);
+  public void updateEntityFromRequest(CursoRequest request, CursoGraduacao entity) {
+    if (request == null || entity == null) {
+      return;
+    }
+    entity.setCodigo(request.codigo());
+    entity.setNome(request.nome());
+    entity.setCargaHoraria(request.cargaHoraria());
+  }
 }

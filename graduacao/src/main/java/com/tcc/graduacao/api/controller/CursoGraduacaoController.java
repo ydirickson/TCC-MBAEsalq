@@ -8,8 +8,8 @@ import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,12 +24,17 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
 @RequestMapping("/cursos")
-@RequiredArgsConstructor
-@Slf4j
 public class CursoGraduacaoController {
+
+  private static final Logger log = LoggerFactory.getLogger(CursoGraduacaoController.class);
 
   private final CursoGraduacaoService service;
   private final CursoMapper mapper;
+
+  public CursoGraduacaoController(CursoGraduacaoService service, CursoMapper mapper) {
+    this.service = service;
+    this.mapper = mapper;
+  }
 
   @PostMapping
   public ResponseEntity<CursoResponse> criar(@Valid @RequestBody CursoRequest request, UriComponentsBuilder uriBuilder) {
