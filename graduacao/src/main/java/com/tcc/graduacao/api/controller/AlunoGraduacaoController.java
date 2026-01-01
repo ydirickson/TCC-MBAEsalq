@@ -45,7 +45,7 @@ public class AlunoGraduacaoController {
           return ResponseEntity.created(location).body(mapper.toResponse(aluno));
         })
         .orElseGet(() -> {
-          log.warn("Falha ao criar aluno: curso nao encontrado cursoId={} pessoaId={}", request.cursoId(), request.pessoaId());
+          log.warn("Falha ao criar aluno: pessoa ou curso nao encontrado pessoaId={} cursoId={}", request.pessoaId(), request.cursoId());
           return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         });
   }
@@ -80,7 +80,7 @@ public class AlunoGraduacaoController {
           return ResponseEntity.ok(mapper.toResponse(aluno));
         })
         .orElseGet(() -> {
-          log.warn("Falha ao atualizar aluno: nao encontrado id={} ou cursoId={}", id, request.cursoId());
+          log.warn("Falha ao atualizar aluno: pessoa, curso ou aluno nao encontrado id={} pessoaId={} cursoId={}", id, request.pessoaId(), request.cursoId());
           return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         });
   }

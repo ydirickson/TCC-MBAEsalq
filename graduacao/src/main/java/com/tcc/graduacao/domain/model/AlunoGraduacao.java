@@ -1,5 +1,4 @@
 package com.tcc.graduacao.domain.model;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -20,8 +19,9 @@ public class AlunoGraduacao {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(nullable = false)
-  private Long pessoaId;
+  @ManyToOne(optional = false)
+  @JoinColumn(name = "pessoa_id", nullable = false)
+  private Pessoa pessoa;
 
   @ManyToOne(optional = false)
   @JoinColumn(name = "curso_id", nullable = false)
@@ -38,8 +38,8 @@ public class AlunoGraduacao {
     // JPA
   }
 
-  public AlunoGraduacao(Long pessoaId, CursoGraduacao curso, LocalDate dataIngresso, SituacaoAcademica status) {
-    this.pessoaId = pessoaId;
+  public AlunoGraduacao(Pessoa pessoa, CursoGraduacao curso, LocalDate dataIngresso, SituacaoAcademica status) {
+    this.pessoa = pessoa;
     this.curso = curso;
     this.dataIngresso = dataIngresso;
     this.status = status;
@@ -53,12 +53,12 @@ public class AlunoGraduacao {
     this.id = id;
   }
 
-  public Long getPessoaId() {
-    return pessoaId;
+  public Pessoa getPessoa() {
+    return pessoa;
   }
 
-  public void setPessoaId(Long pessoaId) {
-    this.pessoaId = pessoaId;
+  public void setPessoa(Pessoa pessoa) {
+    this.pessoa = pessoa;
   }
 
   public CursoGraduacao getCurso() {
@@ -83,5 +83,9 @@ public class AlunoGraduacao {
 
   public void setStatus(SituacaoAcademica status) {
     this.status = status;
+  }
+
+  public Long getPessoaId() {
+    return pessoa != null ? pessoa.getId() : null;
   }
 }

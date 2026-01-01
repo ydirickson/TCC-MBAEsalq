@@ -2,9 +2,11 @@ package com.tcc.graduacao.domain.service;
 
 import com.tcc.graduacao.domain.model.AlunoGraduacao;
 import com.tcc.graduacao.domain.model.CursoGraduacao;
+import com.tcc.graduacao.domain.model.Pessoa;
 import com.tcc.graduacao.domain.model.SituacaoAcademica;
 import com.tcc.graduacao.domain.repository.AlunoGraduacaoRepository;
 import com.tcc.graduacao.domain.repository.CursoGraduacaoRepository;
+import com.tcc.graduacao.domain.repository.PessoaRepository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -16,16 +18,26 @@ public class AlunoGraduacaoService {
 
   private final AlunoGraduacaoRepository alunoRepository;
   private final CursoGraduacaoRepository cursoRepository;
+  private final PessoaRepository pessoaRepository;
 
-  public AlunoGraduacaoService(AlunoGraduacaoRepository alunoRepository, CursoGraduacaoRepository cursoRepository) {
+  public AlunoGraduacaoService(AlunoGraduacaoRepository alunoRepository, CursoGraduacaoRepository cursoRepository,
+      PessoaRepository pessoaRepository) {
     this.alunoRepository = alunoRepository;
     this.cursoRepository = cursoRepository;
+    this.pessoaRepository = pessoaRepository;
   }
 
   @Transactional
   public Optional<AlunoGraduacao> criar(Long pessoaId, Long cursoId, LocalDate dataIngresso, SituacaoAcademica status) {
-    return cursoRepository.findById(cursoId)
-        .map(curso -> alunoRepository.save(new AlunoGraduacao(pessoaId, curso, dataIngresso, status)));
+    var pessoaOpt = pessoaRepository.findById(pessoaId);
+    var cursoOpt = cursoRepository.findById(cursoId);
+
+    if (pessoaOpt.isEmpty() || cursoOpt.isEmpty()) {
+      return Optional.empty();
+    }
+
+    AlunoGraduacao novo = new AlunoGraduacao(pessoaOpt.get(), cursoOpt.get(), dataIngresso, status);
+    return Optional.of(alunoRepository.save(novo));
   }
 
   public List<AlunoGraduacao> listar() {
@@ -39,12 +51,13 @@ public class AlunoGraduacaoService {
   @Transactional
   public Optional<AlunoGraduacao> atualizar(Long id, Long pessoaId, Long cursoId, LocalDate dataIngresso, SituacaoAcademica status) {
     Optional<CursoGraduacao> cursoOpt = cursoRepository.findById(cursoId);
-    if (cursoOpt.isEmpty()) {
+    Optional<Pessoa> pessoaOpt = pessoaRepository.findById(pessoaId);
+    if (cursoOpt.isEmpty() || pessoaOpt.isEmpty()) {
       return Optional.empty();
     }
 
     return alunoRepository.findById(id).map(aluno -> {
-      aluno.setPessoaId(pessoaId);
+      aluno.setPessoa(pessoaOpt.get());
       aluno.setCurso(cursoOpt.get());
       aluno.setDataIngresso(dataIngresso);
       aluno.setStatus(status);
