@@ -9,6 +9,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,6 +25,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RestController
 @RequestMapping("/alunos")
 @RequiredArgsConstructor
+@Slf4j
 public class AlunoGraduacaoController {
 
   private final AlunoGraduacaoService service;
@@ -34,14 +36,20 @@ public class AlunoGraduacaoController {
     return service.criar(request.pessoaId(), request.cursoId(), request.dataIngresso(), request.status())
         .map(aluno -> {
           URI location = uriBuilder.path("/alunos/{id}").buildAndExpand(aluno.getId()).toUri();
+          log.info("Aluno criado id={} pessoaId={} cursoId={} dataIngresso={} status={}", aluno.getId(), request.pessoaId(), request.cursoId(), request.dataIngresso(), request.status());
           return ResponseEntity.created(location).body(mapper.toResponse(aluno));
         })
-        .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+        .orElseGet(() -> {
+          log.warn("Falha ao criar aluno: curso nao encontrado cursoId={} pessoaId={}", request.cursoId(), request.pessoaId());
+          return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        });
   }
 
   @GetMapping
   public List<AlunoGraduacaoResponse> listar() {
-    return service.listar().stream()
+    var alunos = service.listar();
+    log.info("Listando alunos total={}", alunos.size());
+    return alunos.stream()
         .map(mapper::toResponse)
         .collect(Collectors.toList());
   }
@@ -49,23 +57,37 @@ public class AlunoGraduacaoController {
   @GetMapping("/{id}")
   public ResponseEntity<AlunoGraduacaoResponse> buscar(@PathVariable Long id) {
     return service.buscarPorId(id)
-        .map(aluno -> ResponseEntity.ok(mapper.toResponse(aluno)))
-        .orElse(ResponseEntity.notFound().build());
+        .map(aluno -> {
+          log.info("Aluno encontrado id={} pessoaId={} cursoId={}", id, aluno.getPessoaId(), aluno.getCurso().getId());
+          return ResponseEntity.ok(mapper.toResponse(aluno));
+        })
+        .orElseGet(() -> {
+          log.warn("Aluno nao encontrado id={}", id);
+          return ResponseEntity.notFound().build();
+        });
   }
 
   @PutMapping("/{id}")
   public ResponseEntity<AlunoGraduacaoResponse> atualizar(@PathVariable Long id, @Valid @RequestBody AlunoGraduacaoRequest request) {
     return service.atualizar(id, request.pessoaId(), request.cursoId(), request.dataIngresso(), request.status())
-        .map(aluno -> ResponseEntity.ok(mapper.toResponse(aluno)))
-        .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+        .map(aluno -> {
+          log.info("Aluno atualizado id={} pessoaId={} cursoId={} dataIngresso={} status={}", id, request.pessoaId(), request.cursoId(), request.dataIngresso(), request.status());
+          return ResponseEntity.ok(mapper.toResponse(aluno));
+        })
+        .orElseGet(() -> {
+          log.warn("Falha ao atualizar aluno: nao encontrado id={} ou cursoId={}", id, request.cursoId());
+          return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        });
   }
 
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> remover(@PathVariable Long id) {
     boolean removido = service.remover(id);
     if (!removido) {
+      log.warn("Falha ao remover aluno: nao encontrado id={}", id);
       return ResponseEntity.notFound().build();
     }
+    log.info("Aluno removido id={}", id);
     return ResponseEntity.noContent().build();
   }
 }
