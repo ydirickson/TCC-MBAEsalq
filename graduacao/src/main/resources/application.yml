@@ -5,16 +5,19 @@ spring:
   application:
     name: graduacao
   datasource:
-    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:tccdb}
+    url: jdbc:postgresql://${PGR_POSTGRES_HOST:localhost}:${PGR_POSTGRES_PORT:5432}/${PGR_POSTGRES_DB:tccdb}
     driver-class-name: org.postgresql.Driver
-    username: ${POSTGRES_USER:tcc}
-    password: ${POSTGRES_PASSWORD:tcc123}
+    username: ${PGR_POSTGRES_USER:tcc}
+    password: ${PGR_POSTGRES_PASSWORD:tcc123}
   jpa:
     hibernate:
       ddl-auto: update
     properties:
       hibernate:
         '[format_sql]': true
+        '[default_schema]': ${PGR_DEFAULT_SCHEMA:public}
+        hbm2ddl:
+          '[create_namespaces]': true
     open-in-view: false
 
 logging:
