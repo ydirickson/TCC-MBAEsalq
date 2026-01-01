@@ -8,7 +8,7 @@
       "MaintenanceDB": "tccdb",
       "Username": "tcc",
       "SSLMode": "prefer",
-      "Comment": "Configuração inicial para o compose (ajuste conforme .env)"
+      "Comment": "Configuração inicial para o compose (ajuste conforme .env). Atenção: por motivos de segurança, a senha NÃO é armazenada em servers.json; será necessário informá-la manualmente no primeiro acesso ou configurar um arquivo de senhas (pgpass/pgAdmin) para automatizar o login."
     }
   }
 }
