@@ -1,8 +1,10 @@
 package com.tcc.graduacao.api.controller;
 
+import com.tcc.graduacao.api.dto.AlunoGraduacaoCreateRequest;
 import com.tcc.graduacao.api.dto.AlunoGraduacaoRequest;
 import com.tcc.graduacao.api.dto.AlunoGraduacaoResponse;
 import com.tcc.graduacao.api.mapper.AlunoGraduacaoMapper;
+import com.tcc.graduacao.domain.model.Pessoa;
 import com.tcc.graduacao.domain.service.AlunoGraduacaoService;
 import jakarta.validation.Valid;
 import java.net.URI;
@@ -37,15 +39,16 @@ public class AlunoGraduacaoController {
   }
 
   @PostMapping
-  public ResponseEntity<AlunoGraduacaoResponse> criar(@Valid @RequestBody AlunoGraduacaoRequest request, UriComponentsBuilder uriBuilder) {
-    return service.criar(request.pessoaId(), request.cursoId(), request.dataIngresso(), request.status())
+  public ResponseEntity<AlunoGraduacaoResponse> criar(@Valid @RequestBody AlunoGraduacaoCreateRequest request, UriComponentsBuilder uriBuilder) {
+    Pessoa novaPessoa = request.novaPessoa() != null ? request.novaPessoa().toEntity() : null;
+    return service.criar(request.pessoaId(), novaPessoa, request.cursoId(), request.dataIngresso(), request.status())
         .map(aluno -> {
           URI location = uriBuilder.path("/alunos/{id}").buildAndExpand(aluno.getId()).toUri();
-          log.info("Aluno criado id={} pessoaId={} cursoId={} dataIngresso={} status={}", aluno.getId(), request.pessoaId(), request.cursoId(), request.dataIngresso(), request.status());
+          log.info("Aluno criado id={} pessoaId={} cursoId={} dataIngresso={} status={}", aluno.getId(), aluno.getPessoaId(), request.cursoId(), request.dataIngresso(), request.status());
           return ResponseEntity.created(location).body(mapper.toResponse(aluno));
         })
         .orElseGet(() -> {
-          log.warn("Falha ao criar aluno: pessoa ou curso nao encontrado pessoaId={} cursoId={}", request.pessoaId(), request.cursoId());
+          log.warn("Falha ao criar aluno: pessoa inexistente/dados invalidos ou curso nao encontrado pessoaId={} cursoId={}", request.pessoaId(), request.cursoId());
           return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         });
   }

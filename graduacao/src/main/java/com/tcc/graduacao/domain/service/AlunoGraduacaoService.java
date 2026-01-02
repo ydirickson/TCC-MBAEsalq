@@ -28,16 +28,29 @@ public class AlunoGraduacaoService {
   }
 
   @Transactional
-  public Optional<AlunoGraduacao> criar(Long pessoaId, Long cursoId, LocalDate dataIngresso, SituacaoAcademica status) {
-    var pessoaOpt = pessoaRepository.findById(pessoaId);
-    var cursoOpt = cursoRepository.findById(cursoId);
+  public Optional<AlunoGraduacao> criar(Long pessoaId, Pessoa novaPessoa, Long cursoId, LocalDate dataIngresso, SituacaoAcademica status) {
+    Optional<CursoGraduacao> cursoOpt = cursoRepository.findById(cursoId);
+    if (cursoOpt.isEmpty()) {
+      return Optional.empty();
+    }
 
-    if (pessoaOpt.isEmpty() || cursoOpt.isEmpty()) {
+    Optional<Pessoa> pessoaOpt = obterOuCriarPessoa(pessoaId, novaPessoa);
+    if (pessoaOpt.isEmpty()) {
       return Optional.empty();
     }
 
     AlunoGraduacao novo = new AlunoGraduacao(pessoaOpt.get(), cursoOpt.get(), dataIngresso, status);
     return Optional.of(alunoRepository.save(novo));
+  }
+
+  private Optional<Pessoa> obterOuCriarPessoa(Long pessoaId, Pessoa novaPessoa) {
+    if (pessoaId != null) {
+      return pessoaRepository.findById(pessoaId);
+    }
+    if (novaPessoa != null) {
+      return Optional.of(pessoaRepository.save(novaPessoa));
+    }
+    return Optional.empty();
   }
 
   public List<AlunoGraduacao> listar() {
