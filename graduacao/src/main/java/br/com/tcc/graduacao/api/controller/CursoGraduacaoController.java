@@ -1,8 +1,8 @@
 package br.com.tcc.graduacao.api.controller;
 
-import br.com.tcc.graduacao.api.dto.CursoRequest;
-import br.com.tcc.graduacao.api.dto.CursoResponse;
-import br.com.tcc.graduacao.api.mapper.CursoMapper;
+import br.com.tcc.graduacao.api.dto.CursoGraduacaoRequest;
+import br.com.tcc.graduacao.api.dto.CursoGraduacaoResponse;
+import br.com.tcc.graduacao.api.mapper.CursoGraduacaoMapper;
 import br.com.tcc.graduacao.domain.service.CursoGraduacaoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -32,16 +32,16 @@ public class CursoGraduacaoController {
   private static final Logger log = LoggerFactory.getLogger(CursoGraduacaoController.class);
 
   private final CursoGraduacaoService service;
-  private final CursoMapper mapper;
+  private final CursoGraduacaoMapper mapper;
 
-  public CursoGraduacaoController(CursoGraduacaoService service, CursoMapper mapper) {
+  public CursoGraduacaoController(CursoGraduacaoService service, CursoGraduacaoMapper mapper) {
     this.service = service;
     this.mapper = mapper;
   }
 
   @PostMapping
   @Operation(summary = "Criar curso", description = "Cria um novo curso de graduação.")
-  public ResponseEntity<CursoResponse> criar(@Valid @RequestBody CursoRequest request, UriComponentsBuilder uriBuilder) {
+  public ResponseEntity<CursoGraduacaoResponse> criar(@Valid @RequestBody CursoGraduacaoRequest request, UriComponentsBuilder uriBuilder) {
     var salvo = service.criarCurso(request);
     log.info("Curso criado id={} codigo={} nome={}", salvo.getId(), request.codigo(), request.nome());
     URI location = uriBuilder.path("/cursos/{id}").buildAndExpand(salvo.getId()).toUri();
@@ -50,7 +50,7 @@ public class CursoGraduacaoController {
 
   @GetMapping
   @Operation(summary = "Listar cursos", description = "Retorna a lista de cursos cadastrados.")
-  public List<CursoResponse> listar() {
+  public List<CursoGraduacaoResponse> listar() {
     var cursos = service.listar();
     log.info("Listando cursos total={}", cursos.size());
     return cursos.stream()
@@ -60,7 +60,7 @@ public class CursoGraduacaoController {
 
   @GetMapping("/{id}")
   @Operation(summary = "Buscar curso", description = "Busca um curso pelo identificador.")
-  public ResponseEntity<CursoResponse> buscarPorId(@PathVariable Long id) {
+  public ResponseEntity<CursoGraduacaoResponse> buscarPorId(@PathVariable Long id) {
     return service.buscarPorId(id)
         .map(curso -> {
           log.info("Curso encontrado id={}", id);
@@ -74,7 +74,7 @@ public class CursoGraduacaoController {
 
   @PutMapping("/{id}")
   @Operation(summary = "Atualizar curso", description = "Atualiza os dados de um curso existente.")
-  public ResponseEntity<CursoResponse> atualizar(@PathVariable Long id, @Valid @RequestBody CursoRequest request) {
+  public ResponseEntity<CursoGraduacaoResponse> atualizar(@PathVariable Long id, @Valid @RequestBody CursoGraduacaoRequest request) {
     return service.atualizar(id, request)
         .map(curso -> {
           log.info("Curso atualizado id={} novoCodigo={} novoNome={}", id, request.codigo(), request.nome());

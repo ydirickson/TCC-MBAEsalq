@@ -5,7 +5,7 @@
 - AlunoGraduacao (perfil acadêmico)
 - CursoGraduacao
 - VinculoAcademico (origem=grad) — vínculo unificado por pessoa/curso
-- OfertaDisciplina, Turma, MatriculaDisciplina
+- Disciplina, Turma, MatriculaDisciplina
 - HistoricoAcademicoGraduacao
 - SituacaoAcademica (projeção do vínculo, status atual)
 
@@ -27,8 +27,8 @@ erDiagram
   VinculoAcademico }o--|| CursoGraduacao : matriculado_em
   VinculoAcademico ||--|{ SituacaoAcademica : status_atual
 
-  CursoGraduacao ||--o{ OfertaDisciplina : oferece
-  OfertaDisciplina ||--o{ Turma : turmas
+  CursoGraduacao ||--o{ Disciplina : oferece
+  Disciplina ||--o{ Turma : turmas
   Turma ||--o{ MatriculaDisciplina : matriculas
   MatriculaDisciplina }o--|| AlunoGraduacao : de
   MatriculaDisciplina ||--o{ HistoricoAcademicoGraduacao : gera_registros

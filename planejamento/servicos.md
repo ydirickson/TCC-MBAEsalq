@@ -7,7 +7,7 @@
 - **AlunoGraduacao**: perfil acadêmico na graduação.
 - **CursoGraduacao**: cursos ofertados pela graduação.
 - **VinculoGraduacao**: vínculo entre pessoa/aluno e curso.
-- **OfertaDisciplina / Turma**: oferta semestral/ano das disciplinas.
+- **Disciplina / Turma**: oferta semestral/ano das disciplinas.
 - **MatriculaDisciplina**: vínculo do aluno com uma oferta/turma.
 - **HistoricoAcademicoGraduacao**: notas, frequência e resultados.
 - **SituacaoAcademicaGraduacao**: status do vínculo (ativo, trancado, concluído, cancelado).

@@ -1,0 +1,2402 @@
+[
+  {
+    "cursoCodigo": "ADM",
+    "codigo": "ADM0001",
+    "nome": "Disciplina 01 - Administracao",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ADM",
+    "codigo": "ADM0002",
+    "nome": "Disciplina 02 - Administracao",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ADM",
+    "codigo": "ADM0003",
+    "nome": "Disciplina 03 - Administracao",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ADM",
+    "codigo": "ADM0004",
+    "nome": "Disciplina 04 - Administracao",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ADM",
+    "codigo": "ADM0005",
+    "nome": "Disciplina 05 - Administracao",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ADM",
+    "codigo": "ADM0006",
+    "nome": "Disciplina 06 - Administracao",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ADM",
+    "codigo": "ADM0007",
+    "nome": "Disciplina 07 - Administracao",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ADM",
+    "codigo": "ADM0008",
+    "nome": "Disciplina 08 - Administracao",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ADM",
+    "codigo": "ADM0009",
+    "nome": "Disciplina 09 - Administracao",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ADM",
+    "codigo": "ADM0010",
+    "nome": "Disciplina 10 - Administracao",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ADM",
+    "codigo": "ADM0011",
+    "nome": "Disciplina 11 - Administracao",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ADM",
+    "codigo": "ADM0012",
+    "nome": "Disciplina 12 - Administracao",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ADM",
+    "codigo": "ADM0013",
+    "nome": "Disciplina 13 - Administracao",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ADM",
+    "codigo": "ADM0014",
+    "nome": "Disciplina 14 - Administracao",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ADM",
+    "codigo": "ADM0015",
+    "nome": "Disciplina 15 - Administracao",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ADM",
+    "codigo": "ADM0016",
+    "nome": "Disciplina 16 - Administracao",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ADM",
+    "codigo": "ADM0017",
+    "nome": "Disciplina 17 - Administracao",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ADM",
+    "codigo": "ADM0018",
+    "nome": "Disciplina 18 - Administracao",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ADM",
+    "codigo": "ADM0019",
+    "nome": "Disciplina 19 - Administracao",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ADM",
+    "codigo": "ADM0020",
+    "nome": "Disciplina 20 - Administracao",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ADS",
+    "codigo": "ADS0001",
+    "nome": "Disciplina 01 - Analise e Desenvolvimento de Sistemas",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ADS",
+    "codigo": "ADS0002",
+    "nome": "Disciplina 02 - Analise e Desenvolvimento de Sistemas",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ADS",
+    "codigo": "ADS0003",
+    "nome": "Disciplina 03 - Analise e Desenvolvimento de Sistemas",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ADS",
+    "codigo": "ADS0004",
+    "nome": "Disciplina 04 - Analise e Desenvolvimento de Sistemas",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ADS",
+    "codigo": "ADS0005",
+    "nome": "Disciplina 05 - Analise e Desenvolvimento de Sistemas",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ADS",
+    "codigo": "ADS0006",
+    "nome": "Disciplina 06 - Analise e Desenvolvimento de Sistemas",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ADS",
+    "codigo": "ADS0007",
+    "nome": "Disciplina 07 - Analise e Desenvolvimento de Sistemas",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ADS",
+    "codigo": "ADS0008",
+    "nome": "Disciplina 08 - Analise e Desenvolvimento de Sistemas",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ADS",
+    "codigo": "ADS0009",
+    "nome": "Disciplina 09 - Analise e Desenvolvimento de Sistemas",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ADS",
+    "codigo": "ADS0010",
+    "nome": "Disciplina 10 - Analise e Desenvolvimento de Sistemas",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ADS",
+    "codigo": "ADS0011",
+    "nome": "Disciplina 11 - Analise e Desenvolvimento de Sistemas",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ADS",
+    "codigo": "ADS0012",
+    "nome": "Disciplina 12 - Analise e Desenvolvimento de Sistemas",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ADS",
+    "codigo": "ADS0013",
+    "nome": "Disciplina 13 - Analise e Desenvolvimento de Sistemas",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ADS",
+    "codigo": "ADS0014",
+    "nome": "Disciplina 14 - Analise e Desenvolvimento de Sistemas",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ADS",
+    "codigo": "ADS0015",
+    "nome": "Disciplina 15 - Analise e Desenvolvimento de Sistemas",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ADS",
+    "codigo": "ADS0016",
+    "nome": "Disciplina 16 - Analise e Desenvolvimento de Sistemas",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ADS",
+    "codigo": "ADS0017",
+    "nome": "Disciplina 17 - Analise e Desenvolvimento de Sistemas",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ADS",
+    "codigo": "ADS0018",
+    "nome": "Disciplina 18 - Analise e Desenvolvimento de Sistemas",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ADS",
+    "codigo": "ADS0019",
+    "nome": "Disciplina 19 - Analise e Desenvolvimento de Sistemas",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ADS",
+    "codigo": "ADS0020",
+    "nome": "Disciplina 20 - Analise e Desenvolvimento de Sistemas",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ARQ",
+    "codigo": "ARQ0001",
+    "nome": "Disciplina 01 - Arquitetura e Urbanismo",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ARQ",
+    "codigo": "ARQ0002",
+    "nome": "Disciplina 02 - Arquitetura e Urbanismo",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ARQ",
+    "codigo": "ARQ0003",
+    "nome": "Disciplina 03 - Arquitetura e Urbanismo",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ARQ",
+    "codigo": "ARQ0004",
+    "nome": "Disciplina 04 - Arquitetura e Urbanismo",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ARQ",
+    "codigo": "ARQ0005",
+    "nome": "Disciplina 05 - Arquitetura e Urbanismo",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ARQ",
+    "codigo": "ARQ0006",
+    "nome": "Disciplina 06 - Arquitetura e Urbanismo",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ARQ",
+    "codigo": "ARQ0007",
+    "nome": "Disciplina 07 - Arquitetura e Urbanismo",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ARQ",
+    "codigo": "ARQ0008",
+    "nome": "Disciplina 08 - Arquitetura e Urbanismo",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ARQ",
+    "codigo": "ARQ0009",
+    "nome": "Disciplina 09 - Arquitetura e Urbanismo",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ARQ",
+    "codigo": "ARQ0010",
+    "nome": "Disciplina 10 - Arquitetura e Urbanismo",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ARQ",
+    "codigo": "ARQ0011",
+    "nome": "Disciplina 11 - Arquitetura e Urbanismo",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ARQ",
+    "codigo": "ARQ0012",
+    "nome": "Disciplina 12 - Arquitetura e Urbanismo",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ARQ",
+    "codigo": "ARQ0013",
+    "nome": "Disciplina 13 - Arquitetura e Urbanismo",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ARQ",
+    "codigo": "ARQ0014",
+    "nome": "Disciplina 14 - Arquitetura e Urbanismo",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ARQ",
+    "codigo": "ARQ0015",
+    "nome": "Disciplina 15 - Arquitetura e Urbanismo",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ARQ",
+    "codigo": "ARQ0016",
+    "nome": "Disciplina 16 - Arquitetura e Urbanismo",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ARQ",
+    "codigo": "ARQ0017",
+    "nome": "Disciplina 17 - Arquitetura e Urbanismo",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ARQ",
+    "codigo": "ARQ0018",
+    "nome": "Disciplina 18 - Arquitetura e Urbanismo",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ARQ",
+    "codigo": "ARQ0019",
+    "nome": "Disciplina 19 - Arquitetura e Urbanismo",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ARQ",
+    "codigo": "ARQ0020",
+    "nome": "Disciplina 20 - Arquitetura e Urbanismo",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "BIO",
+    "codigo": "BIO0001",
+    "nome": "Disciplina 01 - Ciencias Biologicas",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "BIO",
+    "codigo": "BIO0002",
+    "nome": "Disciplina 02 - Ciencias Biologicas",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "BIO",
+    "codigo": "BIO0003",
+    "nome": "Disciplina 03 - Ciencias Biologicas",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "BIO",
+    "codigo": "BIO0004",
+    "nome": "Disciplina 04 - Ciencias Biologicas",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "BIO",
+    "codigo": "BIO0005",
+    "nome": "Disciplina 05 - Ciencias Biologicas",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "BIO",
+    "codigo": "BIO0006",
+    "nome": "Disciplina 06 - Ciencias Biologicas",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "BIO",
+    "codigo": "BIO0007",
+    "nome": "Disciplina 07 - Ciencias Biologicas",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "BIO",
+    "codigo": "BIO0008",
+    "nome": "Disciplina 08 - Ciencias Biologicas",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "BIO",
+    "codigo": "BIO0009",
+    "nome": "Disciplina 09 - Ciencias Biologicas",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "BIO",
+    "codigo": "BIO0010",
+    "nome": "Disciplina 10 - Ciencias Biologicas",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "BIO",
+    "codigo": "BIO0011",
+    "nome": "Disciplina 11 - Ciencias Biologicas",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "BIO",
+    "codigo": "BIO0012",
+    "nome": "Disciplina 12 - Ciencias Biologicas",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "BIO",
+    "codigo": "BIO0013",
+    "nome": "Disciplina 13 - Ciencias Biologicas",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "BIO",
+    "codigo": "BIO0014",
+    "nome": "Disciplina 14 - Ciencias Biologicas",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "BIO",
+    "codigo": "BIO0015",
+    "nome": "Disciplina 15 - Ciencias Biologicas",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "BIO",
+    "codigo": "BIO0016",
+    "nome": "Disciplina 16 - Ciencias Biologicas",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "BIO",
+    "codigo": "BIO0017",
+    "nome": "Disciplina 17 - Ciencias Biologicas",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "BIO",
+    "codigo": "BIO0018",
+    "nome": "Disciplina 18 - Ciencias Biologicas",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "BIO",
+    "codigo": "BIO0019",
+    "nome": "Disciplina 19 - Ciencias Biologicas",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "BIO",
+    "codigo": "BIO0020",
+    "nome": "Disciplina 20 - Ciencias Biologicas",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "CIV",
+    "codigo": "CIV0001",
+    "nome": "Disciplina 01 - Engenharia Civil",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "CIV",
+    "codigo": "CIV0002",
+    "nome": "Disciplina 02 - Engenharia Civil",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "CIV",
+    "codigo": "CIV0003",
+    "nome": "Disciplina 03 - Engenharia Civil",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "CIV",
+    "codigo": "CIV0004",
+    "nome": "Disciplina 04 - Engenharia Civil",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "CIV",
+    "codigo": "CIV0005",
+    "nome": "Disciplina 05 - Engenharia Civil",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "CIV",
+    "codigo": "CIV0006",
+    "nome": "Disciplina 06 - Engenharia Civil",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "CIV",
+    "codigo": "CIV0007",
+    "nome": "Disciplina 07 - Engenharia Civil",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "CIV",
+    "codigo": "CIV0008",
+    "nome": "Disciplina 08 - Engenharia Civil",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "CIV",
+    "codigo": "CIV0009",
+    "nome": "Disciplina 09 - Engenharia Civil",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "CIV",
+    "codigo": "CIV0010",
+    "nome": "Disciplina 10 - Engenharia Civil",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "CIV",
+    "codigo": "CIV0011",
+    "nome": "Disciplina 11 - Engenharia Civil",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "CIV",
+    "codigo": "CIV0012",
+    "nome": "Disciplina 12 - Engenharia Civil",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "CIV",
+    "codigo": "CIV0013",
+    "nome": "Disciplina 13 - Engenharia Civil",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "CIV",
+    "codigo": "CIV0014",
+    "nome": "Disciplina 14 - Engenharia Civil",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "CIV",
+    "codigo": "CIV0015",
+    "nome": "Disciplina 15 - Engenharia Civil",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "CIV",
+    "codigo": "CIV0016",
+    "nome": "Disciplina 16 - Engenharia Civil",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "CIV",
+    "codigo": "CIV0017",
+    "nome": "Disciplina 17 - Engenharia Civil",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "CIV",
+    "codigo": "CIV0018",
+    "nome": "Disciplina 18 - Engenharia Civil",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "CIV",
+    "codigo": "CIV0019",
+    "nome": "Disciplina 19 - Engenharia Civil",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "CIV",
+    "codigo": "CIV0020",
+    "nome": "Disciplina 20 - Engenharia Civil",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "DIR",
+    "codigo": "DIR0001",
+    "nome": "Disciplina 01 - Direito",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "DIR",
+    "codigo": "DIR0002",
+    "nome": "Disciplina 02 - Direito",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "DIR",
+    "codigo": "DIR0003",
+    "nome": "Disciplina 03 - Direito",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "DIR",
+    "codigo": "DIR0004",
+    "nome": "Disciplina 04 - Direito",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "DIR",
+    "codigo": "DIR0005",
+    "nome": "Disciplina 05 - Direito",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "DIR",
+    "codigo": "DIR0006",
+    "nome": "Disciplina 06 - Direito",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "DIR",
+    "codigo": "DIR0007",
+    "nome": "Disciplina 07 - Direito",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "DIR",
+    "codigo": "DIR0008",
+    "nome": "Disciplina 08 - Direito",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "DIR",
+    "codigo": "DIR0009",
+    "nome": "Disciplina 09 - Direito",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "DIR",
+    "codigo": "DIR0010",
+    "nome": "Disciplina 10 - Direito",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "DIR",
+    "codigo": "DIR0011",
+    "nome": "Disciplina 11 - Direito",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "DIR",
+    "codigo": "DIR0012",
+    "nome": "Disciplina 12 - Direito",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "DIR",
+    "codigo": "DIR0013",
+    "nome": "Disciplina 13 - Direito",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "DIR",
+    "codigo": "DIR0014",
+    "nome": "Disciplina 14 - Direito",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "DIR",
+    "codigo": "DIR0015",
+    "nome": "Disciplina 15 - Direito",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "DIR",
+    "codigo": "DIR0016",
+    "nome": "Disciplina 16 - Direito",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "DIR",
+    "codigo": "DIR0017",
+    "nome": "Disciplina 17 - Direito",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "DIR",
+    "codigo": "DIR0018",
+    "nome": "Disciplina 18 - Direito",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "DIR",
+    "codigo": "DIR0019",
+    "nome": "Disciplina 19 - Direito",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "DIR",
+    "codigo": "DIR0020",
+    "nome": "Disciplina 20 - Direito",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ECO",
+    "codigo": "ECO0001",
+    "nome": "Disciplina 01 - Ciencias Economicas",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ECO",
+    "codigo": "ECO0002",
+    "nome": "Disciplina 02 - Ciencias Economicas",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ECO",
+    "codigo": "ECO0003",
+    "nome": "Disciplina 03 - Ciencias Economicas",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ECO",
+    "codigo": "ECO0004",
+    "nome": "Disciplina 04 - Ciencias Economicas",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ECO",
+    "codigo": "ECO0005",
+    "nome": "Disciplina 05 - Ciencias Economicas",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ECO",
+    "codigo": "ECO0006",
+    "nome": "Disciplina 06 - Ciencias Economicas",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ECO",
+    "codigo": "ECO0007",
+    "nome": "Disciplina 07 - Ciencias Economicas",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ECO",
+    "codigo": "ECO0008",
+    "nome": "Disciplina 08 - Ciencias Economicas",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ECO",
+    "codigo": "ECO0009",
+    "nome": "Disciplina 09 - Ciencias Economicas",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ECO",
+    "codigo": "ECO0010",
+    "nome": "Disciplina 10 - Ciencias Economicas",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ECO",
+    "codigo": "ECO0011",
+    "nome": "Disciplina 11 - Ciencias Economicas",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ECO",
+    "codigo": "ECO0012",
+    "nome": "Disciplina 12 - Ciencias Economicas",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ECO",
+    "codigo": "ECO0013",
+    "nome": "Disciplina 13 - Ciencias Economicas",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ECO",
+    "codigo": "ECO0014",
+    "nome": "Disciplina 14 - Ciencias Economicas",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ECO",
+    "codigo": "ECO0015",
+    "nome": "Disciplina 15 - Ciencias Economicas",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ECO",
+    "codigo": "ECO0016",
+    "nome": "Disciplina 16 - Ciencias Economicas",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ECO",
+    "codigo": "ECO0017",
+    "nome": "Disciplina 17 - Ciencias Economicas",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ECO",
+    "codigo": "ECO0018",
+    "nome": "Disciplina 18 - Ciencias Economicas",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ECO",
+    "codigo": "ECO0019",
+    "nome": "Disciplina 19 - Ciencias Economicas",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ECO",
+    "codigo": "ECO0020",
+    "nome": "Disciplina 20 - Ciencias Economicas",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENF",
+    "codigo": "ENF0001",
+    "nome": "Disciplina 01 - Enfermagem",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENF",
+    "codigo": "ENF0002",
+    "nome": "Disciplina 02 - Enfermagem",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENF",
+    "codigo": "ENF0003",
+    "nome": "Disciplina 03 - Enfermagem",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENF",
+    "codigo": "ENF0004",
+    "nome": "Disciplina 04 - Enfermagem",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENF",
+    "codigo": "ENF0005",
+    "nome": "Disciplina 05 - Enfermagem",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENF",
+    "codigo": "ENF0006",
+    "nome": "Disciplina 06 - Enfermagem",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENF",
+    "codigo": "ENF0007",
+    "nome": "Disciplina 07 - Enfermagem",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENF",
+    "codigo": "ENF0008",
+    "nome": "Disciplina 08 - Enfermagem",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENF",
+    "codigo": "ENF0009",
+    "nome": "Disciplina 09 - Enfermagem",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENF",
+    "codigo": "ENF0010",
+    "nome": "Disciplina 10 - Enfermagem",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENF",
+    "codigo": "ENF0011",
+    "nome": "Disciplina 11 - Enfermagem",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENF",
+    "codigo": "ENF0012",
+    "nome": "Disciplina 12 - Enfermagem",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENF",
+    "codigo": "ENF0013",
+    "nome": "Disciplina 13 - Enfermagem",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENF",
+    "codigo": "ENF0014",
+    "nome": "Disciplina 14 - Enfermagem",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENF",
+    "codigo": "ENF0015",
+    "nome": "Disciplina 15 - Enfermagem",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENF",
+    "codigo": "ENF0016",
+    "nome": "Disciplina 16 - Enfermagem",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENF",
+    "codigo": "ENF0017",
+    "nome": "Disciplina 17 - Enfermagem",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENF",
+    "codigo": "ENF0018",
+    "nome": "Disciplina 18 - Enfermagem",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENF",
+    "codigo": "ENF0019",
+    "nome": "Disciplina 19 - Enfermagem",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENF",
+    "codigo": "ENF0020",
+    "nome": "Disciplina 20 - Enfermagem",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENGMEC",
+    "codigo": "ENG0001",
+    "nome": "Disciplina 01 - Engenharia Mecanica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENGMEC",
+    "codigo": "ENG0002",
+    "nome": "Disciplina 02 - Engenharia Mecanica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENGMEC",
+    "codigo": "ENG0003",
+    "nome": "Disciplina 03 - Engenharia Mecanica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENGMEC",
+    "codigo": "ENG0004",
+    "nome": "Disciplina 04 - Engenharia Mecanica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENGMEC",
+    "codigo": "ENG0005",
+    "nome": "Disciplina 05 - Engenharia Mecanica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENGMEC",
+    "codigo": "ENG0006",
+    "nome": "Disciplina 06 - Engenharia Mecanica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENGMEC",
+    "codigo": "ENG0007",
+    "nome": "Disciplina 07 - Engenharia Mecanica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENGMEC",
+    "codigo": "ENG0008",
+    "nome": "Disciplina 08 - Engenharia Mecanica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENGMEC",
+    "codigo": "ENG0009",
+    "nome": "Disciplina 09 - Engenharia Mecanica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENGMEC",
+    "codigo": "ENG0010",
+    "nome": "Disciplina 10 - Engenharia Mecanica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENGMEC",
+    "codigo": "ENG0011",
+    "nome": "Disciplina 11 - Engenharia Mecanica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENGMEC",
+    "codigo": "ENG0012",
+    "nome": "Disciplina 12 - Engenharia Mecanica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENGMEC",
+    "codigo": "ENG0013",
+    "nome": "Disciplina 13 - Engenharia Mecanica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENGMEC",
+    "codigo": "ENG0014",
+    "nome": "Disciplina 14 - Engenharia Mecanica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENGMEC",
+    "codigo": "ENG0015",
+    "nome": "Disciplina 15 - Engenharia Mecanica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENGMEC",
+    "codigo": "ENG0016",
+    "nome": "Disciplina 16 - Engenharia Mecanica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENGMEC",
+    "codigo": "ENG0017",
+    "nome": "Disciplina 17 - Engenharia Mecanica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENGMEC",
+    "codigo": "ENG0018",
+    "nome": "Disciplina 18 - Engenharia Mecanica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENGMEC",
+    "codigo": "ENG0019",
+    "nome": "Disciplina 19 - Engenharia Mecanica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENGMEC",
+    "codigo": "ENG0020",
+    "nome": "Disciplina 20 - Engenharia Mecanica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENGEL",
+    "codigo": "ENG0001",
+    "nome": "Disciplina 01 - Engenharia Eletrica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENGEL",
+    "codigo": "ENG0002",
+    "nome": "Disciplina 02 - Engenharia Eletrica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENGEL",
+    "codigo": "ENG0003",
+    "nome": "Disciplina 03 - Engenharia Eletrica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENGEL",
+    "codigo": "ENG0004",
+    "nome": "Disciplina 04 - Engenharia Eletrica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENGEL",
+    "codigo": "ENG0005",
+    "nome": "Disciplina 05 - Engenharia Eletrica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENGEL",
+    "codigo": "ENG0006",
+    "nome": "Disciplina 06 - Engenharia Eletrica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENGEL",
+    "codigo": "ENG0007",
+    "nome": "Disciplina 07 - Engenharia Eletrica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENGEL",
+    "codigo": "ENG0008",
+    "nome": "Disciplina 08 - Engenharia Eletrica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENGEL",
+    "codigo": "ENG0009",
+    "nome": "Disciplina 09 - Engenharia Eletrica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENGEL",
+    "codigo": "ENG0010",
+    "nome": "Disciplina 10 - Engenharia Eletrica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENGEL",
+    "codigo": "ENG0011",
+    "nome": "Disciplina 11 - Engenharia Eletrica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENGEL",
+    "codigo": "ENG0012",
+    "nome": "Disciplina 12 - Engenharia Eletrica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENGEL",
+    "codigo": "ENG0013",
+    "nome": "Disciplina 13 - Engenharia Eletrica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENGEL",
+    "codigo": "ENG0014",
+    "nome": "Disciplina 14 - Engenharia Eletrica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENGEL",
+    "codigo": "ENG0015",
+    "nome": "Disciplina 15 - Engenharia Eletrica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENGEL",
+    "codigo": "ENG0016",
+    "nome": "Disciplina 16 - Engenharia Eletrica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENGEL",
+    "codigo": "ENG0017",
+    "nome": "Disciplina 17 - Engenharia Eletrica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENGEL",
+    "codigo": "ENG0018",
+    "nome": "Disciplina 18 - Engenharia Eletrica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENGEL",
+    "codigo": "ENG0019",
+    "nome": "Disciplina 19 - Engenharia Eletrica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENGEL",
+    "codigo": "ENG0020",
+    "nome": "Disciplina 20 - Engenharia Eletrica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENGPROD",
+    "codigo": "ENG0001",
+    "nome": "Disciplina 01 - Engenharia de Producao",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENGPROD",
+    "codigo": "ENG0002",
+    "nome": "Disciplina 02 - Engenharia de Producao",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENGPROD",
+    "codigo": "ENG0003",
+    "nome": "Disciplina 03 - Engenharia de Producao",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENGPROD",
+    "codigo": "ENG0004",
+    "nome": "Disciplina 04 - Engenharia de Producao",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENGPROD",
+    "codigo": "ENG0005",
+    "nome": "Disciplina 05 - Engenharia de Producao",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENGPROD",
+    "codigo": "ENG0006",
+    "nome": "Disciplina 06 - Engenharia de Producao",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENGPROD",
+    "codigo": "ENG0007",
+    "nome": "Disciplina 07 - Engenharia de Producao",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENGPROD",
+    "codigo": "ENG0008",
+    "nome": "Disciplina 08 - Engenharia de Producao",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENGPROD",
+    "codigo": "ENG0009",
+    "nome": "Disciplina 09 - Engenharia de Producao",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENGPROD",
+    "codigo": "ENG0010",
+    "nome": "Disciplina 10 - Engenharia de Producao",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENGPROD",
+    "codigo": "ENG0011",
+    "nome": "Disciplina 11 - Engenharia de Producao",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENGPROD",
+    "codigo": "ENG0012",
+    "nome": "Disciplina 12 - Engenharia de Producao",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENGPROD",
+    "codigo": "ENG0013",
+    "nome": "Disciplina 13 - Engenharia de Producao",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENGPROD",
+    "codigo": "ENG0014",
+    "nome": "Disciplina 14 - Engenharia de Producao",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENGPROD",
+    "codigo": "ENG0015",
+    "nome": "Disciplina 15 - Engenharia de Producao",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENGPROD",
+    "codigo": "ENG0016",
+    "nome": "Disciplina 16 - Engenharia de Producao",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENGPROD",
+    "codigo": "ENG0017",
+    "nome": "Disciplina 17 - Engenharia de Producao",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENGPROD",
+    "codigo": "ENG0018",
+    "nome": "Disciplina 18 - Engenharia de Producao",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENGPROD",
+    "codigo": "ENG0019",
+    "nome": "Disciplina 19 - Engenharia de Producao",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "ENGPROD",
+    "codigo": "ENG0020",
+    "nome": "Disciplina 20 - Engenharia de Producao",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "FAR",
+    "codigo": "FAR0001",
+    "nome": "Disciplina 01 - Farmacia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "FAR",
+    "codigo": "FAR0002",
+    "nome": "Disciplina 02 - Farmacia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "FAR",
+    "codigo": "FAR0003",
+    "nome": "Disciplina 03 - Farmacia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "FAR",
+    "codigo": "FAR0004",
+    "nome": "Disciplina 04 - Farmacia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "FAR",
+    "codigo": "FAR0005",
+    "nome": "Disciplina 05 - Farmacia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "FAR",
+    "codigo": "FAR0006",
+    "nome": "Disciplina 06 - Farmacia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "FAR",
+    "codigo": "FAR0007",
+    "nome": "Disciplina 07 - Farmacia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "FAR",
+    "codigo": "FAR0008",
+    "nome": "Disciplina 08 - Farmacia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "FAR",
+    "codigo": "FAR0009",
+    "nome": "Disciplina 09 - Farmacia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "FAR",
+    "codigo": "FAR0010",
+    "nome": "Disciplina 10 - Farmacia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "FAR",
+    "codigo": "FAR0011",
+    "nome": "Disciplina 11 - Farmacia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "FAR",
+    "codigo": "FAR0012",
+    "nome": "Disciplina 12 - Farmacia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "FAR",
+    "codigo": "FAR0013",
+    "nome": "Disciplina 13 - Farmacia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "FAR",
+    "codigo": "FAR0014",
+    "nome": "Disciplina 14 - Farmacia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "FAR",
+    "codigo": "FAR0015",
+    "nome": "Disciplina 15 - Farmacia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "FAR",
+    "codigo": "FAR0016",
+    "nome": "Disciplina 16 - Farmacia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "FAR",
+    "codigo": "FAR0017",
+    "nome": "Disciplina 17 - Farmacia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "FAR",
+    "codigo": "FAR0018",
+    "nome": "Disciplina 18 - Farmacia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "FAR",
+    "codigo": "FAR0019",
+    "nome": "Disciplina 19 - Farmacia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "FAR",
+    "codigo": "FAR0020",
+    "nome": "Disciplina 20 - Farmacia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "FIS",
+    "codigo": "FIS0001",
+    "nome": "Disciplina 01 - Fisica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "FIS",
+    "codigo": "FIS0002",
+    "nome": "Disciplina 02 - Fisica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "FIS",
+    "codigo": "FIS0003",
+    "nome": "Disciplina 03 - Fisica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "FIS",
+    "codigo": "FIS0004",
+    "nome": "Disciplina 04 - Fisica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "FIS",
+    "codigo": "FIS0005",
+    "nome": "Disciplina 05 - Fisica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "FIS",
+    "codigo": "FIS0006",
+    "nome": "Disciplina 06 - Fisica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "FIS",
+    "codigo": "FIS0007",
+    "nome": "Disciplina 07 - Fisica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "FIS",
+    "codigo": "FIS0008",
+    "nome": "Disciplina 08 - Fisica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "FIS",
+    "codigo": "FIS0009",
+    "nome": "Disciplina 09 - Fisica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "FIS",
+    "codigo": "FIS0010",
+    "nome": "Disciplina 10 - Fisica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "FIS",
+    "codigo": "FIS0011",
+    "nome": "Disciplina 11 - Fisica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "FIS",
+    "codigo": "FIS0012",
+    "nome": "Disciplina 12 - Fisica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "FIS",
+    "codigo": "FIS0013",
+    "nome": "Disciplina 13 - Fisica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "FIS",
+    "codigo": "FIS0014",
+    "nome": "Disciplina 14 - Fisica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "FIS",
+    "codigo": "FIS0015",
+    "nome": "Disciplina 15 - Fisica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "FIS",
+    "codigo": "FIS0016",
+    "nome": "Disciplina 16 - Fisica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "FIS",
+    "codigo": "FIS0017",
+    "nome": "Disciplina 17 - Fisica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "FIS",
+    "codigo": "FIS0018",
+    "nome": "Disciplina 18 - Fisica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "FIS",
+    "codigo": "FIS0019",
+    "nome": "Disciplina 19 - Fisica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "FIS",
+    "codigo": "FIS0020",
+    "nome": "Disciplina 20 - Fisica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "GEO",
+    "codigo": "GEO0001",
+    "nome": "Disciplina 01 - Geografia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "GEO",
+    "codigo": "GEO0002",
+    "nome": "Disciplina 02 - Geografia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "GEO",
+    "codigo": "GEO0003",
+    "nome": "Disciplina 03 - Geografia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "GEO",
+    "codigo": "GEO0004",
+    "nome": "Disciplina 04 - Geografia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "GEO",
+    "codigo": "GEO0005",
+    "nome": "Disciplina 05 - Geografia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "GEO",
+    "codigo": "GEO0006",
+    "nome": "Disciplina 06 - Geografia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "GEO",
+    "codigo": "GEO0007",
+    "nome": "Disciplina 07 - Geografia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "GEO",
+    "codigo": "GEO0008",
+    "nome": "Disciplina 08 - Geografia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "GEO",
+    "codigo": "GEO0009",
+    "nome": "Disciplina 09 - Geografia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "GEO",
+    "codigo": "GEO0010",
+    "nome": "Disciplina 10 - Geografia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "GEO",
+    "codigo": "GEO0011",
+    "nome": "Disciplina 11 - Geografia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "GEO",
+    "codigo": "GEO0012",
+    "nome": "Disciplina 12 - Geografia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "GEO",
+    "codigo": "GEO0013",
+    "nome": "Disciplina 13 - Geografia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "GEO",
+    "codigo": "GEO0014",
+    "nome": "Disciplina 14 - Geografia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "GEO",
+    "codigo": "GEO0015",
+    "nome": "Disciplina 15 - Geografia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "GEO",
+    "codigo": "GEO0016",
+    "nome": "Disciplina 16 - Geografia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "GEO",
+    "codigo": "GEO0017",
+    "nome": "Disciplina 17 - Geografia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "GEO",
+    "codigo": "GEO0018",
+    "nome": "Disciplina 18 - Geografia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "GEO",
+    "codigo": "GEO0019",
+    "nome": "Disciplina 19 - Geografia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "GEO",
+    "codigo": "GEO0020",
+    "nome": "Disciplina 20 - Geografia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "HIS",
+    "codigo": "HIS0001",
+    "nome": "Disciplina 01 - Historia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "HIS",
+    "codigo": "HIS0002",
+    "nome": "Disciplina 02 - Historia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "HIS",
+    "codigo": "HIS0003",
+    "nome": "Disciplina 03 - Historia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "HIS",
+    "codigo": "HIS0004",
+    "nome": "Disciplina 04 - Historia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "HIS",
+    "codigo": "HIS0005",
+    "nome": "Disciplina 05 - Historia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "HIS",
+    "codigo": "HIS0006",
+    "nome": "Disciplina 06 - Historia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "HIS",
+    "codigo": "HIS0007",
+    "nome": "Disciplina 07 - Historia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "HIS",
+    "codigo": "HIS0008",
+    "nome": "Disciplina 08 - Historia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "HIS",
+    "codigo": "HIS0009",
+    "nome": "Disciplina 09 - Historia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "HIS",
+    "codigo": "HIS0010",
+    "nome": "Disciplina 10 - Historia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "HIS",
+    "codigo": "HIS0011",
+    "nome": "Disciplina 11 - Historia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "HIS",
+    "codigo": "HIS0012",
+    "nome": "Disciplina 12 - Historia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "HIS",
+    "codigo": "HIS0013",
+    "nome": "Disciplina 13 - Historia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "HIS",
+    "codigo": "HIS0014",
+    "nome": "Disciplina 14 - Historia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "HIS",
+    "codigo": "HIS0015",
+    "nome": "Disciplina 15 - Historia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "HIS",
+    "codigo": "HIS0016",
+    "nome": "Disciplina 16 - Historia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "HIS",
+    "codigo": "HIS0017",
+    "nome": "Disciplina 17 - Historia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "HIS",
+    "codigo": "HIS0018",
+    "nome": "Disciplina 18 - Historia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "HIS",
+    "codigo": "HIS0019",
+    "nome": "Disciplina 19 - Historia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "HIS",
+    "codigo": "HIS0020",
+    "nome": "Disciplina 20 - Historia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "LET",
+    "codigo": "LET0001",
+    "nome": "Disciplina 01 - Letras",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "LET",
+    "codigo": "LET0002",
+    "nome": "Disciplina 02 - Letras",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "LET",
+    "codigo": "LET0003",
+    "nome": "Disciplina 03 - Letras",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "LET",
+    "codigo": "LET0004",
+    "nome": "Disciplina 04 - Letras",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "LET",
+    "codigo": "LET0005",
+    "nome": "Disciplina 05 - Letras",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "LET",
+    "codigo": "LET0006",
+    "nome": "Disciplina 06 - Letras",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "LET",
+    "codigo": "LET0007",
+    "nome": "Disciplina 07 - Letras",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "LET",
+    "codigo": "LET0008",
+    "nome": "Disciplina 08 - Letras",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "LET",
+    "codigo": "LET0009",
+    "nome": "Disciplina 09 - Letras",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "LET",
+    "codigo": "LET0010",
+    "nome": "Disciplina 10 - Letras",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "LET",
+    "codigo": "LET0011",
+    "nome": "Disciplina 11 - Letras",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "LET",
+    "codigo": "LET0012",
+    "nome": "Disciplina 12 - Letras",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "LET",
+    "codigo": "LET0013",
+    "nome": "Disciplina 13 - Letras",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "LET",
+    "codigo": "LET0014",
+    "nome": "Disciplina 14 - Letras",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "LET",
+    "codigo": "LET0015",
+    "nome": "Disciplina 15 - Letras",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "LET",
+    "codigo": "LET0016",
+    "nome": "Disciplina 16 - Letras",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "LET",
+    "codigo": "LET0017",
+    "nome": "Disciplina 17 - Letras",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "LET",
+    "codigo": "LET0018",
+    "nome": "Disciplina 18 - Letras",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "LET",
+    "codigo": "LET0019",
+    "nome": "Disciplina 19 - Letras",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "LET",
+    "codigo": "LET0020",
+    "nome": "Disciplina 20 - Letras",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "MAT",
+    "codigo": "MAT0001",
+    "nome": "Disciplina 01 - Matematica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "MAT",
+    "codigo": "MAT0002",
+    "nome": "Disciplina 02 - Matematica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "MAT",
+    "codigo": "MAT0003",
+    "nome": "Disciplina 03 - Matematica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "MAT",
+    "codigo": "MAT0004",
+    "nome": "Disciplina 04 - Matematica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "MAT",
+    "codigo": "MAT0005",
+    "nome": "Disciplina 05 - Matematica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "MAT",
+    "codigo": "MAT0006",
+    "nome": "Disciplina 06 - Matematica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "MAT",
+    "codigo": "MAT0007",
+    "nome": "Disciplina 07 - Matematica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "MAT",
+    "codigo": "MAT0008",
+    "nome": "Disciplina 08 - Matematica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "MAT",
+    "codigo": "MAT0009",
+    "nome": "Disciplina 09 - Matematica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "MAT",
+    "codigo": "MAT0010",
+    "nome": "Disciplina 10 - Matematica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "MAT",
+    "codigo": "MAT0011",
+    "nome": "Disciplina 11 - Matematica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "MAT",
+    "codigo": "MAT0012",
+    "nome": "Disciplina 12 - Matematica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "MAT",
+    "codigo": "MAT0013",
+    "nome": "Disciplina 13 - Matematica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "MAT",
+    "codigo": "MAT0014",
+    "nome": "Disciplina 14 - Matematica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "MAT",
+    "codigo": "MAT0015",
+    "nome": "Disciplina 15 - Matematica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "MAT",
+    "codigo": "MAT0016",
+    "nome": "Disciplina 16 - Matematica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "MAT",
+    "codigo": "MAT0017",
+    "nome": "Disciplina 17 - Matematica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "MAT",
+    "codigo": "MAT0018",
+    "nome": "Disciplina 18 - Matematica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "MAT",
+    "codigo": "MAT0019",
+    "nome": "Disciplina 19 - Matematica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "MAT",
+    "codigo": "MAT0020",
+    "nome": "Disciplina 20 - Matematica",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "MED",
+    "codigo": "MED0001",
+    "nome": "Disciplina 01 - Medicina",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "MED",
+    "codigo": "MED0002",
+    "nome": "Disciplina 02 - Medicina",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "MED",
+    "codigo": "MED0003",
+    "nome": "Disciplina 03 - Medicina",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "MED",
+    "codigo": "MED0004",
+    "nome": "Disciplina 04 - Medicina",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "MED",
+    "codigo": "MED0005",
+    "nome": "Disciplina 05 - Medicina",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "MED",
+    "codigo": "MED0006",
+    "nome": "Disciplina 06 - Medicina",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "MED",
+    "codigo": "MED0007",
+    "nome": "Disciplina 07 - Medicina",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "MED",
+    "codigo": "MED0008",
+    "nome": "Disciplina 08 - Medicina",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "MED",
+    "codigo": "MED0009",
+    "nome": "Disciplina 09 - Medicina",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "MED",
+    "codigo": "MED0010",
+    "nome": "Disciplina 10 - Medicina",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "MED",
+    "codigo": "MED0011",
+    "nome": "Disciplina 11 - Medicina",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "MED",
+    "codigo": "MED0012",
+    "nome": "Disciplina 12 - Medicina",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "MED",
+    "codigo": "MED0013",
+    "nome": "Disciplina 13 - Medicina",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "MED",
+    "codigo": "MED0014",
+    "nome": "Disciplina 14 - Medicina",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "MED",
+    "codigo": "MED0015",
+    "nome": "Disciplina 15 - Medicina",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "MED",
+    "codigo": "MED0016",
+    "nome": "Disciplina 16 - Medicina",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "MED",
+    "codigo": "MED0017",
+    "nome": "Disciplina 17 - Medicina",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "MED",
+    "codigo": "MED0018",
+    "nome": "Disciplina 18 - Medicina",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "MED",
+    "codigo": "MED0019",
+    "nome": "Disciplina 19 - Medicina",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "MED",
+    "codigo": "MED0020",
+    "nome": "Disciplina 20 - Medicina",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "PED",
+    "codigo": "PED0001",
+    "nome": "Disciplina 01 - Pedagogia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "PED",
+    "codigo": "PED0002",
+    "nome": "Disciplina 02 - Pedagogia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "PED",
+    "codigo": "PED0003",
+    "nome": "Disciplina 03 - Pedagogia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "PED",
+    "codigo": "PED0004",
+    "nome": "Disciplina 04 - Pedagogia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "PED",
+    "codigo": "PED0005",
+    "nome": "Disciplina 05 - Pedagogia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "PED",
+    "codigo": "PED0006",
+    "nome": "Disciplina 06 - Pedagogia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "PED",
+    "codigo": "PED0007",
+    "nome": "Disciplina 07 - Pedagogia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "PED",
+    "codigo": "PED0008",
+    "nome": "Disciplina 08 - Pedagogia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "PED",
+    "codigo": "PED0009",
+    "nome": "Disciplina 09 - Pedagogia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "PED",
+    "codigo": "PED0010",
+    "nome": "Disciplina 10 - Pedagogia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "PED",
+    "codigo": "PED0011",
+    "nome": "Disciplina 11 - Pedagogia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "PED",
+    "codigo": "PED0012",
+    "nome": "Disciplina 12 - Pedagogia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "PED",
+    "codigo": "PED0013",
+    "nome": "Disciplina 13 - Pedagogia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "PED",
+    "codigo": "PED0014",
+    "nome": "Disciplina 14 - Pedagogia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "PED",
+    "codigo": "PED0015",
+    "nome": "Disciplina 15 - Pedagogia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "PED",
+    "codigo": "PED0016",
+    "nome": "Disciplina 16 - Pedagogia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "PED",
+    "codigo": "PED0017",
+    "nome": "Disciplina 17 - Pedagogia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "PED",
+    "codigo": "PED0018",
+    "nome": "Disciplina 18 - Pedagogia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "PED",
+    "codigo": "PED0019",
+    "nome": "Disciplina 19 - Pedagogia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "PED",
+    "codigo": "PED0020",
+    "nome": "Disciplina 20 - Pedagogia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "PSI",
+    "codigo": "PSI0001",
+    "nome": "Disciplina 01 - Psicologia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "PSI",
+    "codigo": "PSI0002",
+    "nome": "Disciplina 02 - Psicologia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "PSI",
+    "codigo": "PSI0003",
+    "nome": "Disciplina 03 - Psicologia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "PSI",
+    "codigo": "PSI0004",
+    "nome": "Disciplina 04 - Psicologia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "PSI",
+    "codigo": "PSI0005",
+    "nome": "Disciplina 05 - Psicologia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "PSI",
+    "codigo": "PSI0006",
+    "nome": "Disciplina 06 - Psicologia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "PSI",
+    "codigo": "PSI0007",
+    "nome": "Disciplina 07 - Psicologia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "PSI",
+    "codigo": "PSI0008",
+    "nome": "Disciplina 08 - Psicologia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "PSI",
+    "codigo": "PSI0009",
+    "nome": "Disciplina 09 - Psicologia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "PSI",
+    "codigo": "PSI0010",
+    "nome": "Disciplina 10 - Psicologia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "PSI",
+    "codigo": "PSI0011",
+    "nome": "Disciplina 11 - Psicologia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "PSI",
+    "codigo": "PSI0012",
+    "nome": "Disciplina 12 - Psicologia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "PSI",
+    "codigo": "PSI0013",
+    "nome": "Disciplina 13 - Psicologia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "PSI",
+    "codigo": "PSI0014",
+    "nome": "Disciplina 14 - Psicologia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "PSI",
+    "codigo": "PSI0015",
+    "nome": "Disciplina 15 - Psicologia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "PSI",
+    "codigo": "PSI0016",
+    "nome": "Disciplina 16 - Psicologia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "PSI",
+    "codigo": "PSI0017",
+    "nome": "Disciplina 17 - Psicologia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "PSI",
+    "codigo": "PSI0018",
+    "nome": "Disciplina 18 - Psicologia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "PSI",
+    "codigo": "PSI0019",
+    "nome": "Disciplina 19 - Psicologia",
+    "cargaHoraria": 60
+  },
+  {
+    "cursoCodigo": "PSI",
+    "codigo": "PSI0020",
+    "nome": "Disciplina 20 - Psicologia",
+    "cargaHoraria": 60
+  }
+]

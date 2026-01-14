@@ -1,7 +1,7 @@
 package br.com.tcc.graduacao.domain.service;
 
-import br.com.tcc.graduacao.api.dto.CursoRequest;
-import br.com.tcc.graduacao.api.mapper.CursoMapper;
+import br.com.tcc.graduacao.api.dto.CursoGraduacaoRequest;
+import br.com.tcc.graduacao.api.mapper.CursoGraduacaoMapper;
 import br.com.tcc.graduacao.domain.model.CursoGraduacao;
 import br.com.tcc.graduacao.domain.repository.CursoGraduacaoRepository;
 import java.util.List;
@@ -13,15 +13,15 @@ import org.springframework.transaction.annotation.Transactional;
 public class CursoGraduacaoService {
 
   private final CursoGraduacaoRepository repository;
-  private final CursoMapper mapper;
+  private final CursoGraduacaoMapper mapper;
 
-  public CursoGraduacaoService(CursoGraduacaoRepository repository, CursoMapper mapper) {
+  public CursoGraduacaoService(CursoGraduacaoRepository repository, CursoGraduacaoMapper mapper) {
     this.repository = repository;
     this.mapper = mapper;
   }
 
   @Transactional
-  public CursoGraduacao criarCurso(CursoRequest request) {
+  public CursoGraduacao criarCurso(CursoGraduacaoRequest request) {
     return repository.save(mapper.toEntity(request));
   }
 
@@ -34,7 +34,7 @@ public class CursoGraduacaoService {
   }
 
   @Transactional
-  public Optional<CursoGraduacao> atualizar(Long id, CursoRequest request) {
+  public Optional<CursoGraduacao> atualizar(Long id, CursoGraduacaoRequest request) {
     return repository.findById(id).map(curso -> {
       mapper.updateEntityFromRequest(request, curso);
       return curso;

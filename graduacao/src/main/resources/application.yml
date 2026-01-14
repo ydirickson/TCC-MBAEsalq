@@ -13,7 +13,7 @@ spring:
     password: ${PGR_POSTGRES_PASSWORD:tcc123}
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: create
     properties:
       hibernate:
         '[format_sql]': true
