@@ -1,11 +1,12 @@
 package br.com.tcc.graduacao.api.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
-import java.time.Instant;
+import java.net.URI;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
@@ -20,48 +21,53 @@ public class ApiExceptionHandler {
   private static final Logger log = LoggerFactory.getLogger(ApiExceptionHandler.class);
 
   @ExceptionHandler({MethodArgumentNotValidException.class, BindException.class})
-  public ResponseEntity<ErrorResponse> handleValidation(Exception ex, HttpServletRequest request) {
+  public ResponseEntity<ProblemDetail> handleValidation(Exception ex, HttpServletRequest request) {
     var bindingResult = ex instanceof MethodArgumentNotValidException manv
-        ? manv.getBindingResult()
-        : ((BindException) ex).getBindingResult();
+      ? manv.getBindingResult()
+      : ((BindException) ex).getBindingResult();
 
-    String detalhes = bindingResult.getFieldErrors().stream()
+    String listaErros = bindingResult.getFieldErrors().stream()
+      .map(ApiExceptionHandler::formatarErroCampo)
+      .collect(Collectors.joining("; "));
+
+    String mensagemGeral = "Erro de validação de dados";
+    String detalhes = mensagemGeral + (listaErros.isEmpty() ? "" : " -> " + listaErros);
+
+    ProblemDetail body = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+    body.setTitle(mensagemGeral);
+    body.setDetail(listaErros.isEmpty() ? mensagemGeral : listaErros);
+    body.setInstance(URI.create(request.getRequestURI()));
+    if (!listaErros.isEmpty()) {
+      body.setProperty("errors", bindingResult.getFieldErrors().stream()
         .map(ApiExceptionHandler::formatarErroCampo)
-        .collect(Collectors.joining("; "));
+        .collect(Collectors.toList()));
+    }
 
-    ErrorResponse body = ErrorResponse.of(
-        HttpStatus.BAD_REQUEST,
-        "Parametros inválidos",
-        detalhes,
-        request.getRequestURI());
-
-    log.warn("Erro de validacao em {} -> {}", request.getRequestURI(), detalhes);
+    log.info("Erro de validacao em {} -> {}", request.getRequestURI(), detalhes);
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
   }
 
   @ExceptionHandler(HttpMessageNotReadableException.class)
-  public ResponseEntity<ErrorResponse> handleCorpoInvalido(HttpMessageNotReadableException ex, HttpServletRequest request) {
+  public ResponseEntity<ProblemDetail> handleCorpoInvalido(HttpMessageNotReadableException ex, HttpServletRequest request) {
     String detalhe = ex.getMostSpecificCause() != null
         ? ex.getMostSpecificCause().getMessage()
         : "Corpo da requisicao ilegivel ou incompleto";
 
-    ErrorResponse body = ErrorResponse.of(
-        HttpStatus.BAD_REQUEST,
-        "Corpo da requisicao invalido",
-        detalhe,
-        request.getRequestURI());
+    ProblemDetail body = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+    body.setTitle("Corpo da requisicao invalido");
+    body.setDetail(detalhe);
+    body.setInstance(URI.create(request.getRequestURI()));
 
     log.warn("Corpo invalido em {} -> {}", request.getRequestURI(), detalhe);
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
   }
 
   @ExceptionHandler(Exception.class)
-  public ResponseEntity<ErrorResponse> handleGenerico(Exception ex, HttpServletRequest request) {
-    ErrorResponse body = ErrorResponse.of(
-        HttpStatus.INTERNAL_SERVER_ERROR,
-        "Erro interno ao processar a requisicao",
-        ex.getMessage(),
-        request.getRequestURI());
+  public ResponseEntity<ProblemDetail> handleGenerico(Exception ex, HttpServletRequest request) {
+    ProblemDetail body = ProblemDetail.forStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+    body.setTitle("Erro interno ao processar a requisicao");
+    body.setDetail(ex.getMessage());
+    body.setInstance(URI.create(request.getRequestURI()));
 
     log.error("Erro inesperado em {} -> {}", request.getRequestURI(), ex.getMessage(), ex);
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
@@ -69,16 +75,5 @@ public class ApiExceptionHandler {
 
   private static String formatarErroCampo(FieldError error) {
     return error.getField() + ": " + error.getDefaultMessage();
-  }
-
-  public record ErrorResponse(Instant timestamp, int status, String error, String message, String path) {
-    static ErrorResponse of(HttpStatus status, String errorMessage, String detalhe, String path) {
-      return new ErrorResponse(
-          Instant.now(),
-          status.value(),
-          status.getReasonPhrase(),
-          detalhe != null ? detalhe : errorMessage,
-          path);
-    }
   }
 }

@@ -13,7 +13,7 @@ spring:
     password: ${PGR_POSTGRES_PASSWORD:tcc123}
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
     properties:
       hibernate:
         '[format_sql]': true
@@ -25,6 +25,7 @@ spring:
 logging:
   level:
     '[org.springframework]': ${INFRA_LOG_LEVEL:INFO}
+    '[org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver]': ERROR
     '[org.apache.catalina]': ${INFRA_LOG_LEVEL:INFO}
     '[org.hibernate]': ${INFRA_LOG_LEVEL:INFO}
     '[com.zaxxer.hikari]': ${INFRA_LOG_LEVEL:INFO}

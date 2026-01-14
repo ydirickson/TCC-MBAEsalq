@@ -4,6 +4,8 @@ import br.com.tcc.graduacao.api.dto.CursoRequest;
 import br.com.tcc.graduacao.api.dto.CursoResponse;
 import br.com.tcc.graduacao.api.mapper.CursoMapper;
 import br.com.tcc.graduacao.domain.service.CursoGraduacaoService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
@@ -24,6 +26,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
 @RequestMapping("/cursos")
+@Tag(name = "01 - Cursos", description = "Operações de cadastro e manutenção de cursos de graduação")
 public class CursoGraduacaoController {
 
   private static final Logger log = LoggerFactory.getLogger(CursoGraduacaoController.class);
@@ -37,6 +40,7 @@ public class CursoGraduacaoController {
   }
 
   @PostMapping
+  @Operation(summary = "Criar curso", description = "Cria um novo curso de graduação.")
   public ResponseEntity<CursoResponse> criar(@Valid @RequestBody CursoRequest request, UriComponentsBuilder uriBuilder) {
     var salvo = service.criarCurso(request);
     log.info("Curso criado id={} codigo={} nome={}", salvo.getId(), request.codigo(), request.nome());
@@ -45,6 +49,7 @@ public class CursoGraduacaoController {
   }
 
   @GetMapping
+  @Operation(summary = "Listar cursos", description = "Retorna a lista de cursos cadastrados.")
   public List<CursoResponse> listar() {
     var cursos = service.listar();
     log.info("Listando cursos total={}", cursos.size());
@@ -54,6 +59,7 @@ public class CursoGraduacaoController {
   }
 
   @GetMapping("/{id}")
+  @Operation(summary = "Buscar curso", description = "Busca um curso pelo identificador.")
   public ResponseEntity<CursoResponse> buscarPorId(@PathVariable Long id) {
     return service.buscarPorId(id)
         .map(curso -> {
@@ -67,6 +73,7 @@ public class CursoGraduacaoController {
   }
 
   @PutMapping("/{id}")
+  @Operation(summary = "Atualizar curso", description = "Atualiza os dados de um curso existente.")
   public ResponseEntity<CursoResponse> atualizar(@PathVariable Long id, @Valid @RequestBody CursoRequest request) {
     return service.atualizar(id, request)
         .map(curso -> {
@@ -80,6 +87,7 @@ public class CursoGraduacaoController {
   }
 
   @DeleteMapping("/{id}")
+  @Operation(summary = "Remover curso", description = "Remove um curso pelo identificador.")
   public ResponseEntity<Void> remover(@PathVariable Long id) {
     boolean removido = service.remover(id);
     if (!removido) {

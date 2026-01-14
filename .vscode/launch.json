@@ -2,10 +2,10 @@
   "configurations": [
     {
       "type": "java",
-      "name": "Spring Boot-GraduacaoApplication<graduacao>",
+      "name": "Graduação - Local",
       "request": "launch",
       "cwd": "${workspaceFolder}",
-      "mainClass": "com.tcc.graduacao.GraduacaoApplication",
+      "mainClass": "br.com.tcc.graduacao.GraduacaoApplication",
       "projectName": "graduacao",
       "args": "",
       "envFile": "${workspaceFolder}/.env"
