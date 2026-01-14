@@ -19,10 +19,12 @@ import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import br.com.tcc.graduacao.domain.model.CursoGraduacao;
 import br.com.tcc.graduacao.domain.model.DisciplinaGraduacao;
+import br.com.tcc.graduacao.domain.model.Pessoa;
 import br.com.tcc.graduacao.domain.model.TurmaGraduacao;
 import br.com.tcc.graduacao.domain.model.TurmaGraduacao.StatusTurma;
 import br.com.tcc.graduacao.domain.repository.CursoGraduacaoRepository;
 import br.com.tcc.graduacao.domain.repository.DisciplinaRepository;
+import br.com.tcc.graduacao.domain.repository.PessoaRepository;
 import br.com.tcc.graduacao.domain.repository.TurmaGraduacaoRepository;
 
 @Component
@@ -35,17 +37,20 @@ public class JsonSeedLoader {
   private final CursoGraduacaoRepository cursoGraduacaoRepository;
   private final DisciplinaRepository disciplinaRepository;
   private final TurmaGraduacaoRepository turmaGraduacaoRepository;
+  private final PessoaRepository pessoaRepository;
 
   public JsonSeedLoader(
     ObjectMapper objectMapper,
     CursoGraduacaoRepository cursoGraduacaoRepository,
     DisciplinaRepository disciplinaRepository,
-    TurmaGraduacaoRepository turmaGraduacaoRepository
+    TurmaGraduacaoRepository turmaGraduacaoRepository,
+    PessoaRepository pessoaRepository
   ) {
     this.objectMapper = objectMapper;
     this.cursoGraduacaoRepository = cursoGraduacaoRepository;
     this.disciplinaRepository = disciplinaRepository;
     this.turmaGraduacaoRepository = turmaGraduacaoRepository;
+    this.pessoaRepository = pessoaRepository;
   }
 
   @EventListener(ApplicationReadyEvent.class)
@@ -55,6 +60,7 @@ public class JsonSeedLoader {
       Map<String, CursoGraduacao> cursos = this.carregarCursos();
       this.carregarDisciplinas(cursos);
       this.carregarTurmas(cursos);
+      this.carregarPessoas();
     } catch (IOException e) {
       logger.error("Failed to load seed data: {}", e.getMessage(), e);
       throw e;
@@ -124,6 +130,41 @@ public class JsonSeedLoader {
     String codigoTurma = String.format("%d%02d%s", ano, semestre, curso.getCodigo());
     turma.setId(codigoTurma);
     return turma;
+  }
+
+  private void carregarPessoas() throws StreamReadException, DatabindException, IOException {
+    ClassPathResource resource = new ClassPathResource("fixtures/pessoas.json");
+    logger.info("Carregando dados de pessoas");
+    try (InputStream inputStream = resource.getInputStream()) {
+      List<Pessoa> seeds = objectMapper.readValue(
+          inputStream, new TypeReference<List<Pessoa>>() {});
+      seeds.forEach(this::vincularPessoaEmRelacionamentos);
+      List<Pessoa> salvas = this.pessoaRepository.saveAll(seeds);
+      logger.info("Salvas {} pessoas no banco de dados", salvas.size());
+    }
+  }
+
+  private void vincularPessoaEmRelacionamentos(Pessoa pessoa) {
+    if (pessoa == null) {
+      return;
+    }
+    if (pessoa.getContatos() != null) {
+      pessoa.getContatos().forEach(contato -> {
+        if (contato != null) {
+          contato.setPessoa(pessoa);
+        }
+      });
+    }
+    if (pessoa.getEnderecos() != null) {
+      pessoa.getEnderecos().forEach(endereco -> {
+        if (endereco != null) {
+          endereco.setPessoa(pessoa);
+        }
+      });
+    }
+    if (pessoa.getDocumentoIdentificacao() != null) {
+      pessoa.getDocumentoIdentificacao().setPessoa(pessoa);
+    }
   }
 
   private record DisciplinaSeed(
