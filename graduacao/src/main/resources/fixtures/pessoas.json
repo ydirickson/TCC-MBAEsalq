@@ -3,6 +3,10 @@
     "nome": "Ana Almeida",
     "dataNascimento": "1980-01-01",
     "nomeSocial": "Ana Almeida Social",
+    "documentoIdentificacao": {
+      "tipo": "CPF",
+      "numero": "DOC000000"
+    },
     "contatos": [
       {
         "email": "ana.almeida0@exemplo.com",
@@ -32,6 +36,10 @@
     "nome": "Bruno Dias",
     "dataNascimento": "1981-02-02",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "RG",
+      "numero": "DOC000001"
+    },
     "contatos": [
       {
         "email": "bruno.dias1@exemplo.com",
@@ -51,6 +59,10 @@
     "nome": "Carla Gomes",
     "dataNascimento": "1982-03-03",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "PASSAPORTE",
+      "numero": "DOC000002"
+    },
     "contatos": [
       {
         "email": "carla.gomes2@exemplo.com",
@@ -70,6 +82,10 @@
     "nome": "Daniel Junqueira",
     "dataNascimento": "1983-04-04",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "CPF",
+      "numero": "DOC000003"
+    },
     "contatos": [
       {
         "email": "daniel.junqueira3@exemplo.com",
@@ -89,6 +105,10 @@
     "nome": "Eduardo Mendes",
     "dataNascimento": "1984-05-05",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "RG",
+      "numero": "DOC000004"
+    },
     "contatos": [
       {
         "email": "eduardo.mendes4@exemplo.com",
@@ -108,6 +128,10 @@
     "nome": "Fernanda Pereira",
     "dataNascimento": "1985-06-06",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "PASSAPORTE",
+      "numero": "DOC000005"
+    },
     "contatos": [
       {
         "email": "fernanda.pereira5@exemplo.com",
@@ -127,6 +151,10 @@
     "nome": "Gabriel Silva",
     "dataNascimento": "1986-07-07",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "CPF",
+      "numero": "DOC000006"
+    },
     "contatos": [
       {
         "email": "gabriel.silva6@exemplo.com",
@@ -146,6 +174,10 @@
     "nome": "Helena Vieira",
     "dataNascimento": "1987-08-08",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "RG",
+      "numero": "DOC000007"
+    },
     "contatos": [
       {
         "email": "helena.vieira7@exemplo.com",
@@ -165,6 +197,10 @@
     "nome": "Igor Yamamoto",
     "dataNascimento": "1988-09-09",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "PASSAPORTE",
+      "numero": "DOC000008"
+    },
     "contatos": [
       {
         "email": "igor.yamamoto8@exemplo.com",
@@ -184,6 +220,10 @@
     "nome": "Juliana Barbosa",
     "dataNascimento": "1989-10-10",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "CPF",
+      "numero": "DOC000009"
+    },
     "contatos": [
       {
         "email": "juliana.barbosa9@exemplo.com",
@@ -203,6 +243,10 @@
     "nome": "Kai Esteves",
     "dataNascimento": "1990-11-11",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "RG",
+      "numero": "DOC000010"
+    },
     "contatos": [
       {
         "email": "kai.esteves10@exemplo.com",
@@ -222,6 +266,10 @@
     "nome": "Larissa Hernandes",
     "dataNascimento": "1991-12-12",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "PASSAPORTE",
+      "numero": "DOC000011"
+    },
     "contatos": [
       {
         "email": "larissa.hernandes11@exemplo.com",
@@ -241,6 +289,10 @@
     "nome": "Marcos Klein",
     "dataNascimento": "1992-01-13",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "CPF",
+      "numero": "DOC000012"
+    },
     "contatos": [
       {
         "email": "marcos.klein12@exemplo.com",
@@ -260,6 +312,10 @@
     "nome": "Natalia Nogueira",
     "dataNascimento": "1993-02-14",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "RG",
+      "numero": "DOC000013"
+    },
     "contatos": [
       {
         "email": "natalia.nogueira13@exemplo.com",
@@ -279,6 +335,10 @@
     "nome": "Otavio Queiroz",
     "dataNascimento": "1994-03-15",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "PASSAPORTE",
+      "numero": "DOC000014"
+    },
     "contatos": [
       {
         "email": "otavio.queiroz14@exemplo.com",
@@ -298,6 +358,10 @@
     "nome": "Patricia Teixeira",
     "dataNascimento": "1995-04-16",
     "nomeSocial": "Patricia Teixeira Social",
+    "documentoIdentificacao": {
+      "tipo": "CPF",
+      "numero": "DOC000015"
+    },
     "contatos": [
       {
         "email": "patricia.teixeira15@exemplo.com",
@@ -317,6 +381,10 @@
     "nome": "Rafael Wagner",
     "dataNascimento": "1996-05-17",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "RG",
+      "numero": "DOC000016"
+    },
     "contatos": [
       {
         "email": "rafael.wagner16@exemplo.com",
@@ -336,6 +404,10 @@
     "nome": "Sabrina Zanetti",
     "dataNascimento": "1997-06-18",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "PASSAPORTE",
+      "numero": "DOC000017"
+    },
     "contatos": [
       {
         "email": "sabrina.zanetti17@exemplo.com",
@@ -355,6 +427,10 @@
     "nome": "Thiago Cardoso",
     "dataNascimento": "1998-07-19",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "CPF",
+      "numero": "DOC000018"
+    },
     "contatos": [
       {
         "email": "thiago.cardoso18@exemplo.com",
@@ -374,6 +450,10 @@
     "nome": "Vanessa Ferreira",
     "dataNascimento": "1999-08-20",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "RG",
+      "numero": "DOC000019"
+    },
     "contatos": [
       {
         "email": "vanessa.ferreira19@exemplo.com",
@@ -393,6 +473,10 @@
     "nome": "Will Ibrahim",
     "dataNascimento": "2000-09-21",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "PASSAPORTE",
+      "numero": "DOC000020"
+    },
     "contatos": [
       {
         "email": "will.ibrahim20@exemplo.com",
@@ -416,6 +500,10 @@
     "nome": "Xavier Lopes",
     "dataNascimento": "2001-10-22",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "CPF",
+      "numero": "DOC000021"
+    },
     "contatos": [
       {
         "email": "xavier.lopes21@exemplo.com",
@@ -435,6 +523,10 @@
     "nome": "Yara Oliveira",
     "dataNascimento": "2002-11-23",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "RG",
+      "numero": "DOC000022"
+    },
     "contatos": [
       {
         "email": "yara.oliveira22@exemplo.com",
@@ -454,6 +546,10 @@
     "nome": "Zeca Ribeiro",
     "dataNascimento": "1980-12-24",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "PASSAPORTE",
+      "numero": "DOC000023"
+    },
     "contatos": [
       {
         "email": "zeca.ribeiro23@exemplo.com",
@@ -473,6 +569,10 @@
     "nome": "Ana Uchoa",
     "dataNascimento": "1981-01-25",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "CPF",
+      "numero": "DOC000024"
+    },
     "contatos": [
       {
         "email": "ana.uchoa24@exemplo.com",
@@ -492,6 +592,10 @@
     "nome": "Bruno Ximenes",
     "dataNascimento": "1982-02-26",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "RG",
+      "numero": "DOC000025"
+    },
     "contatos": [
       {
         "email": "bruno.ximenes25@exemplo.com",
@@ -517,6 +621,10 @@
     "nome": "Carla Almeida",
     "dataNascimento": "1983-03-27",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "PASSAPORTE",
+      "numero": "DOC000026"
+    },
     "contatos": [
       {
         "email": "carla.almeida26@exemplo.com",
@@ -536,6 +644,10 @@
     "nome": "Daniel Dias",
     "dataNascimento": "1984-04-01",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "CPF",
+      "numero": "DOC000027"
+    },
     "contatos": [
       {
         "email": "daniel.dias27@exemplo.com",
@@ -555,6 +667,10 @@
     "nome": "Eduardo Gomes",
     "dataNascimento": "1985-05-02",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "RG",
+      "numero": "DOC000028"
+    },
     "contatos": [
       {
         "email": "eduardo.gomes28@exemplo.com",
@@ -574,6 +690,10 @@
     "nome": "Fernanda Junqueira",
     "dataNascimento": "1986-06-03",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "PASSAPORTE",
+      "numero": "DOC000029"
+    },
     "contatos": [
       {
         "email": "fernanda.junqueira29@exemplo.com",
@@ -593,6 +713,10 @@
     "nome": "Gabriel Mendes",
     "dataNascimento": "1987-07-04",
     "nomeSocial": "Gabriel Mendes Social",
+    "documentoIdentificacao": {
+      "tipo": "CPF",
+      "numero": "DOC000030"
+    },
     "contatos": [
       {
         "email": "gabriel.mendes30@exemplo.com",
@@ -612,6 +736,10 @@
     "nome": "Helena Pereira",
     "dataNascimento": "1988-08-05",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "RG",
+      "numero": "DOC000031"
+    },
     "contatos": [
       {
         "email": "helena.pereira31@exemplo.com",
@@ -631,6 +759,10 @@
     "nome": "Igor Silva",
     "dataNascimento": "1989-09-06",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "PASSAPORTE",
+      "numero": "DOC000032"
+    },
     "contatos": [
       {
         "email": "igor.silva32@exemplo.com",
@@ -650,6 +782,10 @@
     "nome": "Juliana Vieira",
     "dataNascimento": "1990-10-07",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "CPF",
+      "numero": "DOC000033"
+    },
     "contatos": [
       {
         "email": "juliana.vieira33@exemplo.com",
@@ -669,6 +805,10 @@
     "nome": "Kai Yamamoto",
     "dataNascimento": "1991-11-08",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "RG",
+      "numero": "DOC000034"
+    },
     "contatos": [
       {
         "email": "kai.yamamoto34@exemplo.com",
@@ -688,6 +828,10 @@
     "nome": "Larissa Barbosa",
     "dataNascimento": "1992-12-09",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "PASSAPORTE",
+      "numero": "DOC000035"
+    },
     "contatos": [
       {
         "email": "larissa.barbosa35@exemplo.com",
@@ -707,6 +851,10 @@
     "nome": "Marcos Esteves",
     "dataNascimento": "1993-01-10",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "CPF",
+      "numero": "DOC000036"
+    },
     "contatos": [
       {
         "email": "marcos.esteves36@exemplo.com",
@@ -726,6 +874,10 @@
     "nome": "Natalia Hernandes",
     "dataNascimento": "1994-02-11",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "RG",
+      "numero": "DOC000037"
+    },
     "contatos": [
       {
         "email": "natalia.hernandes37@exemplo.com",
@@ -745,6 +897,10 @@
     "nome": "Otavio Klein",
     "dataNascimento": "1995-03-12",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "PASSAPORTE",
+      "numero": "DOC000038"
+    },
     "contatos": [
       {
         "email": "otavio.klein38@exemplo.com",
@@ -764,6 +920,10 @@
     "nome": "Patricia Nogueira",
     "dataNascimento": "1996-04-13",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "CPF",
+      "numero": "DOC000039"
+    },
     "contatos": [
       {
         "email": "patricia.nogueira39@exemplo.com",
@@ -783,6 +943,10 @@
     "nome": "Rafael Queiroz",
     "dataNascimento": "1997-05-14",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "RG",
+      "numero": "DOC000040"
+    },
     "contatos": [
       {
         "email": "rafael.queiroz40@exemplo.com",
@@ -806,6 +970,10 @@
     "nome": "Sabrina Teixeira",
     "dataNascimento": "1998-06-15",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "PASSAPORTE",
+      "numero": "DOC000041"
+    },
     "contatos": [
       {
         "email": "sabrina.teixeira41@exemplo.com",
@@ -825,6 +993,10 @@
     "nome": "Thiago Wagner",
     "dataNascimento": "1999-07-16",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "CPF",
+      "numero": "DOC000042"
+    },
     "contatos": [
       {
         "email": "thiago.wagner42@exemplo.com",
@@ -844,6 +1016,10 @@
     "nome": "Vanessa Zanetti",
     "dataNascimento": "2000-08-17",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "RG",
+      "numero": "DOC000043"
+    },
     "contatos": [
       {
         "email": "vanessa.zanetti43@exemplo.com",
@@ -863,6 +1039,10 @@
     "nome": "Will Cardoso",
     "dataNascimento": "2001-09-18",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "PASSAPORTE",
+      "numero": "DOC000044"
+    },
     "contatos": [
       {
         "email": "will.cardoso44@exemplo.com",
@@ -882,6 +1062,10 @@
     "nome": "Xavier Ferreira",
     "dataNascimento": "2002-10-19",
     "nomeSocial": "Xavier Ferreira Social",
+    "documentoIdentificacao": {
+      "tipo": "CPF",
+      "numero": "DOC000045"
+    },
     "contatos": [
       {
         "email": "xavier.ferreira45@exemplo.com",
@@ -901,6 +1085,10 @@
     "nome": "Yara Ibrahim",
     "dataNascimento": "1980-11-20",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "RG",
+      "numero": "DOC000046"
+    },
     "contatos": [
       {
         "email": "yara.ibrahim46@exemplo.com",
@@ -920,6 +1108,10 @@
     "nome": "Zeca Lopes",
     "dataNascimento": "1981-12-21",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "PASSAPORTE",
+      "numero": "DOC000047"
+    },
     "contatos": [
       {
         "email": "zeca.lopes47@exemplo.com",
@@ -939,6 +1131,10 @@
     "nome": "Ana Oliveira",
     "dataNascimento": "1982-01-22",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "CPF",
+      "numero": "DOC000048"
+    },
     "contatos": [
       {
         "email": "ana.oliveira48@exemplo.com",
@@ -958,6 +1154,10 @@
     "nome": "Bruno Ribeiro",
     "dataNascimento": "1983-02-23",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "RG",
+      "numero": "DOC000049"
+    },
     "contatos": [
       {
         "email": "bruno.ribeiro49@exemplo.com",
@@ -977,6 +1177,10 @@
     "nome": "Carla Uchoa",
     "dataNascimento": "1984-03-24",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "PASSAPORTE",
+      "numero": "DOC000050"
+    },
     "contatos": [
       {
         "email": "carla.uchoa50@exemplo.com",
@@ -1002,6 +1206,10 @@
     "nome": "Daniel Ximenes",
     "dataNascimento": "1985-04-25",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "CPF",
+      "numero": "DOC000051"
+    },
     "contatos": [
       {
         "email": "daniel.ximenes51@exemplo.com",
@@ -1021,6 +1229,10 @@
     "nome": "Eduardo Almeida",
     "dataNascimento": "1986-05-26",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "RG",
+      "numero": "DOC000052"
+    },
     "contatos": [
       {
         "email": "eduardo.almeida52@exemplo.com",
@@ -1040,6 +1252,10 @@
     "nome": "Fernanda Dias",
     "dataNascimento": "1987-06-27",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "PASSAPORTE",
+      "numero": "DOC000053"
+    },
     "contatos": [
       {
         "email": "fernanda.dias53@exemplo.com",
@@ -1059,6 +1275,10 @@
     "nome": "Gabriel Gomes",
     "dataNascimento": "1988-07-01",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "CPF",
+      "numero": "DOC000054"
+    },
     "contatos": [
       {
         "email": "gabriel.gomes54@exemplo.com",
@@ -1078,6 +1298,10 @@
     "nome": "Helena Junqueira",
     "dataNascimento": "1989-08-02",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "RG",
+      "numero": "DOC000055"
+    },
     "contatos": [
       {
         "email": "helena.junqueira55@exemplo.com",
@@ -1097,6 +1321,10 @@
     "nome": "Igor Mendes",
     "dataNascimento": "1990-09-03",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "PASSAPORTE",
+      "numero": "DOC000056"
+    },
     "contatos": [
       {
         "email": "igor.mendes56@exemplo.com",
@@ -1116,6 +1344,10 @@
     "nome": "Juliana Pereira",
     "dataNascimento": "1991-10-04",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "CPF",
+      "numero": "DOC000057"
+    },
     "contatos": [
       {
         "email": "juliana.pereira57@exemplo.com",
@@ -1135,6 +1367,10 @@
     "nome": "Kai Silva",
     "dataNascimento": "1992-11-05",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "RG",
+      "numero": "DOC000058"
+    },
     "contatos": [
       {
         "email": "kai.silva58@exemplo.com",
@@ -1154,6 +1390,10 @@
     "nome": "Larissa Vieira",
     "dataNascimento": "1993-12-06",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "PASSAPORTE",
+      "numero": "DOC000059"
+    },
     "contatos": [
       {
         "email": "larissa.vieira59@exemplo.com",
@@ -1173,6 +1413,10 @@
     "nome": "Marcos Yamamoto",
     "dataNascimento": "1994-01-07",
     "nomeSocial": "Marcos Yamamoto Social",
+    "documentoIdentificacao": {
+      "tipo": "CPF",
+      "numero": "DOC000060"
+    },
     "contatos": [
       {
         "email": "marcos.yamamoto60@exemplo.com",
@@ -1196,6 +1440,10 @@
     "nome": "Natalia Barbosa",
     "dataNascimento": "1995-02-08",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "RG",
+      "numero": "DOC000061"
+    },
     "contatos": [
       {
         "email": "natalia.barbosa61@exemplo.com",
@@ -1215,6 +1463,10 @@
     "nome": "Otavio Esteves",
     "dataNascimento": "1996-03-09",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "PASSAPORTE",
+      "numero": "DOC000062"
+    },
     "contatos": [
       {
         "email": "otavio.esteves62@exemplo.com",
@@ -1234,6 +1486,10 @@
     "nome": "Patricia Hernandes",
     "dataNascimento": "1997-04-10",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "CPF",
+      "numero": "DOC000063"
+    },
     "contatos": [
       {
         "email": "patricia.hernandes63@exemplo.com",
@@ -1253,6 +1509,10 @@
     "nome": "Rafael Klein",
     "dataNascimento": "1998-05-11",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "RG",
+      "numero": "DOC000064"
+    },
     "contatos": [
       {
         "email": "rafael.klein64@exemplo.com",
@@ -1272,6 +1532,10 @@
     "nome": "Sabrina Nogueira",
     "dataNascimento": "1999-06-12",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "PASSAPORTE",
+      "numero": "DOC000065"
+    },
     "contatos": [
       {
         "email": "sabrina.nogueira65@exemplo.com",
@@ -1291,6 +1555,10 @@
     "nome": "Thiago Queiroz",
     "dataNascimento": "2000-07-13",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "CPF",
+      "numero": "DOC000066"
+    },
     "contatos": [
       {
         "email": "thiago.queiroz66@exemplo.com",
@@ -1310,6 +1578,10 @@
     "nome": "Vanessa Teixeira",
     "dataNascimento": "2001-08-14",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "RG",
+      "numero": "DOC000067"
+    },
     "contatos": [
       {
         "email": "vanessa.teixeira67@exemplo.com",
@@ -1329,6 +1601,10 @@
     "nome": "Will Wagner",
     "dataNascimento": "2002-09-15",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "PASSAPORTE",
+      "numero": "DOC000068"
+    },
     "contatos": [
       {
         "email": "will.wagner68@exemplo.com",
@@ -1348,6 +1624,10 @@
     "nome": "Xavier Zanetti",
     "dataNascimento": "1980-10-16",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "CPF",
+      "numero": "DOC000069"
+    },
     "contatos": [
       {
         "email": "xavier.zanetti69@exemplo.com",
@@ -1367,6 +1647,10 @@
     "nome": "Yara Cardoso",
     "dataNascimento": "1981-11-17",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "RG",
+      "numero": "DOC000070"
+    },
     "contatos": [
       {
         "email": "yara.cardoso70@exemplo.com",
@@ -1386,6 +1670,10 @@
     "nome": "Zeca Ferreira",
     "dataNascimento": "1982-12-18",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "PASSAPORTE",
+      "numero": "DOC000071"
+    },
     "contatos": [
       {
         "email": "zeca.ferreira71@exemplo.com",
@@ -1405,6 +1693,10 @@
     "nome": "Ana Ibrahim",
     "dataNascimento": "1983-01-19",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "CPF",
+      "numero": "DOC000072"
+    },
     "contatos": [
       {
         "email": "ana.ibrahim72@exemplo.com",
@@ -1424,6 +1716,10 @@
     "nome": "Bruno Lopes",
     "dataNascimento": "1984-02-20",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "RG",
+      "numero": "DOC000073"
+    },
     "contatos": [
       {
         "email": "bruno.lopes73@exemplo.com",
@@ -1443,6 +1739,10 @@
     "nome": "Carla Oliveira",
     "dataNascimento": "1985-03-21",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "PASSAPORTE",
+      "numero": "DOC000074"
+    },
     "contatos": [
       {
         "email": "carla.oliveira74@exemplo.com",
@@ -1462,6 +1762,10 @@
     "nome": "Daniel Ribeiro",
     "dataNascimento": "1986-04-22",
     "nomeSocial": "Daniel Ribeiro Social",
+    "documentoIdentificacao": {
+      "tipo": "CPF",
+      "numero": "DOC000075"
+    },
     "contatos": [
       {
         "email": "daniel.ribeiro75@exemplo.com",
@@ -1487,6 +1791,10 @@
     "nome": "Eduardo Uchoa",
     "dataNascimento": "1987-05-23",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "RG",
+      "numero": "DOC000076"
+    },
     "contatos": [
       {
         "email": "eduardo.uchoa76@exemplo.com",
@@ -1506,6 +1814,10 @@
     "nome": "Fernanda Ximenes",
     "dataNascimento": "1988-06-24",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "PASSAPORTE",
+      "numero": "DOC000077"
+    },
     "contatos": [
       {
         "email": "fernanda.ximenes77@exemplo.com",
@@ -1525,6 +1837,10 @@
     "nome": "Gabriel Almeida",
     "dataNascimento": "1989-07-25",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "CPF",
+      "numero": "DOC000078"
+    },
     "contatos": [
       {
         "email": "gabriel.almeida78@exemplo.com",
@@ -1544,6 +1860,10 @@
     "nome": "Helena Dias",
     "dataNascimento": "1990-08-26",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "RG",
+      "numero": "DOC000079"
+    },
     "contatos": [
       {
         "email": "helena.dias79@exemplo.com",
@@ -1563,6 +1883,10 @@
     "nome": "Igor Gomes",
     "dataNascimento": "1991-09-27",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "PASSAPORTE",
+      "numero": "DOC000080"
+    },
     "contatos": [
       {
         "email": "igor.gomes80@exemplo.com",
@@ -1586,6 +1910,10 @@
     "nome": "Juliana Junqueira",
     "dataNascimento": "1992-10-01",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "CPF",
+      "numero": "DOC000081"
+    },
     "contatos": [
       {
         "email": "juliana.junqueira81@exemplo.com",
@@ -1605,6 +1933,10 @@
     "nome": "Kai Mendes",
     "dataNascimento": "1993-11-02",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "RG",
+      "numero": "DOC000082"
+    },
     "contatos": [
       {
         "email": "kai.mendes82@exemplo.com",
@@ -1624,6 +1956,10 @@
     "nome": "Larissa Pereira",
     "dataNascimento": "1994-12-03",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "PASSAPORTE",
+      "numero": "DOC000083"
+    },
     "contatos": [
       {
         "email": "larissa.pereira83@exemplo.com",
@@ -1643,6 +1979,10 @@
     "nome": "Marcos Silva",
     "dataNascimento": "1995-01-04",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "CPF",
+      "numero": "DOC000084"
+    },
     "contatos": [
       {
         "email": "marcos.silva84@exemplo.com",
@@ -1662,6 +2002,10 @@
     "nome": "Natalia Vieira",
     "dataNascimento": "1996-02-05",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "RG",
+      "numero": "DOC000085"
+    },
     "contatos": [
       {
         "email": "natalia.vieira85@exemplo.com",
@@ -1681,6 +2025,10 @@
     "nome": "Otavio Yamamoto",
     "dataNascimento": "1997-03-06",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "PASSAPORTE",
+      "numero": "DOC000086"
+    },
     "contatos": [
       {
         "email": "otavio.yamamoto86@exemplo.com",
@@ -1700,6 +2048,10 @@
     "nome": "Patricia Barbosa",
     "dataNascimento": "1998-04-07",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "CPF",
+      "numero": "DOC000087"
+    },
     "contatos": [
       {
         "email": "patricia.barbosa87@exemplo.com",
@@ -1719,6 +2071,10 @@
     "nome": "Rafael Esteves",
     "dataNascimento": "1999-05-08",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "RG",
+      "numero": "DOC000088"
+    },
     "contatos": [
       {
         "email": "rafael.esteves88@exemplo.com",
@@ -1738,6 +2094,10 @@
     "nome": "Sabrina Hernandes",
     "dataNascimento": "2000-06-09",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "PASSAPORTE",
+      "numero": "DOC000089"
+    },
     "contatos": [
       {
         "email": "sabrina.hernandes89@exemplo.com",
@@ -1757,6 +2117,10 @@
     "nome": "Thiago Klein",
     "dataNascimento": "2001-07-10",
     "nomeSocial": "Thiago Klein Social",
+    "documentoIdentificacao": {
+      "tipo": "CPF",
+      "numero": "DOC000090"
+    },
     "contatos": [
       {
         "email": "thiago.klein90@exemplo.com",
@@ -1776,6 +2140,10 @@
     "nome": "Vanessa Nogueira",
     "dataNascimento": "2002-08-11",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "RG",
+      "numero": "DOC000091"
+    },
     "contatos": [
       {
         "email": "vanessa.nogueira91@exemplo.com",
@@ -1795,6 +2163,10 @@
     "nome": "Will Queiroz",
     "dataNascimento": "1980-09-12",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "PASSAPORTE",
+      "numero": "DOC000092"
+    },
     "contatos": [
       {
         "email": "will.queiroz92@exemplo.com",
@@ -1814,6 +2186,10 @@
     "nome": "Xavier Teixeira",
     "dataNascimento": "1981-10-13",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "CPF",
+      "numero": "DOC000093"
+    },
     "contatos": [
       {
         "email": "xavier.teixeira93@exemplo.com",
@@ -1833,6 +2209,10 @@
     "nome": "Yara Wagner",
     "dataNascimento": "1982-11-14",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "RG",
+      "numero": "DOC000094"
+    },
     "contatos": [
       {
         "email": "yara.wagner94@exemplo.com",
@@ -1852,6 +2232,10 @@
     "nome": "Zeca Zanetti",
     "dataNascimento": "1983-12-15",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "PASSAPORTE",
+      "numero": "DOC000095"
+    },
     "contatos": [
       {
         "email": "zeca.zanetti95@exemplo.com",
@@ -1871,6 +2255,10 @@
     "nome": "Ana Cardoso",
     "dataNascimento": "1984-01-16",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "CPF",
+      "numero": "DOC000096"
+    },
     "contatos": [
       {
         "email": "ana.cardoso96@exemplo.com",
@@ -1890,6 +2278,10 @@
     "nome": "Bruno Ferreira",
     "dataNascimento": "1985-02-17",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "RG",
+      "numero": "DOC000097"
+    },
     "contatos": [
       {
         "email": "bruno.ferreira97@exemplo.com",
@@ -1909,6 +2301,10 @@
     "nome": "Carla Ibrahim",
     "dataNascimento": "1986-03-18",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "PASSAPORTE",
+      "numero": "DOC000098"
+    },
     "contatos": [
       {
         "email": "carla.ibrahim98@exemplo.com",
@@ -1928,6 +2324,10 @@
     "nome": "Daniel Lopes",
     "dataNascimento": "1987-04-19",
     "nomeSocial": null,
+    "documentoIdentificacao": {
+      "tipo": "CPF",
+      "numero": "DOC000099"
+    },
     "contatos": [
       {
         "email": "daniel.lopes99@exemplo.com",
