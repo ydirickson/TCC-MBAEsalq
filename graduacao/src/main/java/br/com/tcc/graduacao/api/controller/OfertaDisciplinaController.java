@@ -1,8 +1,12 @@
 package br.com.tcc.graduacao.api.controller;
 
+import br.com.tcc.graduacao.api.dto.AvaliacaoOfertaDisciplinaRequest;
+import br.com.tcc.graduacao.api.dto.AvaliacaoOfertaDisciplinaResponse;
 import br.com.tcc.graduacao.api.dto.OfertaDisciplinaRequest;
 import br.com.tcc.graduacao.api.dto.OfertaDisciplinaResponse;
+import br.com.tcc.graduacao.api.mapper.AvaliacaoOfertaDisciplinaMapper;
 import br.com.tcc.graduacao.api.mapper.OfertaDisciplinaMapper;
+import br.com.tcc.graduacao.domain.service.AvaliacaoOfertaDisciplinaService;
 import br.com.tcc.graduacao.domain.service.OfertaDisciplinaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -34,10 +38,18 @@ public class OfertaDisciplinaController {
 
   private final OfertaDisciplinaService service;
   private final OfertaDisciplinaMapper mapper;
+  private final AvaliacaoOfertaDisciplinaService avaliacaoService;
+  private final AvaliacaoOfertaDisciplinaMapper avaliacaoMapper;
 
-  public OfertaDisciplinaController(OfertaDisciplinaService service, OfertaDisciplinaMapper mapper) {
+  public OfertaDisciplinaController(
+      OfertaDisciplinaService service,
+      OfertaDisciplinaMapper mapper,
+      AvaliacaoOfertaDisciplinaService avaliacaoService,
+      AvaliacaoOfertaDisciplinaMapper avaliacaoMapper) {
     this.service = service;
     this.mapper = mapper;
+    this.avaliacaoService = avaliacaoService;
+    this.avaliacaoMapper = avaliacaoMapper;
   }
 
   @PostMapping
@@ -113,6 +125,83 @@ public class OfertaDisciplinaController {
       return ResponseEntity.notFound().build();
     }
     log.info("Oferta removida id={}", id);
+    return ResponseEntity.noContent().build();
+  }
+
+  @PostMapping("/{ofertaId}/avaliacoes")
+  @Operation(summary = "Criar avaliacao", description = "Cria uma avaliacao para a oferta de disciplina.")
+  public ResponseEntity<AvaliacaoOfertaDisciplinaResponse> criarAvaliacao(
+      @PathVariable Long ofertaId,
+      @Valid @RequestBody AvaliacaoOfertaDisciplinaRequest request,
+      UriComponentsBuilder uriBuilder) {
+    return avaliacaoService.criar(ofertaId, request)
+        .map(avaliacao -> {
+          log.info("Avaliacao criada id={} ofertaId={}", avaliacao.getId(), ofertaId);
+          URI location = uriBuilder.path("/ofertas-disciplinas/{ofertaId}/avaliacoes/{id}")
+              .buildAndExpand(ofertaId, avaliacao.getId())
+              .toUri();
+          return ResponseEntity.created(location).body(avaliacaoMapper.toResponse(avaliacao));
+        })
+        .orElseGet(() -> {
+          log.warn("Falha ao criar avaliacao ofertaId={}", ofertaId);
+          return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        });
+  }
+
+  @GetMapping("/{ofertaId}/avaliacoes")
+  @Operation(summary = "Listar avaliacoes", description = "Lista avaliacoes de uma oferta de disciplina.")
+  public List<AvaliacaoOfertaDisciplinaResponse> listarAvaliacoes(@PathVariable Long ofertaId) {
+    var avaliacoes = avaliacaoService.listar(ofertaId);
+    log.info("Listando avaliacoes total={} ofertaId={}", avaliacoes.size(), ofertaId);
+    return avaliacoes.stream()
+        .map(avaliacaoMapper::toResponse)
+        .collect(Collectors.toList());
+  }
+
+  @GetMapping("/{ofertaId}/avaliacoes/{avaliacaoId}")
+  @Operation(summary = "Buscar avaliacao", description = "Busca uma avaliacao pelo identificador.")
+  public ResponseEntity<AvaliacaoOfertaDisciplinaResponse> buscarAvaliacao(
+      @PathVariable Long ofertaId,
+      @PathVariable Long avaliacaoId) {
+    return avaliacaoService.buscarPorId(ofertaId, avaliacaoId)
+        .map(avaliacao -> {
+          log.info("Avaliacao encontrada id={} ofertaId={}", avaliacaoId, ofertaId);
+          return ResponseEntity.ok(avaliacaoMapper.toResponse(avaliacao));
+        })
+        .orElseGet(() -> {
+          log.warn("Avaliacao nao encontrada id={} ofertaId={}", avaliacaoId, ofertaId);
+          return ResponseEntity.notFound().build();
+        });
+  }
+
+  @PutMapping("/{ofertaId}/avaliacoes/{avaliacaoId}")
+  @Operation(summary = "Atualizar avaliacao", description = "Atualiza uma avaliacao de oferta de disciplina.")
+  public ResponseEntity<AvaliacaoOfertaDisciplinaResponse> atualizarAvaliacao(
+      @PathVariable Long ofertaId,
+      @PathVariable Long avaliacaoId,
+      @Valid @RequestBody AvaliacaoOfertaDisciplinaRequest request) {
+    return avaliacaoService.atualizar(ofertaId, avaliacaoId, request)
+        .map(avaliacao -> {
+          log.info("Avaliacao atualizada id={} ofertaId={}", avaliacaoId, ofertaId);
+          return ResponseEntity.ok(avaliacaoMapper.toResponse(avaliacao));
+        })
+        .orElseGet(() -> {
+          log.warn("Falha ao atualizar avaliacao id={} ofertaId={}", avaliacaoId, ofertaId);
+          return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        });
+  }
+
+  @DeleteMapping("/{ofertaId}/avaliacoes/{avaliacaoId}")
+  @Operation(summary = "Remover avaliacao", description = "Remove uma avaliacao de oferta de disciplina.")
+  public ResponseEntity<Void> removerAvaliacao(
+      @PathVariable Long ofertaId,
+      @PathVariable Long avaliacaoId) {
+    boolean removido = avaliacaoService.remover(ofertaId, avaliacaoId);
+    if (!removido) {
+      log.warn("Falha ao remover avaliacao id={} ofertaId={}", avaliacaoId, ofertaId);
+      return ResponseEntity.notFound().build();
+    }
+    log.info("Avaliacao removida id={} ofertaId={}", avaliacaoId, ofertaId);
     return ResponseEntity.noContent().build();
   }
 }
