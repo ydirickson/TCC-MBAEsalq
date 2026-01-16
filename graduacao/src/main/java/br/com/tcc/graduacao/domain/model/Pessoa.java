@@ -39,6 +39,9 @@ public class Pessoa {
   @OneToMany(mappedBy = "pessoa", cascade = CascadeType.ALL, orphanRemoval = true)
   private Set<Endereco> enderecos = new LinkedHashSet<>();
 
+  @OneToMany(mappedBy = "pessoa", cascade = CascadeType.ALL, orphanRemoval = true)
+  private Set<VinculoAcademico> vinculosAcademicos = new LinkedHashSet<>();
+
   public Pessoa() {
     // JPA
   }
@@ -103,5 +106,13 @@ public class Pessoa {
 
   public void setEnderecos(Set<Endereco> enderecos) {
     this.enderecos = enderecos;
+  }
+
+  public Set<VinculoAcademico> getVinculosAcademicos() {
+    return vinculosAcademicos;
+  }
+
+  public void setVinculosAcademicos(Set<VinculoAcademico> vinculosAcademicos) {
+    this.vinculosAcademicos = vinculosAcademicos;
   }
 }
