@@ -1,12 +1,12 @@
 package br.com.tcc.graduacao.domain.service;
 
 import br.com.tcc.graduacao.domain.model.AlunoGraduacao;
-import br.com.tcc.graduacao.domain.model.CursoGraduacao;
 import br.com.tcc.graduacao.domain.model.Pessoa;
 import br.com.tcc.graduacao.domain.model.SituacaoAcademica;
+import br.com.tcc.graduacao.domain.model.TurmaGraduacao;
 import br.com.tcc.graduacao.domain.repository.AlunoGraduacaoRepository;
-import br.com.tcc.graduacao.domain.repository.CursoGraduacaoRepository;
 import br.com.tcc.graduacao.domain.repository.PessoaRepository;
+import br.com.tcc.graduacao.domain.repository.TurmaGraduacaoRepository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -17,29 +17,30 @@ import org.springframework.transaction.annotation.Transactional;
 public class AlunoGraduacaoService {
 
   private final AlunoGraduacaoRepository alunoRepository;
-  private final CursoGraduacaoRepository cursoRepository;
   private final PessoaRepository pessoaRepository;
+  private final TurmaGraduacaoRepository turmaRepository;
 
-  public AlunoGraduacaoService(AlunoGraduacaoRepository alunoRepository, CursoGraduacaoRepository cursoRepository,
-      PessoaRepository pessoaRepository) {
+  public AlunoGraduacaoService(AlunoGraduacaoRepository alunoRepository, PessoaRepository pessoaRepository,
+      TurmaGraduacaoRepository turmaRepository) {
     this.alunoRepository = alunoRepository;
-    this.cursoRepository = cursoRepository;
     this.pessoaRepository = pessoaRepository;
+    this.turmaRepository = turmaRepository;
   }
 
   @Transactional
-  public Optional<AlunoGraduacao> criar(Long pessoaId, Pessoa novaPessoa, Long cursoId, LocalDate dataIngresso, SituacaoAcademica status) {
-    Optional<CursoGraduacao> cursoOpt = cursoRepository.findById(cursoId);
-    if (cursoOpt.isEmpty()) {
-      return Optional.empty();
-    }
-
+  public Optional<AlunoGraduacao> criar(
+      Long pessoaId,
+      Pessoa novaPessoa,
+      String turmaId,
+      LocalDate dataMatricula,
+      SituacaoAcademica status) {
     Optional<Pessoa> pessoaOpt = obterOuCriarPessoa(pessoaId, novaPessoa);
-    if (pessoaOpt.isEmpty()) {
+    Optional<TurmaGraduacao> turmaOpt = turmaRepository.findById(turmaId);
+    if (pessoaOpt.isEmpty() || turmaOpt.isEmpty()) {
       return Optional.empty();
     }
 
-    AlunoGraduacao novo = new AlunoGraduacao(pessoaOpt.get(), cursoOpt.get(), dataIngresso, status);
+    AlunoGraduacao novo = new AlunoGraduacao(pessoaOpt.get(), turmaOpt.get(), dataMatricula, status);
     return Optional.of(alunoRepository.save(novo));
   }
 
@@ -62,17 +63,22 @@ public class AlunoGraduacaoService {
   }
 
   @Transactional
-  public Optional<AlunoGraduacao> atualizar(Long id, Long pessoaId, Long cursoId, LocalDate dataIngresso, SituacaoAcademica status) {
-    Optional<CursoGraduacao> cursoOpt = cursoRepository.findById(cursoId);
+  public Optional<AlunoGraduacao> atualizar(
+      Long id,
+      Long pessoaId,
+      String turmaId,
+      LocalDate dataMatricula,
+      SituacaoAcademica status) {
     Optional<Pessoa> pessoaOpt = pessoaRepository.findById(pessoaId);
-    if (cursoOpt.isEmpty() || pessoaOpt.isEmpty()) {
+    Optional<TurmaGraduacao> turmaOpt = turmaRepository.findById(turmaId);
+    if (pessoaOpt.isEmpty() || turmaOpt.isEmpty()) {
       return Optional.empty();
     }
 
     return alunoRepository.findById(id).map(aluno -> {
       aluno.setPessoa(pessoaOpt.get());
-      aluno.setCurso(cursoOpt.get());
-      aluno.setDataIngresso(dataIngresso);
+      aluno.setTurma(turmaOpt.get());
+      aluno.setDataMatricula(dataMatricula);
       aluno.setStatus(status);
       return aluno;
     });

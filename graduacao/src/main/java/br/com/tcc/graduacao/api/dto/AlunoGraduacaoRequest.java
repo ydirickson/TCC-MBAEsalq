@@ -6,8 +6,8 @@ import java.time.LocalDate;
 
 public record AlunoGraduacaoRequest(
     @NotNull Long pessoaId,
-    @NotNull Long cursoId,
-    @NotNull LocalDate dataIngresso,
+    @NotNull String turmaId,
+    @NotNull LocalDate dataMatricula,
     @NotNull SituacaoAcademica status
 ) {
 }

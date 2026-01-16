@@ -8,8 +8,8 @@ import java.time.LocalDate;
 public record AlunoGraduacaoCreateRequest(
     Long pessoaId,
     PessoaRequest novaPessoa,
-    @NotNull Long cursoId,
-    @NotNull LocalDate dataIngresso,
+    @NotNull String turmaId,
+    @NotNull LocalDate dataMatricula,
     @NotNull SituacaoAcademica status
 ) {
 
