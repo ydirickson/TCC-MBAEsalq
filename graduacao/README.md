@@ -28,15 +28,14 @@ Com a aplicacao em execucao:
 - `DELETE /cursos/{id}` — remove curso
 
 ### Alunos (`/alunos`)
-- `POST /alunos` — cria aluno (requer um curso já cadastrado)  
+- `POST /alunos` — cria aluno (requer uma turma já cadastrada)  
   ```json
   {
     "pessoaId": 1001,
-    "cursoId": 1,
-    "dataIngresso": "2024-03-01",
+    "turmaId": 1,
+    "dataMatricula": "2024-03-01",
     "status": "ATIVO"
   }
-  ```
 - `GET /alunos` — lista alunos
 - `GET /alunos/{id}` — busca aluno
 - `PUT /alunos/{id}` — atualiza aluno
