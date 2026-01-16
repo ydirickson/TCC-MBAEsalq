@@ -12,8 +12,8 @@ As entidades a seguir aparecem em múltiplos serviços e são candidatas naturai
 
 **Vida acadêmica (grad/pós → diplomas):**
 - Aluno (perfil acadêmico)
-- Vinculo/Matrícula (aluno em curso/programa)
-- Curso/Programa
+- VinculoAcademico (pessoa em curso/programa, com referência ao curso)
+- Curso/Programa (catálogo)
 - Situação acadêmica / conclusão
 
 **Documentos formais (diplomas → assinatura):**

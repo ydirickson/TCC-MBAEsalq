@@ -3,30 +3,45 @@
 
 ## 4.1. Serviço de Graduação
 ### 4.1.1. Responsável (source of truth)
-- **Pessoa**: cadastro base do discente que ingressa na graduação.
-- **AlunoGraduacao**: perfil acadêmico na graduação.
+- **Pessoa**: cadastro base do discente e do docente na graduação.
+- **DocumentoIdentificacao / Contato / Endereco**: cadastro de identificação e comunicação.
+- **VinculoAcademico**: vínculo entre pessoa e curso (com referência do curso).
+- **AlunoGraduacao**: perfil acadêmico na graduação (matrícula por turma).
+- **ProfessorGraduacao**: perfil docente da graduação.
 - **CursoGraduacao**: cursos ofertados pela graduação.
-- **VinculoGraduacao**: vínculo entre pessoa/aluno e curso.
-- **Disciplina / Turma**: oferta semestral/ano das disciplinas.
-- **MatriculaDisciplina**: vínculo do aluno com uma oferta/turma.
-- **HistoricoAcademicoGraduacao**: notas, frequência e resultados.
-- **SituacaoAcademicaGraduacao**: status do vínculo (ativo, trancado, concluído, cancelado).
+- **DisciplinaGraduacao / TurmaGraduacao / OfertaDisciplina**: oferta acadêmica.
+- **MatriculaDisciplina**: vínculo do aluno com uma oferta.
+- **AvaliacaoOfertaDisciplina / AvaliacaoAluno**: avaliações e notas.
 
 ### 4.1.2. Entidades (descrição)
 - **Pessoa**
-  - Campos típicos: `personId`, nome completo, data nascimento, nome social (opcional), etc.
+  - Campos típicos: `id`, nome completo, data nascimento, nome social (opcional).
 - **DocumentoIdentificacao**
-  - Ex.: CPF/RG/passaporte com tipo e número.
+  - Tipo (CPF/RG/passaporte) e número.
 - **Contato**
-  - Ex.: email, telefone.
+  - Email e telefone.
 - **Endereco**
-  - Ex.: logradouro, cidade, UF, CEP.
+  - Logradouro, cidade, UF, CEP.
 - **AlunoGraduacao**
-  - Ex.: `personId`, dados acadêmicos específicos (ano ingresso, etc.).
-- **VinculoGraduacao**
-  - Ex.: `academicLinkId`, `personId`, `cursoId`, status.
-- **HistoricoAcademicoGraduacao**
-  - Ex.: `academicLinkId`, registros de matrícula/nota/frequência por disciplina.
+  - Referências a `Pessoa` e `TurmaGraduacao`, data de matrícula e status.
+- **VinculoAcademico**
+  - Referência à `Pessoa`, `CursoReferencia` (id/código/nome/tipo), tipo de vínculo, datas de ingresso/conclusão e situação.
+- **ProfessorGraduacao**
+  - Referências a `Pessoa` e `CursoGraduacao`, data de ingresso, nível docente e situação funcional.
+- **CursoGraduacao**
+  - Código, nome e carga horária.
+- **DisciplinaGraduacao**
+  - Curso, código, nome e carga horária.
+- **TurmaGraduacao**
+  - Curso, ano, semestre e status.
+- **OfertaDisciplina**
+  - Disciplina, professor, ano e semestre.
+- **MatriculaDisciplina**
+  - Aluno, oferta, data de matrícula, status e nota.
+- **AvaliacaoOfertaDisciplina**
+  - Oferta, nome e peso da avaliação.
+- **AvaliacaoAluno**
+  - Matrícula, avaliação e nota.
 
 ### 4.1.3. Dados replicados (read models locais)
 - Pode replicar documentos e assinaturas para exibição/consulta (opcional):
@@ -49,13 +64,13 @@
 ### 4.2.2. Entidades (descrição)
 - **Pessoa** (mesmo conceito do serviço de graduação, mas com ownership definido por decisão de arquitetura)
 - **AlunoPosGraduacao**
-  - Ex.: `personId`, linha de pesquisa, área, etc.
+  - Ex.: `pessoaId`, linha de pesquisa, área, etc.
 - **ProgramaPos**
   - Ex.: `programaId`, nome, nível.
 - **VinculoPosGraduacao**
-  - Ex.: `academicLinkId`, `personId`, `programaId`, status.
+  - Ex.: `vinculoId`, `pessoaId`, `programaId`, status.
 - **Orientacao**
-  - Ex.: `academicLinkId`, orientador(es).
+  - Ex.: `vinculoId`, orientador(es).
 - **Qualificacao / Defesa**
   - Ex.: datas, resultado, ata/registro (metadados).
 
@@ -76,7 +91,7 @@
 
 ### 4.3.2. Entidades (descrição)
 - **RequerimentoDiploma**
-  - Ex.: `requerimentoId`, `personId`, origem (grad/pós), `academicLinkId`, data solicitação, status.
+  - Ex.: `requerimentoId`, `pessoaId`, origem (grad/pós), `vinculoId`, data solicitação, status.
 - **BaseEmissaoDiploma**
   - Snapshot contendo:
     - dados essenciais de Pessoa (nome, documento principal),
@@ -106,7 +121,7 @@
 
 ### 4.4.2. Entidades (descrição)
 - **UsuarioAssinante**
-  - Ex.: `assinanteId`, `personId`, perfil/permissões.
+  - Ex.: `assinanteId`, `pessoaId`, perfil/permissões.
 - **DocumentoAssinavel**
   - Ex.: `documentoId`, origem (diplomas, grad, pós), tipo, hash, versão, status.
 - **SolicitacaoAssinatura**

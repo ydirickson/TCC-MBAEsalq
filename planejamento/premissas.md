@@ -12,11 +12,11 @@
 - Identificadores canônicos serão **numéricos (long)**, gerados por sequência/identity do banco; **não usar UUID**. Com isso conseguimos replicar estruturas legadas mais clássicas de banco de dados.
 - Devemos **evitar chaves compostas**, preferindo chaves substitutas simples. Não causa impacto na simulação em si e simplifica a construção dos serviços.
 - Identificador estável para a entidade **Pessoa**:
-  - **PersonId (long)** como chave global.
+  - **PessoaId (long)** como chave global.
 - Vínculos acadêmicos devem ter identificadores próprios:
-  - **AcademicLinkId (long)** para representar um vínculo (ex.: vínculo na graduação, vínculo na pós).
+  - **VinculoId (long)** para representar um vínculo (ex.: vínculo na graduação, vínculo na pós).
 - Cada serviço pode ter seus IDs internos, mas deve persistir também as referências canônicas:
-  - Ex.: Diploma guarda `personId` e `academicLinkId` usados como referência.
+  - Ex.: Diploma guarda `pessoaId` e `vinculoId` usados como referência.
 
 ## 2.3. Mutabilidade e Responsabilidade de Criação
 - Nenhuma entidade será estritamente read-only; dados replicados podem sofrer atualização conforme regras específicas.
