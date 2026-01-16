@@ -2,36 +2,47 @@
 
 ## Entidades
 - Pessoa (owner primário se adotado), DocumentoIdentificacao, Contato, Endereco
-- AlunoGraduacao (perfil acadêmico)
-- CursoGraduacao
-- VinculoAcademico (origem=grad) — vínculo unificado por pessoa/curso
-- OfertaDisciplina, Turma, MatriculaDisciplina
-- HistoricoAcademicoGraduacao
-- SituacaoAcademica (projeção do vínculo, status atual)
+- VinculoAcademico (pessoa + curso referenciado via `CursoReferencia`)
+- AlunoGraduacao (matrícula por turma)
+- ProfessorGraduacao
+- CursoGraduacao, DisciplinaGraduacao, TurmaGraduacao, OfertaDisciplina
+- MatriculaDisciplina, AvaliacaoOfertaDisciplina, AvaliacaoAluno
+- SituacaoAcademica (enum de status para vínculo e aluno)
 
 ## Regras de Negócio da Simulação
-- Criação de Pessoa e do VinculoAcademico (origem=grad, status=ativo) emite eventos `PessoaCriada` e `VinculoAcademicoCriado`.
+- Criação de Pessoa e do VinculoAcademico (status inicial ativo) emite eventos `PessoaCriada` e `VinculoAcademicoCriado`.
 - Atualizações de contato/endereço emitem `PessoaAtualizada` (replicação em outros serviços).
-- Mudança de status do vínculo (trancado, reaberto, desligado, concluído) emite `VinculoAcademicoAtualizado`; status concluído emite também `ConclusaoPublicada` com `academicLinkId`.
-- Notas/frequência geram registros em Historico; não são replicados fora, apenas agregam carga de escrita.
+- Mudança de status do vínculo (trancado, reaberto, desligado, concluído) emite `VinculoAcademicoAtualizado`; status concluído emite também `ConclusaoPublicada` com `vinculoId`.
+- Notas e avaliações ficam em `MatriculaDisciplina`/`AvaliacaoAluno`; não são replicadas fora.
 - Consome eventos de Diploma/Assinatura apenas para read models locais opcionais (`DocumentoDiploma`, `Assinatura` cópias).
 
 ## Diagrama de Entidades
 ```mermaid
 erDiagram
-  Pessoa ||--o{ DocumentoIdentificacao : possui
+  Pessoa ||--o| DocumentoIdentificacao : possui
   Pessoa ||--o{ Contato : possui
-  Pessoa ||--o{ Endereco : reside_em
+  Pessoa ||--o{ Endereco : possui
 
   Pessoa ||--o{ VinculoAcademico : vinculo
-  VinculoAcademico }o--|| CursoGraduacao : matriculado_em
-  VinculoAcademico ||--|{ SituacaoAcademica : status_atual
+  VinculoAcademico ||--|| CursoReferencia : curso_snapshot
 
-  CursoGraduacao ||--o{ OfertaDisciplina : oferece
-  OfertaDisciplina ||--o{ Turma : turmas
-  Turma ||--o{ MatriculaDisciplina : matriculas
-  MatriculaDisciplina }o--|| AlunoGraduacao : de
-  MatriculaDisciplina ||--o{ HistoricoAcademicoGraduacao : gera_registros
+  Pessoa ||--o{ AlunoGraduacao : perfil
+  TurmaGraduacao ||--o{ AlunoGraduacao : matricula
+  CursoGraduacao ||--o{ TurmaGraduacao : turmas
+
+  Pessoa ||--o| ProfessorGraduacao : professor
+  CursoGraduacao ||--o{ ProfessorGraduacao : lota
+
+  CursoGraduacao ||--o{ DisciplinaGraduacao : oferece
+  DisciplinaGraduacao ||--o{ OfertaDisciplina : ofertas
+  ProfessorGraduacao ||--o{ OfertaDisciplina : ministra
+
+  OfertaDisciplina ||--o{ MatriculaDisciplina : matriculas
+  AlunoGraduacao ||--o{ MatriculaDisciplina : cursa
+
+  OfertaDisciplina ||--o{ AvaliacaoOfertaDisciplina : avaliacoes
+  MatriculaDisciplina ||--o{ AvaliacaoAluno : notas
+  AvaliacaoOfertaDisciplina ||--o{ AvaliacaoAluno : compoe
 ```
 
 ## Fluxo de Eventos e Read Models

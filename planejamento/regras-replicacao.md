@@ -8,9 +8,9 @@
 - Regra de atualização: Graduação e Pós podem atualizar Pessoa; ambos publicam `PessoaAtualizada`. Consumidores aplicam de forma idempotente (id + timestamp/versão) em seus read models.
 
 ## 5.2. Vínculo Acadêmico (VinculoAcademico)
-- **Cardinalidade:** uma Pessoa pode ter múltiplos vínculos (1:N), por exemplo duas graduações, um mestrado e um doutorado, cada um com seu próprio `academicLinkId`.
+- **Cardinalidade:** uma Pessoa pode ter múltiplos vínculos (1:N), por exemplo duas graduações, um mestrado e um doutorado, cada um com seu próprio `vinculoId`.
 - **Histórico:** manter tabela de histórico/versões de `VinculoAcademico` para registrar mudanças de status/curso/orientador (auditoria).
-- **Fontes de produção:** Graduação e Pós criam e atualizam `VinculoAcademico` (origem=grad|pos).
+- **Fontes de produção:** Graduação e Pós criam e atualizam `VinculoAcademico`.
 - Eventos: `VinculoAcademicoCriado` (status inicial ativo) e `VinculoAcademicoAtualizado` (mudança de status, curso/programa, orientador/colegiado).
 - Consumo: Diplomas e Assinatura mantêm read models; Graduação e Pós também consomem para reconciliação.
 - Status “concluído” gera `ConclusaoPublicada` (coberto na seção seguinte).
