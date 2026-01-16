@@ -6,6 +6,7 @@ import br.com.tcc.graduacao.domain.model.AlunoGraduacao;
 import br.com.tcc.graduacao.domain.model.CursoGraduacao;
 import br.com.tcc.graduacao.domain.model.Pessoa;
 import br.com.tcc.graduacao.domain.model.SituacaoAcademica;
+import br.com.tcc.graduacao.domain.model.TurmaGraduacao;
 import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
 
@@ -19,8 +20,10 @@ class AlunoGraduacaoMapperTest {
     pessoa.setId(10L);
     CursoGraduacao curso = new CursoGraduacao("ENG001", "Engenharia", 3600);
     curso.setId(20L);
+    TurmaGraduacao turma = new TurmaGraduacao(curso, 2020, 1, TurmaGraduacao.StatusTurma.ATIVA);
+    turma.setId("TURMA-2020-1");
 
-    AlunoGraduacao entity = new AlunoGraduacao(pessoa, curso, LocalDate.of(2020, 2, 15), SituacaoAcademica.ATIVO);
+    AlunoGraduacao entity = new AlunoGraduacao(pessoa, turma, LocalDate.of(2020, 2, 15), SituacaoAcademica.ATIVO);
     entity.setId(30L);
 
     var response = mapper.toResponse(entity);
@@ -30,7 +33,8 @@ class AlunoGraduacaoMapperTest {
     assertThat(response.cursoId()).isEqualTo(20L);
     assertThat(response.cursoCodigo()).isEqualTo("ENG001");
     assertThat(response.cursoNome()).isEqualTo("Engenharia");
-    assertThat(response.dataIngresso()).isEqualTo(LocalDate.of(2020, 2, 15));
+    assertThat(response.turmaId()).isEqualTo("TURMA-2020-1");
+    assertThat(response.dataMatricula()).isEqualTo(LocalDate.of(2020, 2, 15));
     assertThat(response.status()).isEqualTo(SituacaoAcademica.ATIVO);
   }
 

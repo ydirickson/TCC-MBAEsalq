@@ -6,6 +6,9 @@ import br.com.tcc.graduacao.domain.model.AlunoGraduacao;
 import br.com.tcc.graduacao.domain.model.CursoGraduacao;
 import br.com.tcc.graduacao.domain.model.Pessoa;
 import br.com.tcc.graduacao.domain.model.SituacaoAcademica;
+import br.com.tcc.graduacao.domain.model.TurmaGraduacao;
+import br.com.tcc.graduacao.domain.repository.DisciplinaRepository;
+import br.com.tcc.graduacao.domain.repository.MatriculaDisciplinaRepository;
 import java.time.LocalDate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,10 +29,22 @@ class AlunoGraduacaoRepositoryTest {
   @Autowired
   private CursoGraduacaoRepository cursoRepository;
 
+  @Autowired
+  private TurmaGraduacaoRepository turmaRepository;
+
+  @Autowired
+  private DisciplinaRepository disciplinaRepository;
+
+  @Autowired
+  private MatriculaDisciplinaRepository matriculaDisciplinaRepository;
+
   @BeforeEach
   void limparDados() {
+    matriculaDisciplinaRepository.deleteAll();
+    disciplinaRepository.deleteAll();
     alunoRepository.deleteAll();
     pessoaRepository.deleteAll();
+    turmaRepository.deleteAll();
     cursoRepository.deleteAll();
   }
 
@@ -37,8 +52,11 @@ class AlunoGraduacaoRepositoryTest {
   void deveSalvarERecuperarAluno() {
     Pessoa pessoa = pessoaRepository.save(new Pessoa("Aluno Teste", LocalDate.of(1990, 1, 1), null));
     CursoGraduacao curso = cursoRepository.save(new CursoGraduacao("ENG", "Engenharia", 3600));
+    TurmaGraduacao turma = new TurmaGraduacao(curso, 2024, 1, TurmaGraduacao.StatusTurma.ATIVA);
+    turma.setId("T-ENG-2024-1");
+    turma = turmaRepository.save(turma);
 
-    AlunoGraduacao salvo = alunoRepository.save(new AlunoGraduacao(pessoa, curso, LocalDate.of(2024, 1, 1), SituacaoAcademica.ATIVO));
+    AlunoGraduacao salvo = alunoRepository.save(new AlunoGraduacao(pessoa, turma, LocalDate.of(2024, 1, 1), SituacaoAcademica.ATIVO));
 
     assertThat(salvo.getId()).isNotNull();
 
@@ -46,6 +64,7 @@ class AlunoGraduacaoRepositoryTest {
     assertThat(encontrado).isPresent();
     assertThat(encontrado.get().getPessoa().getNome()).isEqualTo("Aluno Teste");
     assertThat(encontrado.get().getCurso().getCodigo()).isEqualTo("ENG");
+    assertThat(encontrado.get().getTurma().getId()).isEqualTo("T-ENG-2024-1");
     assertThat(encontrado.get().getStatus()).isEqualTo(SituacaoAcademica.ATIVO);
   }
 }
