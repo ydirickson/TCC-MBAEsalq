@@ -1,10 +1,10 @@
 package br.com.tcc.graduacao.api.dto;
 
+import java.time.LocalDate;
 import br.com.tcc.graduacao.domain.model.NivelDocente;
 import br.com.tcc.graduacao.domain.model.SituacaoFuncional;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotNull;
-import java.time.LocalDate;
 
 public record ProfessorGraduacaoCreateRequest(
     Long pessoaId,

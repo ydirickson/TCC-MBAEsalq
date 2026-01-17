@@ -9,6 +9,16 @@
       "projectName": "graduacao",
       "args": "",
       "envFile": "${workspaceFolder}/.env"
+    },
+    {
+      "type": "java",
+      "name": "Spring Boot-PosGraduacaoApplication<pos-graduacao>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "br.com.tcc.posgraduacao.PosGraduacaoApplication",
+      "projectName": "pos-graduacao",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env"
     }
   ]
 }
