@@ -11,8 +11,8 @@ As entidades a seguir aparecem em múltiplos serviços e são candidatas naturai
 - Endereco
 
 **Vida acadêmica (grad/pós → diplomas):**
-- Aluno (perfil acadêmico)
-- VinculoAcademico (pessoa em curso/programa, com referência ao curso)
+- Aluno (perfil acadêmico: graduação/pós)
+- VinculoAcademico (pessoa em curso/programa, com referência ao catálogo)
 - Curso/Programa (catálogo)
 - Situação acadêmica / conclusão
 
