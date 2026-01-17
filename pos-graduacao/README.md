@@ -13,8 +13,8 @@ Por padrao o servico sobe em `http://localhost:8082` e usa o PostgreSQL definido
 
 ## Documentacao OpenAPI (Swagger)
 Com a aplicacao em execucao:
-- OpenAPI JSON: `http://localhost:8081/v3/api-docs`
-- Swagger UI: `http://localhost:8081/swagger-ui/index.html`
+- OpenAPI JSON: `http://localhost:8082/v3/api-docs`
+- Swagger UI: `http://localhost:8082/swagger-ui/index.html`
 
 ## Endpoints principais
 ### Programas (`/programas`)
