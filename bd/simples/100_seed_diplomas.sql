@@ -30,7 +30,7 @@ WITH vinculos_concluidos AS (
 INSERT INTO requerimento_diploma (pessoa_id, vinculo_id, data_solicitacao)
 SELECT v.pessoa_id,
        v.vinculo_id,
-       v.data_conclusao + (v.rn * 5)
+       v.data_conclusao + (v.rn * 5)::int
 FROM vinculos_concluidos v;
 
 INSERT INTO base_emissao_diploma (
@@ -70,7 +70,7 @@ INSERT INTO diploma (requerimento_id, base_emissao_id, numero_registro, data_emi
 SELECT r.requerimento_id,
        r.base_emissao_id,
        'DIP-' || lpad(r.requerimento_id::text, 4, '0'),
-       DATE '2025-02-15' + (r.rn * 3)
+       DATE '2025-02-15' + (r.rn * 3)::int
 FROM requerimentos r
 WHERE r.rn <= 3;
 
