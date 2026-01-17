@@ -2,13 +2,20 @@
   "configurations": [
     {
       "type": "java",
+      "name": "DiplomasApplication",
+      "request": "launch",
+      "mainClass": "br.com.tcc.diplomas.DiplomasApplication"
+    },
+    {
+      "type": "java",
       "name": "Graduação - Local",
       "request": "launch",
       "cwd": "${workspaceFolder}",
       "mainClass": "br.com.tcc.graduacao.GraduacaoApplication",
       "projectName": "graduacao",
       "args": "",
-      "envFile": "${workspaceFolder}/.env"
+      "envFile": "${workspaceFolder}/.env",
+      "vmArgs": " -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=36465 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=graduacao"
     },
     {
       "type": "java",
@@ -17,6 +24,17 @@
       "cwd": "${workspaceFolder}",
       "mainClass": "br.com.tcc.posgraduacao.PosGraduacaoApplication",
       "projectName": "pos-graduacao",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env",
+      "vmArgs": " -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=36719 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=pos-graduacao"
+    },
+    {
+      "type": "java",
+      "name": "Spring Boot-DiplomasApplication<diplomas>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "br.com.tcc.diplomas.DiplomasApplication",
+      "projectName": "diplomas",
       "args": "",
       "envFile": "${workspaceFolder}/.env"
     }

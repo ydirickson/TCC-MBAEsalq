@@ -20,6 +20,7 @@
   <modules>
     <module>graduacao</module>
     <module>pos-graduacao</module>
+    <module>diplomas</module>
   </modules>
 
   <properties>
