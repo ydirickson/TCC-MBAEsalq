@@ -5,7 +5,7 @@
 - DocumentoIdentificacao: tipo (CPF/RG/Passaporte), número
 - Contato: email, telefone (opcionais)
 - Endereco: logradouro, cidade, UF, CEP
-- VinculoAcademico: `id`, `pessoaId`, `cursoId`, `cursoCodigo`, `cursoNome`, `tipoCurso`, `tipoVinculo`, `dataIngresso`, `dataConclusao` (opcional), `situacao`
+- VinculoAcademico: `id`, `pessoaId`, `cursoId`, `cursoCodigo`, `cursoNome`, `tipoCursoPrograma`, `tipoVinculo`, `dataIngresso`, `dataConclusao` (opcional), `situacao`
 - DocumentoBase: `documentoId`, tipo, hash, versão, localizacao (metadados)
 
 ## Eventos Canônicos (Kafka)
@@ -16,5 +16,6 @@
 - AssinaturaParcial, AssinaturaConcluida, AssinaturaRejeitada
 
 ## Regras Gerais
+- Todas as entidades comuns acima existem com o mesmo esquema em todos os serviços.
 - Identificadores numéricos (long) para pessoa e vínculo; evitar chaves compostas.
 - Consumidores aplicam atualizações de forma idempotente por id + versão ou timestamp.

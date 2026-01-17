@@ -3,13 +3,15 @@
 
 ## 5.1. Pessoa (intersecção principal)
 - Pessoa é usada por todos os serviços.
-- **Fontes de produção:** Graduação e Pós criam e atualizam Pessoa; Diplomas e Assinatura apenas consomem (mantêm cópias locais/read models).
+- **Esquema comum:** todos os serviços possuem a mesma entidade e tabela de Pessoa.
+- **Fontes de produção:** Graduação e Pós criam e atualizam Pessoa; Diplomas e Assinatura consomem e mantêm cópias locais.
 - Regra de criação: Pessoa pode nascer em qualquer um dos dois serviços principais (Graduação ou Pós) e ambos publicam `PessoaCriada`.
 - Regra de atualização: Graduação e Pós podem atualizar Pessoa; ambos publicam `PessoaAtualizada`. Consumidores aplicam de forma idempotente (id + timestamp/versão) em seus read models.
 
 ## 5.2. Vínculo Acadêmico (VinculoAcademico)
 - **Cardinalidade:** uma Pessoa pode ter múltiplos vínculos (1:N), por exemplo duas graduações, um mestrado e um doutorado, cada um com seu próprio `vinculoId`.
 - **Histórico:** manter tabela de histórico/versões de `VinculoAcademico` para registrar mudanças de status/curso/orientador (auditoria).
+- **Esquema comum:** todos os serviços possuem a mesma entidade e tabela de VinculoAcademico (com `cursoId`, `cursoCodigo`, `cursoNome`, `tipoCursoPrograma`).
 - **Fontes de produção:** Graduação e Pós criam e atualizam `VinculoAcademico`.
 - Eventos: `VinculoAcademicoCriado` (status inicial ativo) e `VinculoAcademicoAtualizado` (mudança de status, curso/programa, orientador/colegiado).
 - Consumo: Diplomas e Assinatura mantêm read models; Graduação e Pós também consomem para reconciliação.

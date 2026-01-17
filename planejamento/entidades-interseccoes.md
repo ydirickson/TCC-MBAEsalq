@@ -12,7 +12,7 @@ As entidades a seguir aparecem em múltiplos serviços e são candidatas naturai
 
 **Vida acadêmica (grad/pós → diplomas):**
 - Aluno (perfil acadêmico: graduação/pós)
-- VinculoAcademico (pessoa em curso/programa, com referência ao catálogo)
+- VinculoAcademico (pessoa em curso/programa, com referência ao catálogo e tipoCursoPrograma)
 - Curso/Programa (catálogo)
 - Situação acadêmica / conclusão
 
