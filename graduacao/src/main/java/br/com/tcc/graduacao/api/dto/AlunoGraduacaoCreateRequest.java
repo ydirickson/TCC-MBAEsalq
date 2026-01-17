@@ -1,9 +1,9 @@
 package br.com.tcc.graduacao.api.dto;
 
+import java.time.LocalDate;
 import br.com.tcc.graduacao.domain.model.SituacaoAcademica;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotNull;
-import java.time.LocalDate;
 
 public record AlunoGraduacaoCreateRequest(
     Long pessoaId,

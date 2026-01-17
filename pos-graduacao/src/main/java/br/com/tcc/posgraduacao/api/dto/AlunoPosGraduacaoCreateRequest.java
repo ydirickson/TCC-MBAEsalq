@@ -1,9 +1,9 @@
 package br.com.tcc.posgraduacao.api.dto;
 
+import java.time.LocalDate;
 import br.com.tcc.posgraduacao.domain.model.SituacaoAcademica;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotNull;
-import java.time.LocalDate;
 
 public record AlunoPosGraduacaoCreateRequest(
     Long pessoaId,
