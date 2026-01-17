@@ -37,6 +37,16 @@
       "projectName": "diplomas",
       "args": "",
       "envFile": "${workspaceFolder}/.env"
+    },
+    {
+      "type": "java",
+      "name": "Spring Boot-AssinaturaApplication<assinatura>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "br.com.tcc.assinatura.AssinaturaApplication",
+      "projectName": "assinatura",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env"
     }
   ]
 }

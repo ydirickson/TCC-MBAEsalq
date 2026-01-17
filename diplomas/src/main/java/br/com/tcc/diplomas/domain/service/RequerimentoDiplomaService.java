@@ -50,7 +50,7 @@ public class RequerimentoDiplomaService {
     var vinculo = vinculoRepository.findById(request.vinculoId())
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Vinculo academico nao encontrado"));
     if (vinculo.getSituacao() != SituacaoAcademica.CONCLUIDO) {
-      throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Vinculo nao esta concluido");
+      throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_CONTENT, "Vinculo nao esta concluido");
     }
 
     RequerimentoDiploma requerimento = mapper.toEntity(request, pessoa, vinculo);
