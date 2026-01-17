@@ -1,6 +1,7 @@
 package br.com.tcc.diplomas.domain.model;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -24,6 +25,9 @@ public class VinculoAcademico {
   @JoinColumn(name = "pessoa_id", nullable = false)
   private Pessoa pessoa;
 
+  @Embedded
+  private CursoProgramaReferencia curso;
+
   @Enumerated(EnumType.STRING)
   @Column(name = "tipo_vinculo", nullable = false, length = 30)
   private TipoVinculo tipoVinculo;
@@ -42,8 +46,10 @@ public class VinculoAcademico {
     // JPA
   }
 
-  public VinculoAcademico(Pessoa pessoa, TipoVinculo tipoVinculo, LocalDate dataIngresso, SituacaoAcademica situacao) {
+  public VinculoAcademico(Pessoa pessoa, CursoProgramaReferencia curso, TipoVinculo tipoVinculo,
+      LocalDate dataIngresso, SituacaoAcademica situacao) {
     this.pessoa = pessoa;
+    this.curso = curso;
     this.tipoVinculo = tipoVinculo;
     this.dataIngresso = dataIngresso;
     this.situacao = situacao;
@@ -63,6 +69,14 @@ public class VinculoAcademico {
 
   public void setPessoa(Pessoa pessoa) {
     this.pessoa = pessoa;
+  }
+
+  public CursoProgramaReferencia getCurso() {
+    return curso;
+  }
+
+  public void setCurso(CursoProgramaReferencia curso) {
+    this.curso = curso;
   }
 
   public TipoVinculo getTipoVinculo() {

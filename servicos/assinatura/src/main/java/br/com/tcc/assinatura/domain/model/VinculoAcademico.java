@@ -1,6 +1,5 @@
-package br.com.tcc.graduacao.domain.model;
+package br.com.tcc.assinatura.domain.model;
 
-import java.time.LocalDate;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -12,6 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "vinculo_academico")
@@ -46,8 +46,8 @@ public class VinculoAcademico {
     // JPA
   }
 
-  public VinculoAcademico(Pessoa pessoa, CursoProgramaReferencia curso, TipoVinculo tipoVinculo, LocalDate dataIngresso,
-      SituacaoAcademica situacao) {
+  public VinculoAcademico(Pessoa pessoa, CursoProgramaReferencia curso, TipoVinculo tipoVinculo,
+      LocalDate dataIngresso, SituacaoAcademica situacao) {
     this.pessoa = pessoa;
     this.curso = curso;
     this.tipoVinculo = tipoVinculo;

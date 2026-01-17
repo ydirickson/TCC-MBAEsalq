@@ -1,4 +1,4 @@
-package br.com.tcc.diplomas.domain.model;
+package br.com.tcc.assinatura.domain.model;
 
 public enum TipoCursoPrograma {
   GRADUACAO,

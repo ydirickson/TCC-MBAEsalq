@@ -14,7 +14,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "vinculo_academico_pos")
+@Table(name = "vinculo_academico")
 public class VinculoAcademico {
 
   @Id
@@ -26,7 +26,7 @@ public class VinculoAcademico {
   private Pessoa pessoa;
 
   @Embedded
-  private ProgramaReferencia programa;
+  private CursoProgramaReferencia curso;
 
   @Enumerated(EnumType.STRING)
   @Column(name = "tipo_vinculo", nullable = false, length = 30)
@@ -46,10 +46,10 @@ public class VinculoAcademico {
     // JPA
   }
 
-  public VinculoAcademico(Pessoa pessoa, ProgramaReferencia programa, TipoVinculo tipoVinculo, LocalDate dataIngresso,
+  public VinculoAcademico(Pessoa pessoa, CursoProgramaReferencia curso, TipoVinculo tipoVinculo, LocalDate dataIngresso,
       SituacaoAcademica situacao) {
     this.pessoa = pessoa;
-    this.programa = programa;
+    this.curso = curso;
     this.tipoVinculo = tipoVinculo;
     this.dataIngresso = dataIngresso;
     this.situacao = situacao;
@@ -71,12 +71,12 @@ public class VinculoAcademico {
     this.pessoa = pessoa;
   }
 
-  public ProgramaReferencia getPrograma() {
-    return programa;
+  public CursoProgramaReferencia getCurso() {
+    return curso;
   }
 
-  public void setPrograma(ProgramaReferencia programa) {
-    this.programa = programa;
+  public void setCurso(CursoProgramaReferencia curso) {
+    this.curso = curso;
   }
 
   public TipoVinculo getTipoVinculo() {

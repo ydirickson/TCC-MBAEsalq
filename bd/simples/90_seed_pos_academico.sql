@@ -49,12 +49,12 @@ FROM pessoas_aluno p
 JOIN programas pr ON pr.rn = ((p.rn - 1) % (SELECT COUNT(*) FROM programas)) + 1
 LEFT JOIN orientadores o ON o.programa_id = pr.id AND o.rn = 1;
 
-INSERT INTO vinculo_academico_pos (
+INSERT INTO vinculo_academico (
   pessoa_id,
-  programa_id,
-  programa_codigo,
-  programa_nome,
-  programa_tipo,
+  curso_id,
+  curso_codigo,
+  curso_nome,
+  curso_tipo,
   tipo_vinculo,
   data_ingresso,
   data_conclusao,
@@ -77,12 +77,12 @@ FROM aluno_pos_graduacao a
 JOIN pessoa p ON p.id = a.pessoa_id
 JOIN programa_pos pr ON pr.id = a.programa_id;
 
-INSERT INTO vinculo_academico_pos (
+INSERT INTO vinculo_academico (
   pessoa_id,
-  programa_id,
-  programa_codigo,
-  programa_nome,
-  programa_tipo,
+  curso_id,
+  curso_codigo,
+  curso_nome,
+  curso_tipo,
   tipo_vinculo,
   data_ingresso,
   data_conclusao,
