@@ -41,6 +41,53 @@ services:
     networks:
       - tcc-network
 
+  prometheus:
+    image: prom/prometheus:v2.54.1
+    container_name: tcc_prometheus
+    restart: unless-stopped
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.retention.time=15d
+      - --web.enable-remote-write-receiver
+    ports:
+      - "9090:9090"
+    volumes:
+      - prometheus_data:/prometheus
+      - ./monitoramento/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    networks:
+      - tcc-network
+
+  grafana:
+    image: grafana/grafana:11.1.4
+    container_name: tcc_grafana
+    restart: unless-stopped
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin123}
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoramento/grafana/provisioning:/etc/grafana/provisioning:ro
+    depends_on:
+      - prometheus
+    networks:
+      - tcc-network
+
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:v0.18.1
+    container_name: tcc_postgres_exporter
+    restart: unless-stopped
+    environment:
+      DATA_SOURCE_NAME: "postgresql://${POSTGRES_USER:-tcc}:${POSTGRES_PASSWORD:-tcc123}@${POSTGRES_HOST:-postgres}:${POSTGRES_PORT:-5432}/${POSTGRES_DB:-tccdb}?sslmode=disable"
+    ports:
+      - "9187:9187"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - tcc-network
+
 networks:
   tcc-network:
     driver: bridge
@@ -48,3 +95,5 @@ networks:
 volumes:
   postgres_data:
   pgadmin_data:
+  prometheus_data:
+  grafana_data:
