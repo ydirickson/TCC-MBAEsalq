@@ -31,13 +31,43 @@ A partir desse contexto, a ideia é propor uma solução que retire a dependênc
 ## Como executar — banco centralizado (fase 1)
 1. Pré-requisitos: Docker/Docker Compose instalados (JDK/Node ainda não usados nesta fase).
 2. Copie o arquivo de variáveis: `cp .env.example .env` e ajuste senhas/portas se necessário.
-3. Suba a infraestrutura: `docker compose up -d postgres pgadmin`.
+3. Suba a infraestrutura: `docker compose up -d postgres pgadmin prometheus grafana postgres-exporter`.
 4. Verifique se está saudável: `docker compose ps` deve mostrar `healthy` no Postgres; em caso de dúvida, `docker compose logs -f postgres` até ver `database system is ready to accept connections`.
 5. Acessos:
    - Postgres: `localhost:${POSTGRES_PORT:-5432}` (usuário/senha definidos em `.env`). CLI rápida: `docker compose exec postgres psql -U "$POSTGRES_USER" -d "$POSTGRES_DB"`.
    - pgAdmin: `http://localhost:${PGADMIN_PORT:-8080}` com o login de `.env`. O servidor `TCC Postgres` já vem cadastrado via `bd/pgadmin/servers.json`. Se não aparecer, limpe o volume `pgadmin_data` (`docker volume ls | grep pgadmin_data` para conferir o nome e remover).
-6. Serviços locais (grad/pós/diplomas/assinatura): serão detalhados quando os serviços forem implementados.
-7. Métricas: scripts serão adicionados em `scripts/` (a criar).
+6. Monitoramento:
+   - Prometheus: http://localhost:9090
+   - Grafana: http://localhost:3000 (padrao: admin/admin123)
+7. Serviços locais (grad/pós/diplomas/assinatura): serão detalhados quando os serviços forem implementados.
+8. Métricas: scripts serão adicionados em `scripts/` (a criar).
+
+## Monitoramento (Prometheus + Grafana)
+Stack de observabilidade acoplada ao compose principal para as simulacoes.
+
+### O que esta incluido
+- Prometheus (coleta e armazenamento de metricas)
+- Grafana (dashboards)
+- Postgres Exporter (metricas do banco)
+
+### Variaveis uteis
+O Postgres Exporter usa:
+```
+POSTGRES_HOST=postgres
+POSTGRES_PORT=5432
+POSTGRES_DB=tccdb
+POSTGRES_USER=tcc
+POSTGRES_PASSWORD=tcc123
+```
+Se precisar, exporte essas variaveis antes de subir o compose.
+
+### k6 -> Prometheus (remote write)
+Para enviar metricas do k6 direto ao Prometheus:
+```bash
+k6 run --out experimental-prometheus-rw=http://localhost:9090/api/v1/write seu_script.js
+```
+
+Sugestao: envie um header `X-Run-Id` nas chamadas para correlacionar com o log do banco.
 
 ## Convenções de implementação
 - Identificadores numéricos (long) para Pessoa e VinculoAcademico; evitar chaves compostas.
