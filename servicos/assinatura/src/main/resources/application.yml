@@ -35,3 +35,12 @@ logging:
 springdoc:
   swagger-ui:
     tagsSorter: alpha
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      show-details: always
