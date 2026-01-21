@@ -8,5 +8,7 @@ FROM eclipse-temurin:21-jre
 
 WORKDIR /app
 COPY --from=build /workspace/servicos/diplomas/target/*-SNAPSHOT.jar /app/app.jar
+RUN addgroup --system spring && adduser --system --ingroup spring spring
+USER spring
 EXPOSE 8083
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]
