@@ -1,13 +1,12 @@
 FROM maven:3.9.9-eclipse-temurin-21 AS build
 
 WORKDIR /workspace
-COPY servicos/pom.xml /workspace/servicos/pom.xml
-COPY servicos/assinatura /workspace/servicos/assinatura
+COPY servicos /workspace/servicos
 RUN mvn -f servicos/pom.xml -pl assinatura -am -DskipTests package
 
 FROM eclipse-temurin:21-jre
 
 WORKDIR /app
-COPY --from=build /workspace/servicos/assinatura/target/ /app/
+COPY --from=build /workspace/servicos/assinatura/target/*-SNAPSHOT.jar /app/app.jar
 EXPOSE 8084
-ENTRYPOINT ["sh", "-c", "java -jar /app/*-SNAPSHOT.jar"]
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]
