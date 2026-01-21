@@ -1,7 +1,8 @@
 FROM maven:3.9.9-eclipse-temurin-21 AS build
 
 WORKDIR /workspace
-COPY servicos /workspace/servicos
+COPY servicos/pom.xml /workspace/servicos/pom.xml
+COPY servicos/graduacao /workspace/servicos/graduacao
 RUN mvn -f servicos/pom.xml -pl graduacao -am -DskipTests package
 
 FROM eclipse-temurin:21-jre
