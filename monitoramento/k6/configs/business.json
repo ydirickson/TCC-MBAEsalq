@@ -1,0 +1,46 @@
+{
+  "targets": [
+    {
+      "name": "graduacao",
+      "endpoints": [
+        "/pessoas",
+        "/alunos",
+        "/cursos",
+        "/ofertas-disciplinas"
+      ]
+    },
+    {
+      "name": "pos-graduacao",
+      "endpoints": [
+        "/pessoas",
+        "/alunos",
+        "/programas",
+        "/ofertas-disciplinas"
+      ]
+    },
+    {
+      "name": "diplomas",
+      "endpoints": [
+        "/diplomas",
+        "/requerimentos",
+        "/documentos-diploma",
+        "/status-emissao"
+      ]
+    },
+    {
+      "name": "assinatura",
+      "endpoints": [
+        "/assinaturas",
+        "/documentos-assinaveis",
+        "/documentos-diploma",
+        "/solicitacoes-assinatura"
+      ]
+    }
+  ],
+  "baseUrls": {
+    "graduacao": "http://localhost:8081",
+    "pos-graduacao": "http://localhost:8082",
+    "diplomas": "http://localhost:8083",
+    "assinatura": "http://localhost:8084"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "targets": [
+    {
+      "name": "graduacao",
+      "url": "http://localhost:8081/actuator/health"
+    },
+    {
+      "name": "pos-graduacao",
+      "url": "http://localhost:8082/actuator/health"
+    },
+    {
+      "name": "diplomas",
+      "url": "http://localhost:8083/actuator/health"
+    },
+    {
+      "name": "assinatura",
+      "url": "http://localhost:8084/actuator/health"
+    }
+  ]
+}
