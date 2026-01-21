@@ -11,7 +11,7 @@
 ## 5.2. Vínculo Acadêmico (VinculoAcademico)
 - **Cardinalidade:** uma Pessoa pode ter múltiplos vínculos (1:N), por exemplo duas graduações, um mestrado e um doutorado, cada um com seu próprio `vinculoId`.
 - **Histórico:** manter tabela de histórico/versões de `VinculoAcademico` para registrar mudanças de status/curso/orientador (auditoria).
-- **Esquema comum:** todos os serviços possuem a mesma entidade e tabela de VinculoAcademico (com `cursoId`, `cursoCodigo`, `cursoNome`, `tipoCursoPrograma`).
+- **Esquema comum:** todos os serviços possuem a mesma entidade e tabela de VínculoAcadêmico (com `cursoId`, `cursoCodigo`, `cursoNome`, `tipoCursoPrograma`).
 - **Fontes de produção:** Graduação e Pós criam e atualizam `VinculoAcademico`.
 - Eventos: `VinculoAcademicoCriado` (status inicial ativo) e `VinculoAcademicoAtualizado` (mudança de status, curso/programa, orientador/colegiado).
 - Consumo: Diplomas e Assinatura mantêm read models; Graduação e Pós também consomem para reconciliação.
@@ -29,7 +29,7 @@
 
 ## 5.5. Documento de diploma e assinatura
 - Diplomas gera **DocumentoDiploma** quando emite.
-- Assinatura eletrônica consome o evento de documento gerado para criar **DocumentoAssinavel**.
+- Assinatura eletrônica consome o evento de documento gerado para criar **DocumentoAssinável**.
 - Assinatura produz eventos de “assinatura concluída” que Diplomas pode consumir para atualizar status do diploma/documento.
 
 ## 5.6. Solicitação de Assinatura e Certificados (tabela replicada)

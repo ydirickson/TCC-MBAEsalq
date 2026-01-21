@@ -1,24 +1,24 @@
-# Servico de Assinatura Eletronica (REST)
+# Serviço de Assinatura Eletrônica (REST)
 
-CRUD simples para assinaturas seguindo MVC com camada de servico, Spring Boot 4.0.1, Java 21, Spring Data JPA e banco PostgreSQL (rodando via Docker). Nao ha camada de seguranca neste servico por nao fazer parte do escopo do teste.
+CRUD simples para assinaturas seguindo MVC com camada de serviço, Spring Boot 4.0.1, Java 21, Spring Data JPA e banco PostgreSQL (rodando via Docker). Não há camada de segurança neste serviço por não fazer parte do escopo do teste.
 
 ## Como rodar
-Pre-requisitos: JDK 21 e Maven.
+Pré-requisitos: JDK 21 e Maven.
 
 ```bash
 mvn spring-boot:run
 ```
 
-Por padrao o servico sobe em `http://localhost:8084` e usa o PostgreSQL definido em `.env`/`docker-compose.yml` (`POSTGRES_USER=tcc`, `POSTGRES_PASSWORD=tcc123`, `POSTGRES_DB=tccdb`, porta `5432`). Antes de rodar a aplicacao, suba o banco via `docker compose up -d postgres` na raiz do repositorio.
+Por padrão o serviço sobe em `http://localhost:8084` e usa o PostgreSQL definido em `.env`/`docker-compose.yml` (`POSTGRES_USER=tcc`, `POSTGRES_PASSWORD=tcc123`, `POSTGRES_DB=tccdb`, porta `5432`). Antes de rodar a aplicação, suba o banco via `docker compose up -d postgres` na raiz do repositório.
 
-## Documentacao OpenAPI (Swagger)
-Com a aplicacao em execucao:
+## Documentação OpenAPI (Swagger)
+Com a aplicação em execução:
 - OpenAPI JSON: `http://localhost:8084/v3/api-docs`
 - Swagger UI: `http://localhost:8084/swagger-ui/index.html`
 
 ## Endpoints principais
-### Usuarios assinantes (`/usuarios-assinantes`)
-- `POST /usuarios-assinantes` — cria usuario assinante
+### Usuários assinantes (`/usuarios-assinantes`)
+- `POST /usuarios-assinantes` — cria usuário assinante
   ```json
   {
     "pessoaId": 1001,
@@ -32,12 +32,12 @@ Com a aplicacao em execucao:
 - `PUT /usuarios-assinantes/{id}`
 - `DELETE /usuarios-assinantes/{id}`
 
-### Documentos assinaveis (`/documentos-assinaveis`)
-- `POST /documentos-assinaveis` — cria documento assinavel
+### Documentos assináveis (`/documentos-assinaveis`)
+- `POST /documentos-assinaveis` — cria documento assinável
   ```json
   {
     "documentoDiplomaId": 1,
-    "descricao": "Diploma versao final",
+    "descricao": "Diploma versão final",
     "dataCriacao": "2025-03-10T10:00:00"
   }
   ```
@@ -46,8 +46,8 @@ Com a aplicacao em execucao:
 - `PUT /documentos-assinaveis/{id}`
 - `DELETE /documentos-assinaveis/{id}`
 
-### Solicitacoes (`/solicitacoes-assinatura`)
-- `POST /solicitacoes-assinatura` — cria solicitacao
+### Solicitações (`/solicitacoes-assinatura`)
+- `POST /solicitacoes-assinatura` — cria solicitação
   ```json
   {
     "documentoAssinavelId": 1,

@@ -11,8 +11,8 @@ mvn spring-boot:run
 
 Por padrão o serviço sobe em `http://localhost:8081` e usa o PostgreSQL definido em `.env`/`docker-compose.yml` (`POSTGRES_USER=tcc`, `POSTGRES_PASSWORD=tcc123`, `POSTGRES_DB=tccdb`, porta `5432`). Antes de rodar a aplicação, suba o banco via `docker compose up -d postgres` na raiz do repositório.
 
-## Documentacao OpenAPI (Swagger)
-Com a aplicacao em execucao:
+## Documentação OpenAPI (Swagger)
+Com a aplicação em execução:
 - OpenAPI JSON: `http://localhost:8081/v3/api-docs`
 - Swagger UI: `http://localhost:8081/swagger-ui/index.html`
 
@@ -20,7 +20,7 @@ Com a aplicacao em execucao:
 ### Cursos (`/cursos`)
 - `POST /cursos` — cria curso  
   ```json
-  {"codigo": "BCC", "nome": "Ciencia da Computacao", "cargaHoraria": 3200}
+  {"codigo": "BCC", "nome": "Ciência da Computação", "cargaHoraria": 3200}
   ```
 - `GET /cursos` — lista cursos
 - `GET /cursos/{id}` — busca curso

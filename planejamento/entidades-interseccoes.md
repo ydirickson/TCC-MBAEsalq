@@ -6,13 +6,13 @@ As entidades a seguir aparecem em múltiplos serviços e são candidatas naturai
 
 **Identidade e cadastro (aparece em todos):**
 - Pessoa
-- DocumentoIdentificacao
+- DocumentoIdentificação
 - Contato
-- Endereco
+- Endereço
 
 **Vida acadêmica (grad/pós → diplomas):**
 - Aluno (perfil acadêmico: graduação/pós)
-- VinculoAcademico (pessoa em curso/programa, com referência ao catálogo e tipoCursoPrograma)
+- VínculoAcadêmico (pessoa em curso/programa, com referência ao catálogo e tipoCursoPrograma)
 - Curso/Programa (catálogo)
 - Situação acadêmica / conclusão
 

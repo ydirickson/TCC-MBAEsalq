@@ -1,6 +1,6 @@
 # Serviço de Pós-graduação (REST)
 
-CRUD simples para Pos-graduacao seguindo MVC com camada de servico, Spring Boot 4.0.1, Java 21, Spring Data JPA e banco PostgreSQL (rodando via Docker). Nao ha camada de seguranca neste servico por nao fazer parte do escopo do teste.
+CRUD simples para Pós-graduação seguindo MVC com camada de serviço, Spring Boot 4.0.1, Java 21, Spring Data JPA e banco PostgreSQL (rodando via Docker). Não há camada de segurança neste serviço por não fazer parte do escopo do teste.
 
 ## Como rodar
 Pré-requisitos: JDK 21 e Maven.
@@ -9,10 +9,10 @@ Pré-requisitos: JDK 21 e Maven.
 mvn spring-boot:run
 ```
 
-Por padrao o servico sobe em `http://localhost:8082` e usa o PostgreSQL definido em `.env`/`docker-compose.yml` (`POSTGRES_USER=tcc`, `POSTGRES_PASSWORD=tcc123`, `POSTGRES_DB=tccdb`, porta `5432`). Antes de rodar a aplicacao, suba o banco via `docker compose up -d postgres` na raiz do repositorio.
+Por padrão o serviço sobe em `http://localhost:8082` e usa o PostgreSQL definido em `.env`/`docker-compose.yml` (`POSTGRES_USER=tcc`, `POSTGRES_PASSWORD=tcc123`, `POSTGRES_DB=tccdb`, porta `5432`). Antes de rodar a aplicação, suba o banco via `docker compose up -d postgres` na raiz do repositório.
 
-## Documentacao OpenAPI (Swagger)
-Com a aplicacao em execucao:
+## Documentação OpenAPI (Swagger)
+Com a aplicação em execução:
 - OpenAPI JSON: `http://localhost:8082/v3/api-docs`
 - Swagger UI: `http://localhost:8082/swagger-ui/index.html`
 
@@ -20,7 +20,7 @@ Com a aplicacao em execucao:
 ### Programas (`/programas`)
 - `POST /programas` — cria programa
   ```json
-  {"codigo": "PPG", "nome": "Ciencia de Dados", "cargaHoraria": 360}
+  {"codigo": "PPG", "nome": "Ciência de Dados", "cargaHoraria": 360}
   ```
 - `GET /programas` — lista programas
 - `GET /programas/{id}` — busca programa

@@ -10,3 +10,23 @@ scrape_configs:
   - job_name: postgres_exporter
     static_configs:
       - targets: ["postgres-exporter:9187"]
+
+  - job_name: spring_graduacao
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ["graduacao:8081"]
+
+  - job_name: spring_pos_graduacao
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ["pos-graduacao:8082"]
+
+  - job_name: spring_diplomas
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ["diplomas:8083"]
+
+  - job_name: spring_assinatura
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ["assinatura:8084"]

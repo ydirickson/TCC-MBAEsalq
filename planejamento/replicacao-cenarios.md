@@ -1,52 +1,52 @@
-# Replicacao por cenarios de banco
-[← Voltar ao indice](./README.md)
+# Replicação por cenários de banco
+[← Voltar ao índice](./README.md)
 
-Este documento descreve sugestoes de replicacao de dados para o VinculoAcademico e demais entidades comuns em quatro cenarios de infraestrutura.
+Este documento descreve sugestões de replicação de dados para o VínculoAcadêmico e demais entidades comuns em quatro cenários de infraestrutura.
 
-## Objetivo da simulacao
-Comparar replicacao tradicional (recursos nativos do PostgreSQL) com replicacao baseada em eventos via Kafka. A simulacao busca demonstrar que a abordagem por eventos pode manter desempenho e confiabilidade sem perda, ao mesmo tempo em que oferece maior flexibilidade e desacoplamento do modelo de dados.
+## Objetivo da simulação
+Comparar replicação tradicional (recursos nativos do PostgreSQL) com replicação baseada em eventos via Kafka. A simulação busca demonstrar que a abordagem por eventos pode manter desempenho e confiabilidade sem perda, ao mesmo tempo em que oferece maior flexibilidade e desacoplamento do modelo de dados.
 
 ## 1) Simples (mesmo BD e mesmos schemas)
-**Contexto:** todos os servicos compartilham o mesmo banco e os mesmos schemas.
-- **Padrao sugerido:** modelo unico e tabelas comuns unicas (Pessoa, VinculoAcademico, Contato, Endereco, DocumentoIdentificacao).
-- **Replicacao:** nao ha replicacao fisica; ha apenas **ownership logico** (Graduacao/Pos produzem; Diplomas/Assinatura consomem).
-- **Integracao:** leitura direta por FK e consultas compartilhadas; use visoes para separar leitura por servico, se necessario.
-- **Risco:** acoplamento forte e concorrencia; exigir contratos claros de escrita (somente produtores oficiais atualizam).
+**Contexto:** todos os serviços compartilham o mesmo banco e os mesmos schemas.
+- **Padrão sugerido:** modelo único e tabelas comuns únicas (Pessoa, VínculoAcadêmico, Contato, Endereço, DocumentoIdentificação).
+- **Replicação:** não há replicação física; há apenas **ownership lógico** (Graduação/Pós produzem; Diplomas/Assinatura consomem).
+- **Integração:** leitura direta por FK e consultas compartilhadas; use visões para separar leitura por serviço, se necessário.
+- **Risco:** acoplamento forte e concorrência; exigir contratos claros de escrita (somente produtores oficiais atualizam).
 
-## 2) Schema (mesmo BD, schemas distintos por servico)
-**Contexto:** um banco unico com schemas separados por servico.
-- **Padrao sugerido:** tabelas comuns duplicadas em cada schema com o mesmo modelo.
-- **Replicacao:** eventos ou jobs de sincronizacao para copiar dados dos schemas produtores para schemas consumidores.
+## 2) Schema (mesmo BD, schemas distintos por serviço)
+**Contexto:** um banco único com schemas separados por serviço.
+- **Padrão sugerido:** tabelas comuns duplicadas em cada schema com o mesmo modelo.
+- **Replicação:** eventos ou jobs de sincronização para copiar dados dos schemas produtores para schemas consumidores.
 - **Mecanismo:** 
   - **Evento** (preferencial): publicar `PessoaCriada/Atualizada`, `VinculoAcademicoCriado/Atualizado` e aplicar no schema alvo.
-  - **CDC/stream** (opcional): replicar mudancas do schema produtor para consumidores.
-- **Risco:** divergencia entre schemas; usar idempotencia por `id` e `timestamp/versao`.
+  - **CDC/stream** (opcional): replicar mudanças do schema produtor para consumidores.
+- **Risco:** divergência entre schemas; usar idempotência por `id` e `timestamp/versao`.
 
 ## 3) Databases (bancos distintos no mesmo servidor)
-**Contexto:** cada servico possui seu proprio database no mesmo servidor Postgres.
-- **Padrao sugerido:** mesmo modelo comum em cada database, com ownership por servico.
-- **Replicacao:** eventos assincronos (Kafka, filas, ou jobs) para manter read models alinhados.
+**Contexto:** cada serviço possui seu próprio database no mesmo servidor Postgres.
+- **Padrão sugerido:** mesmo modelo comum em cada database, com ownership por serviço.
+- **Replicação:** eventos assíncronos (Kafka, filas, ou jobs) para manter read models alinhados.
 - **Mecanismo:**
-  - **Outbox** no producer e **inbox** no consumer para garantir entrega e idempotencia.
-  - **Batch** para reconciliacao diaria em caso de falhas.
-- **Risco:** latencia e consistencia eventual; monitorar atraso e aplicar reprocessamento.
+  - **Outbox** no producer e **inbox** no consumer para garantir entrega e idempotência.
+  - **Batch** para reconciliação diária em caso de falhas.
+- **Risco:** latência e consistência eventual; monitorar atraso e aplicar reprocessamento.
 
 ## 4) Servers (bancos em servidores diferentes)
-**Contexto:** cada servico tem seu database em servidores diferentes.
-- **Padrao sugerido:** mesma modelagem comum, com replicacao assincromna e robusta.
-- **Replicacao:** eventos assincronos obrigatorios; considerar CDC + fila se houver alto volume.
+**Contexto:** cada serviço tem seu database em servidores diferentes.
+- **Padrão sugerido:** mesma modelagem comum, com replicação assíncrona e robusta.
+- **Replicação:** eventos assíncronos obrigatórios; considerar CDC + fila se houver alto volume.
 - **Mecanismo:**
   - **Outbox + broker** (Kafka/Rabbit) e contratos de eventos versionados.
-  - **Reprocessamento** por offset/versao para recuperacao.
-- **Risco:** falhas de rede e inconsistencias temporarias; exigir observabilidade (lag, retries, DLQ).
+  - **Reprocessamento** por offset/versao para recuperação.
+- **Risco:** falhas de rede e inconsistências temporárias; exigir observabilidade (lag, retries, DLQ).
 
-## Regras comuns para todos os cenarios
-- **Ownership:** Graduacao/Pos produzem Pessoa e VinculoAcademico; Diplomas/Assinatura consomem.
-- **Idempotencia:** aplicar por `id` + `versao`/`timestamp`.
-- **Auditoria:** manter historico de VinculoAcademico quando houver mudanca de status/curso.
+## Regras comuns para todos os cenários
+- **Ownership:** Graduação/Pós produzem Pessoa e VínculoAcadêmico; Diplomas/Assinatura consomem.
+- **Idempotência:** aplicar por `id` + `versao`/`timestamp`.
+- **Auditoria:** manter histórico de VínculoAcadêmico quando houver mudança de status/curso.
 
-## Fluxos por cenario (tradicional vs eventos)
-**Legenda rapida:** "Tradicional" = recursos nativos do PostgreSQL; "Eventos" = Kafka + outbox/inbox.
+## Fluxos por cenário (tradicional vs eventos)
+**Legenda rápida:** "Tradicional" = recursos nativos do PostgreSQL; "Eventos" = Kafka + outbox/inbox.
 
 ### 1) Simples (mesmo BD e mesmos schemas)
 - **Tradicional (triggers/procedures):**
@@ -54,7 +54,7 @@ Comparar replicacao tradicional (recursos nativos do PostgreSQL) com replicacao 
   2. Trigger chama `sync_vinculo_academico(...)`.
   3. UPSERT direto em `vinculo_academico`.
 - **Eventos (outbox + Kafka, mesmo DB):**
-  1. Aplicacao grava dados + evento na `outbox_eventos` na mesma transacao.
+  1. Aplicação grava dados + evento na `outbox_eventos` na mesma transação.
   2. Worker publica no Kafka.
   3. Consumer aplica UPSERT em `vinculo_academico` (mesmo schema).
 
@@ -64,27 +64,27 @@ Comparar replicacao tradicional (recursos nativos do PostgreSQL) com replicacao 
   2. Trigger grava no `schema_consumidor.vinculo_academico`.
   3. Leitura no schema consumidor.
 - **Eventos (outbox + Kafka, mesmo DB):**
-  1. Aplicacao grava dados + outbox no schema produtor.
+  1. Aplicação grava dados + outbox no schema produtor.
   2. Worker publica no Kafka.
-  3. Consumer aplica no schema consumidor com inbox para idempotencia.
+  3. Consumer aplica no schema consumidor com inbox para idempotência.
 
 ### 3) Databases (bancos distintos no mesmo servidor)
 - **Tradicional (logical replication):**
   1. Publisher cria publication com tabelas fonte.
-  2. Subscriber aplica mudancas no DB consumidor.
+  2. Subscriber aplica mudanças no DB consumidor.
   3. Ajustes de schema/DDL e sequencias feitos manualmente.
 - **Eventos (outbox + Kafka, DBs distintos):**
-  1. Aplicacao grava dados + outbox no DB produtor.
+  1. Aplicação grava dados + outbox no DB produtor.
   2. Worker publica no Kafka.
   3. Consumer aplica no DB consumidor com inbox e retry.
 
 ### 4) Servers (bancos em servidores diferentes)
 - **Tradicional (logical replication):**
   1. Publisher e subscriber em servidores distintos.
-  2. Replicacao logica aplica mudancas no destino.
+  2. Replicação lógica aplica mudanças no destino.
   3. Observabilidade para lag e falhas de rede.
 - **Eventos (outbox + Kafka, servidores diferentes):**
-  1. Aplicacao grava dados + outbox no produtor.
+  1. Aplicação grava dados + outbox no produtor.
   2. Kafka distribui para consumidores.
   3. Consumer aplica no destino com DLQ e reprocessamento.
 
@@ -92,44 +92,44 @@ Comparar replicacao tradicional (recursos nativos do PostgreSQL) com replicacao 
 | Cenario | Tradicional (PostgreSQL) | Eventos (Kafka) | Riscos principais |
 | --- | --- | --- | --- |
 | 1) Simples | Triggers + procedures no mesmo schema | Outbox + Kafka + consumer local | Acoplamento vs overhead de eventos |
-| 2) Schema | Triggers cross-schema | Outbox no produtor + consumer no schema alvo | Divergencia de schemas; idempotencia |
-| 3) Databases | Logical replication entre DBs | Outbox + Kafka + consumer no DB alvo | Latencia e consistencia eventual |
+| 2) Schema | Triggers cross-schema | Outbox no produtor + consumer no schema alvo | Divergência de schemas; idempotência |
+| 3) Databases | Logical replication entre DBs | Outbox + Kafka + consumer no DB alvo | Latência e consistência eventual |
 | 4) Servers | Logical replication entre servidores | Outbox + Kafka + consumer remoto | Falhas de rede; observabilidade |
 
-## Tecnicas de preenchimento do VinculoAcademico por cenario
+## Técnicas de preenchimento do VínculoAcadêmico por cenário
 **Gatilhos comuns:** sempre que houver INSERT/UPDATE em `AlunoGraduacao`, `ProfessorGraduacao`, `AlunoPosGraduacao`, `ProfessorPosGraduacao`.
 
 ### 1) Simples (mesmo BD e mesmos schemas)
 - **Trigger SQL:** triggers em tabelas de aluno/professor que fazem UPSERT direto em `vinculo_academico`.
-- **Stored procedure:** procedure unica `sync_vinculo_academico(...)` chamada por triggers ou pela aplicacao.
-- **Batch leve:** job periodico para reconciliar inconsistencias (recalcular vinculos a partir das tabelas fonte).
+- **Stored procedure:** procedure única `sync_vinculo_academico(...)` chamada por triggers ou pela aplicação.
+- **Batch leve:** job periódico para reconciliar inconsistências (recalcular vínculos a partir das tabelas fonte).
 
-### 2) Schema (mesmo BD, schemas distintos por servico)
-- **Trigger + cross-schema:** trigger no schema produtor escreve em tabela de vinculacao do schema consumidor (via `schema_alvo.vinculo_academico`).
-- **View + materializacao:** view no schema consumidor sobre as tabelas do produtor e job para materializar em `vinculo_academico`.
+### 2) Schema (mesmo BD, schemas distintos por serviço)
+- **Trigger + cross-schema:** trigger no schema produtor escreve em tabela de vinculação do schema consumidor (via `schema_alvo.vinculo_academico`).
+- **View + materialização:** view no schema consumidor sobre as tabelas do produtor e job para materializar em `vinculo_academico`.
 - **Eventos internos:** tabela outbox no schema produtor e job que aplica no schema consumidor.
 
 ### 3) Databases (bancos distintos no mesmo servidor)
 - **Outbox/InBox:** outbox no DB do produtor com eventos `VinculoAcademicoCriado/Atualizado`; consumer aplica no seu DB.
-- **CDC por DB:** capture de mudancas nas tabelas de aluno/professor e replicacao para `vinculo_academico` no DB alvo.
+- **CDC por DB:** capture de mudanças nas tabelas de aluno/professor e replicação para `vinculo_academico` no DB alvo.
 - **Batch cross-DB:** job que consulta o DB produtor e faz UPSERT no DB consumidor (via conexao federada/app).
 
 ### 4) Servers (bancos em servidores diferentes)
-- **Eventos assincronos:** outbox + broker (Kafka/Rabbit) para propagar mudancas de aluno/professor.
-- **CDC + streaming:** CDC no produtor publica mudancas, consumidor consolida `vinculo_academico`.
+- **Eventos assíncronos:** outbox + broker (Kafka/Rabbit) para propagar mudanças de aluno/professor.
+- **CDC + streaming:** CDC no produtor publica mudanças, consumidor consolida `vinculo_academico`.
 - **Reprocessamento:** fila de retry e DLQ para garantir entrega em falhas de rede.
 
 ## CDC no PostgreSQL
-**Onde o CDC se encaixa:** ideal para cenarios 2, 3 e 4 quando voce quer capturar mudancas nas tabelas de aluno/professor sem depender de triggers na aplicacao. No cenario 1 (mesmo schema), CDC costuma ser desnecessario.
+**Onde o CDC se encaixa:** ideal para cenários 2, 3 e 4 quando você quer capturar mudanças nas tabelas de aluno/professor sem depender de triggers na aplicação. No cenário 1 (mesmo schema), CDC costuma ser desnecessário.
 
-**CDC recomendado (padrao de mercado):**
+**CDC recomendado (padrão de mercado):**
 - **Debezium + PostgreSQL logical decoding** (Kafka Connect): boa observabilidade, esquema de eventos bem definido, suporte amplo e comunidade forte.
 
 **Alternativas validas:**
-- **pgoutput + consumidor proprio**: baixo nivel, exige app para consumir o WAL.
-- **wal2json**: simples para prototipo, mas menos robusto para escala/operacao.
+- **pgoutput + consumidor próprio**: baixo nível, exige app para consumir o WAL.
+- **wal2json**: simples para protótipo, mas menos robusto para escala/operação.
 
-**Sugestao pratica:**
+**Sugestão prática:**
 - Habilitar logical replication no Postgres (WAL em `logical`).
-- Criar publicacao para as tabelas fonte (Aluno/Professor).
+- Criar publicação para as tabelas fonte (Aluno/Professor).
 - Consumidor transforma eventos em UPSERT de `vinculo_academico` no destino.
