@@ -1,16 +1,16 @@
 # Serviço de Graduação
 
 ## Entidades
-- Pessoa (owner primário se adotado), DocumentoIdentificacao, Contato, Endereco
-- VinculoAcademico (pessoa + curso referenciado via `CursoReferencia`)
-- AlunoGraduacao (matrícula por turma)
-- ProfessorGraduacao
-- CursoGraduacao, DisciplinaGraduacao, TurmaGraduacao, OfertaDisciplina
-- MatriculaDisciplina, AvaliacaoOfertaDisciplina, AvaliacaoAluno
-- SituacaoAcademica (enum de status para vínculo e aluno)
+- Pessoa (owner primário se adotado), DocumentoIdentificação, Contato, Endereço
+- VínculoAcadêmico (pessoa + curso referenciado via `CursoReferencia`)
+- AlunoGraduação (matrícula por turma)
+- ProfessorGraduação
+- CursoGraduação, DisciplinaGraduação, TurmaGraduação, OfertaDisciplina
+- MatrículaDisciplina, AvaliaçãoOfertaDisciplina, AvaliaçãoAluno
+- SituaçãoAcadêmica (enum de status para vínculo e aluno)
 
 ## Regras de Negócio da Simulação
-- Criação de Pessoa e do VinculoAcademico (status inicial ativo) emite eventos `PessoaCriada` e `VinculoAcademicoCriado`.
+- Criação de Pessoa e do VínculoAcadêmico (status inicial ativo) emite eventos `PessoaCriada` e `VinculoAcademicoCriado`.
 - Atualizações de contato/endereço emitem `PessoaAtualizada` (replicação em outros serviços).
 - Mudança de status do vínculo (trancado, reaberto, desligado, concluído) emite `VinculoAcademicoAtualizado`; status concluído emite também `ConclusaoPublicada` com `vinculoId`.
 - Notas e avaliações ficam em `MatriculaDisciplina`/`AvaliacaoAluno`; não são replicadas fora.

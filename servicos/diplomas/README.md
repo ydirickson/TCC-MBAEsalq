@@ -1,30 +1,30 @@
-# Servico de Diplomas (REST)
+# Serviço de Diplomas (REST)
 
-CRUD simples para Diplomas seguindo MVC com camada de servico, Spring Boot 4.0.1, Java 21, Spring Data JPA e banco PostgreSQL (rodando via Docker). Nao ha camada de seguranca neste servico por nao fazer parte do escopo do teste.
+CRUD simples para Diplomas seguindo MVC com camada de serviço, Spring Boot 4.0.1, Java 21, Spring Data JPA e banco PostgreSQL (rodando via Docker). Não há camada de segurança neste serviço por não fazer parte do escopo do teste.
 
 ## Como rodar
-Pre-requisitos: JDK 21 e Maven.
+Pré-requisitos: JDK 21 e Maven.
 
 ```bash
 mvn spring-boot:run
 ```
 
-Por padrao o servico sobe em `http://localhost:8083` e usa o PostgreSQL definido em `.env`/`docker-compose.yml` (`POSTGRES_USER=tcc`, `POSTGRES_PASSWORD=tcc123`, `POSTGRES_DB=tccdb`, porta `5432`). Antes de rodar a aplicacao, suba o banco via `docker compose up -d postgres` na raiz do repositorio.
+Por padrão o serviço sobe em `http://localhost:8083` e usa o PostgreSQL definido em `.env`/`docker-compose.yml` (`POSTGRES_USER=tcc`, `POSTGRES_PASSWORD=tcc123`, `POSTGRES_DB=tccdb`, porta `5432`). Antes de rodar a aplicação, suba o banco via `docker compose up -d postgres` na raiz do repositório.
 
-## Documentacao OpenAPI (Swagger)
-Com a aplicacao em execucao:
+## Documentação OpenAPI (Swagger)
+Com a aplicação em execução:
 - OpenAPI JSON: `http://localhost:8083/v3/api-docs`
 - Swagger UI: `http://localhost:8083/swagger-ui/index.html`
 
 ## Endpoints principais
 ### Requerimentos (`/requerimentos`)
-- `POST /requerimentos` — cria requerimento e base de emissao
+- `POST /requerimentos` — cria requerimento e base de emissão
   ```json
   {
     "pessoaId": 1001,
     "vinculoId": 10,
     "cursoCodigo": "BCC",
-    "cursoNome": "Ciencia da Computacao",
+    "cursoNome": "Ciência da Computação",
     "cursoTipo": "GRADUACAO",
     "dataConclusao": "2024-12-20",
     "dataColacaoGrau": "2025-02-15",

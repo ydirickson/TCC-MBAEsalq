@@ -4,43 +4,43 @@
 ## 4.1. Serviço de Graduação
 ### 4.1.1. Responsável (source of truth)
 - **Pessoa**: cadastro base do discente e do docente na graduação.
-- **DocumentoIdentificacao / Contato / Endereco**: cadastro de identificação e comunicação.
-- **VinculoAcademico**: vínculo entre pessoa e curso (com referência do curso).
-- **AlunoGraduacao**: perfil acadêmico na graduação (matrícula por turma).
-- **ProfessorGraduacao**: perfil docente da graduação.
-- **CursoGraduacao**: cursos ofertados pela graduação.
-- **DisciplinaGraduacao / TurmaGraduacao / OfertaDisciplina**: oferta acadêmica.
-- **MatriculaDisciplina**: vínculo do aluno com uma oferta.
-- **AvaliacaoOfertaDisciplina / AvaliacaoAluno**: avaliações e notas.
+- **DocumentoIdentificação / Contato / Endereço**: cadastro de identificação e comunicação.
+- **VínculoAcadêmico**: vínculo entre pessoa e curso (com referência do curso).
+- **AlunoGraduação**: perfil acadêmico na graduação (matrícula por turma).
+- **ProfessorGraduação**: perfil docente da graduação.
+- **CursoGraduação**: cursos ofertados pela graduação.
+- **DisciplinaGraduação / TurmaGraduação / OfertaDisciplina**: oferta acadêmica.
+- **MatrículaDisciplina**: vínculo do aluno com uma oferta.
+- **AvaliaçãoOfertaDisciplina / AvaliaçãoAluno**: avaliações e notas.
 
 ### 4.1.2. Entidades (descrição)
 - **Pessoa**
   - Campos típicos: `id`, nome completo, data nascimento, nome social (opcional).
-- **DocumentoIdentificacao**
+- **DocumentoIdentificação**
   - Tipo (CPF/RG/passaporte) e número.
 - **Contato**
   - Email e telefone.
-- **Endereco**
+- **Endereço**
   - Logradouro, cidade, UF, CEP.
-- **AlunoGraduacao**
+- **AlunoGraduação**
   - Referências a `Pessoa` e `TurmaGraduacao`, data de matrícula e status.
-- **VinculoAcademico**
+- **VínculoAcadêmico**
   - Referência à `Pessoa`, `CursoReferencia` (id/código/nome/tipo), tipo de vínculo, datas de ingresso/conclusão e situação.
-- **ProfessorGraduacao**
+- **ProfessorGraduação**
   - Referências a `Pessoa` e `CursoGraduacao`, data de ingresso, nível docente e situação funcional.
-- **CursoGraduacao**
+- **CursoGraduação**
   - Código, nome e carga horária.
-- **DisciplinaGraduacao**
+- **DisciplinaGraduação**
   - Curso, código, nome e carga horária.
-- **TurmaGraduacao**
+- **TurmaGraduação**
   - Curso, ano, semestre e status.
 - **OfertaDisciplina**
   - Disciplina, professor, ano e semestre.
-- **MatriculaDisciplina**
+- **MatrículaDisciplina**
   - Aluno, oferta, data de matrícula, status e nota.
-- **AvaliacaoOfertaDisciplina**
+- **AvaliaçãoOfertaDisciplina**
   - Oferta, nome e peso da avaliação.
-- **AvaliacaoAluno**
+- **AvaliaçãoAluno**
   - Matrícula, avaliação e nota.
 
 ### 4.1.3. Dados replicados (read models locais)
@@ -53,25 +53,25 @@
 ## 4.2. Serviço de Pós-graduação
 ### 4.2.1. Responsável (source of truth)
 - **Pessoa**: cadastro base do discente que ingressa na pós (pode existir pessoa que só exista na pós).
-- **AlunoPosGraduacao**: perfil acadêmico na pós.
-- **ProgramaPos**: programas (mestrado, doutorado, especialização, etc.).
-- **VinculoPosGraduacao**: vínculo entre pessoa/aluno e programa.
-- **Orientacao**: orientador/coorientador.
-- **Qualificacao**: registros de qualificação (se aplicável).
+- **AlunoPósGraduação**: perfil acadêmico na pós.
+- **ProgramaPós**: programas (mestrado, doutorado, especialização, etc.).
+- **VínculoPósGraduação**: vínculo entre pessoa/aluno e programa.
+- **Orientação**: orientador/coorientador.
+- **Qualificação**: registros de qualificação (se aplicável).
 - **Defesa**: registros de defesa e resultado.
-- **SituacaoAcademicaPos**: status (ativo, em pesquisa, concluído, desligado).
+- **SituaçãoAcadêmicaPós**: status (ativo, em pesquisa, concluído, desligado).
 
 ### 4.2.2. Entidades (descrição)
 - **Pessoa** (mesmo conceito do serviço de graduação, mas com ownership definido por decisão de arquitetura)
-- **AlunoPosGraduacao**
+- **AlunoPósGraduação**
   - Ex.: `pessoaId`, linha de pesquisa, área, etc.
-- **ProgramaPos**
+- **ProgramaPós**
   - Ex.: `programaId`, nome, nível.
-- **VinculoPosGraduacao**
+- **VínculoPósGraduação**
   - Ex.: `vinculoId`, `pessoaId`, `programaId`, status.
-- **Orientacao**
+- **Orientação**
   - Ex.: `vinculoId`, orientador(es).
-- **Qualificacao / Defesa**
+- **Qualificação / Defesa**
   - Ex.: datas, resultado, ata/registro (metadados).
 
 ### 4.2.3. Dados replicados (read models locais)
@@ -112,19 +112,19 @@
 
 ## 4.4. Serviço de Assinatura Eletrônica
 ### 4.4.1. Responsável (source of truth)
-- **UsuarioAssinante** (vínculo com Pessoa)
-- **MetodoAssinatura / Credencial / Certificado** (simulado)
-- **SolicitacaoAssinatura**
+- **UsuárioAssinante** (vínculo com Pessoa)
+- **MétodoAssinatura / Credencial / Certificado** (simulado)
+- **SolicitaçãoAssinatura**
 - **Assinatura**
 - **ManifestoAssinatura** (metadados de validação e auditoria)
-- **DocumentoAssinavel** (metadados do arquivo a assinar, versões)
+- **DocumentoAssinável** (metadados do arquivo a assinar, versões)
 
 ### 4.4.2. Entidades (descrição)
-- **UsuarioAssinante**
+- **UsuárioAssinante**
   - Ex.: `assinanteId`, `pessoaId`, perfil/permissões.
-- **DocumentoAssinavel**
+- **DocumentoAssinável**
   - Ex.: `documentoId`, origem (diplomas, grad, pós), tipo, hash, versão, status.
-- **SolicitacaoAssinatura**
+- **SolicitaçãoAssinatura**
   - Ex.: `solicitacaoId`, `documentoId`, lista de signatários, ordem, prazo, status.
 - **Assinatura**
   - Ex.: `assinaturaId`, `solicitacaoId`, `assinanteId`, data, resultado, hash final.

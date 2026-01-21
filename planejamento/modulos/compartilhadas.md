@@ -2,10 +2,10 @@
 
 ## Entidades Comuns
 - Pessoa: `id`, nome, data nascimento, nome social (opcional)
-- DocumentoIdentificacao: tipo (CPF/RG/Passaporte), número
+- DocumentoIdentificação: tipo (CPF/RG/Passaporte), número
 - Contato: email, telefone (opcionais)
-- Endereco: logradouro, cidade, UF, CEP
-- VinculoAcademico: `id`, `pessoaId`, `cursoId`, `cursoCodigo`, `cursoNome`, `tipoCursoPrograma`, `tipoVinculo`, `dataIngresso`, `dataConclusao` (opcional), `situacao`
+- Endereço: logradouro, cidade, UF, CEP
+- VínculoAcadêmico: `id`, `pessoaId`, `cursoId`, `cursoCodigo`, `cursoNome`, `tipoCursoPrograma`, `tipoVinculo`, `dataIngresso`, `dataConclusao` (opcional), `situacao`
 - DocumentoBase: `documentoId`, tipo, hash, versão, localizacao (metadados)
 
 ## Eventos Canônicos (Kafka)

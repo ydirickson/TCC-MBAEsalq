@@ -2,11 +2,11 @@
 
 ## Entidades
 - RequerimentoDiploma
-- BaseEmissaoDiploma (snapshot de Pessoa, Curso/Programa, Conclusão no momento da solicitação)
+- BaseEmissãoDiploma (snapshot de Pessoa, Curso/Programa, Conclusão no momento da solicitação)
 - Diploma
 - DocumentoDiploma (metadados do PDF emitido)
-- StatusEmissao (estado do fluxo)
-- Read models: Pessoa (cópia), VinculoAcademico (cópia), Curso/Programa (cópia), Conclusao (cópia)
+- StatusEmissão (estado do fluxo)
+- Read models: Pessoa (cópia), VínculoAcadêmico (cópia), Curso/Programa (cópia), Conclusão (cópia)
 
 ## Regras de Negócio da Simulação
 - Consome `VinculoAcademicoAtualizado` e `ConclusaoPublicada` para manter elegibilidade local.

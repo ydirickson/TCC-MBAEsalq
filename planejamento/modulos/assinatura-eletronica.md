@@ -1,9 +1,9 @@
 # Serviço de Assinatura Eletrônica
 
 ## Entidades
-- UsuarioAssinante (ligado a Pessoa)
-- DocumentoAssinavel (referência ao documento a ser assinado)
-- SolicitacaoAssinatura
+- UsuárioAssinante (ligado a Pessoa)
+- DocumentoAssinável (referência ao documento a ser assinado)
+- SolicitaçãoAssinatura
 - Assinatura
 - ManifestoAssinatura (auditoria, carimbo, hash final)
 - Read models: Pessoa (cópia), DocumentoDiploma (cópia)

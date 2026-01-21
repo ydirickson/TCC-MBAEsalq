@@ -1,15 +1,15 @@
 # Serviço de Pós-graduação
 
 ## Entidades
-- Pessoa (owner secundário quando não existir no catálogo da graduação), DocumentoIdentificacao, Contato, Endereco
-- AlunoPosGraduacao (perfil acadêmico, com orientador integrado)
-- ProgramaPos
-- DisciplinaPos, OfertaDisciplinaPos, MatriculaDisciplinaPos (nota global por disciplina/aluno)
-- ProfessorPosGraduacao
-- VinculoAcademico — vínculo unificado por pessoa/programa
+- Pessoa (owner secundário quando não existir no catálogo da graduação), DocumentoIdentificação, Contato, Endereço
+- AlunoPósGraduação (perfil acadêmico, com orientador integrado)
+- ProgramaPós
+- DisciplinaPós, OfertaDisciplinaPós, MatrículaDisciplinaPós (nota global por disciplina/aluno)
+- ProfessorPósGraduação
+- VínculoAcadêmico — vínculo unificado por pessoa/programa
 - Defesa (qualificação ou defesa final)
 - DefesaMembro (membros da banca com nota e presidente)
-- SituacaoAcademica (projeção do vínculo, status atual)
+- SituaçãoAcadêmica (projeção do vínculo, status atual)
 
 ## Regras de Negócio da Simulação
 - Cria Pessoa somente se não encontrada localmente e publica `PessoaCriada`; caso encontre versão replicada, atualiza e publica `PessoaAtualizada`.

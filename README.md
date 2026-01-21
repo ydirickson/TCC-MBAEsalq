@@ -1,22 +1,22 @@
 # TCC-MBA Esalq — Simulação de Replicação vs Kafka
 
-Repositório do meu Trabalho de Conclusão de Curso (TCC) em Engenharia da Computação em 2025 e 2026. O tema deste TCC é propor uma solução de replicação de dados corporativos baseados em uma arquitetura distribuída e _event driven_, utilizando o Apache Kafka como peça central, possibilitando uma flexibildiade maior na comunicação e replicação deste dados com os diversos serviços que os consomem.
+Repositório do meu Trabalho de Conclusão de Curso (TCC) em Engenharia da Computação em 2025 e 2026. O tema deste TCC é propor uma solução de replicação de dados corporativos baseados em uma arquitetura distribuída e _event driven_, utilizando o Apache Kafka como peça central, possibilitando uma flexibilidade maior na comunicação e replicação destes dados com os diversos serviços que os consomem.
 
 ## Introdução e Contexto Resumidos
 
-Vindo de um ambiente altamento acoplado de diversos sistemas/serviços corporativos, uma das estratégias mais clássicas para replicação de dados é utilizando algum mecanismo próprios dos Sistemas Gerenciadores de Banco de Dados (SGBDs) que permita que os dados presentes nesses bancos sejam replicados para outros locais de mesmo banco, seja por motivo de redundância, seja por motivos de compartilhamento desses dados.
+Vindo de um ambiente altamente acoplado de diversos sistemas/serviços corporativos, uma das estratégias mais clássicas para replicação de dados é utilizando algum mecanismo próprios dos Sistemas Gerenciadores de Banco de Dados (SGBDs) que permita que os dados presentes nesses bancos sejam replicados para outros locais de mesmo banco, seja por motivo de redundância, seja por motivos de compartilhamento desses dados.
 
 A partir desse contexto, a ideia é propor uma solução que retire a dependência nas soluções proprietárias e/ou centralizadas desses SGBDs para uma arquitetura distribuída, garantindo assim que os dados sejam replicados da mesma forma e com a mesma segurança e desempenho, ganhando também maior flexibilidade em como os diversos sistemas irão consumir ou utilizar esses dados.
 
 ## Visão geral
 - Objetivo: medir latência, throughput e impacto arquitetural ao migrar de replicação baseada em banco para replicação por eventos (Kafka).
-- Domínio: serviços acadêmicos com entidades compartilhadas (Pessoa, VinculoAcademico) e fluxos de diploma/assinatura.
+- Domínio: serviços acadêmicos com entidades compartilhadas (Pessoa, VínculoAcadêmico) e fluxos de diploma/assinatura.
 - Fases: 1) acoplado por replicação de banco; 2) desacoplado por eventos Kafka.
 
 ## Estrutura do repositório
 - `planejamento/` — documentos de contexto, premissas e regras (ver índice em `planejamento/README.md`).
 - `planejamento/modulos/` — visão por serviço e conceitos compartilhados.
-- `docker-compose.yml` — infraestrutura atual do banco centralizado + pgAdmin.
+- `docker-compose.yml` — infraestrutura atual + microserviços Spring (grad/pós/diplomas/assinatura).
 - `.env.example` — variáveis para parametrizar as imagens e portas do compose.
 - `bd/pgadmin/servers.json` — cadastro do servidor Postgres no pgAdmin (carregado no start).
 - `docs/` — reservado para diagramas/artefatos gerados (a criar).
@@ -28,29 +28,35 @@ A partir desse contexto, a ideia é propor uma solução que retire a dependênc
 - Entidades e intersecções: `planejamento/entidades-interseccoes.md`.
 - Módulos por serviço: `planejamento/modulos/`.
 
-## Como executar — banco centralizado (fase 1)
-1. Pré-requisitos: Docker/Docker Compose instalados (JDK/Node ainda não usados nesta fase).
+## Como executar — banco centralizado + microserviços (fase 1)
+1. Pré-requisitos: Docker/Docker Compose instalados.
 2. Copie o arquivo de variáveis: `cp .env.example .env` e ajuste senhas/portas se necessário.
-3. Suba a infraestrutura: `docker compose up -d postgres pgadmin prometheus grafana postgres-exporter`.
+3. Suba a stack completa: `docker compose up -d`.
 4. Verifique se está saudável: `docker compose ps` deve mostrar `healthy` no Postgres; em caso de dúvida, `docker compose logs -f postgres` até ver `database system is ready to accept connections`.
 5. Acessos:
    - Postgres: `localhost:${POSTGRES_PORT:-5432}` (usuário/senha definidos em `.env`). CLI rápida: `docker compose exec postgres psql -U "$POSTGRES_USER" -d "$POSTGRES_DB"`.
    - pgAdmin: `http://localhost:${PGADMIN_PORT:-8080}` com o login de `.env`. O servidor `TCC Postgres` já vem cadastrado via `bd/pgadmin/servers.json`. Se não aparecer, limpe o volume `pgadmin_data` (`docker volume ls | grep pgadmin_data` para conferir o nome e remover).
 6. Monitoramento:
    - Prometheus: http://localhost:9090
-   - Grafana: http://localhost:3000 (padrao: admin/admin123)
-7. Serviços locais (grad/pós/diplomas/assinatura): serão detalhados quando os serviços forem implementados.
-8. Métricas: scripts serão adicionados em `scripts/` (a criar).
+   - Grafana: http://localhost:3000 (padrão: admin/admin123)
+7. Microserviços:
+   - Graduação: http://localhost:8081
+   - Pós-graduação: http://localhost:8082
+   - Diplomas: http://localhost:8083
+   - Assinatura: http://localhost:8084
+8. Actuator/Prometheus:
+   - Endpoint padrão: `/actuator/prometheus` em cada serviço.
 
 ## Monitoramento (Prometheus + Grafana)
-Stack de observabilidade acoplada ao compose principal para as simulacoes.
+Stack de observabilidade acoplada ao compose principal para as simulações.
 
-### O que esta incluido
-- Prometheus (coleta e armazenamento de metricas)
+### O que está incluído
+- Prometheus (coleta e armazenamento de métricas)
 - Grafana (dashboards)
-- Postgres Exporter (metricas do banco)
+- Postgres Exporter (métricas do banco)
+- Spring Actuator + Micrometer Prometheus (métricas dos microserviços)
 
-### Variaveis uteis
+### Variáveis úteis
 O Postgres Exporter usa:
 ```
 POSTGRES_HOST=postgres
@@ -59,18 +65,25 @@ POSTGRES_DB=tccdb
 POSTGRES_USER=tcc
 POSTGRES_PASSWORD=tcc123
 ```
-Se precisar, exporte essas variaveis antes de subir o compose.
+Se precisar, exporte essas variáveis antes de subir o compose.
+
+### Scrape dos microserviços
+O Prometheus já está configurado para coletar:
+- `graduacao:8081/actuator/prometheus`
+- `pos-graduacao:8082/actuator/prometheus`
+- `diplomas:8083/actuator/prometheus`
+- `assinatura:8084/actuator/prometheus`
 
 ### k6 -> Prometheus (remote write)
-Para enviar metricas do k6 direto ao Prometheus:
+Para enviar métricas do k6 direto ao Prometheus:
 ```bash
 k6 run --out experimental-prometheus-rw=http://localhost:9090/api/v1/write seu_script.js
 ```
 
-Sugestao: envie um header `X-Run-Id` nas chamadas para correlacionar com o log do banco.
+Sugestão: envie um header `X-Run-Id` nas chamadas para correlacionar com o log do banco.
 
 ## Convenções de implementação
-- Identificadores numéricos (long) para Pessoa e VinculoAcademico; evitar chaves compostas.
+- Identificadores numéricos (long) para Pessoa e VínculoAcadêmico; evitar chaves compostas.
 - Eventos em português, em snake_case ou CamelCase consistente com os mapeamentos das libs (definir por linguagem).
 - Interfaces REST simples; contratos de evento priorizam id + versão/timestamp para idempotência.
 
@@ -94,7 +107,7 @@ Sugestao: envie um header `X-Run-Id` nas chamadas para correlacionar com o log d
 
 ## Plano inicial de tarefas
 - Infraestrutura: montar `docker-compose` com bancos (por serviço) e Kafka/ZooKeeper; criar scripts de bootstrap de tópicos.
-- Modelagem: definir schema inicial de Pessoa e VinculoAcademico em SQL; tabelas de histórico e pedidos de diploma/assinatura.
+- Modelagem: definir schema inicial de Pessoa e VínculoAcadêmico em SQL; tabelas de histórico e pedidos de diploma/assinatura.
 - Contratos de eventos: descrever payload mínimo de cada evento em `planejamento/regras-replicacao.md` (id, versão/timestamp, origem).
 - Serviços: scaffolds para Graduação, Pós, Diplomas e Assinatura com APIs REST básicas e produtores/consumidores Kafka.
 - Replicação acoplada: implementar triggers/jobs para replicar Pessoa/Vínculo/PedidoDiploma/Assinatura na fase 1.
