@@ -8,6 +8,6 @@ RUN mvn -f servicos/pom.xml -pl assinatura -am -DskipTests package
 FROM eclipse-temurin:21-jre
 
 WORKDIR /app
-COPY --from=build /workspace/servicos/assinatura/target/*-SNAPSHOT.jar /app/app.jar
+COPY --from=build /workspace/servicos/assinatura/target/ /app/
 EXPOSE 8084
-ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+ENTRYPOINT ["sh", "-c", "java -jar /app/*-SNAPSHOT.jar"]
