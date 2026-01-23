@@ -82,6 +82,29 @@ k6 run --out experimental-prometheus-rw=http://localhost:9090/api/v1/write seu_s
 
 Sugestão: envie um header `X-Run-Id` nas chamadas para correlacionar com o log do banco.
 
+### k6 (CLI) — scripts de carga
+Os scripts ficam em `monitoramento/k6/scripts/` e as configs em `monitoramento/k6/configs/`.
+
+Hello world (healthcheck dos serviços):
+```bash
+k6 run monitoramento/k6/scripts/hello-world.js
+```
+
+Endpoints de negócio (GETs simples):
+```bash
+k6 run monitoramento/k6/scripts/business-endpoints.js
+```
+
+Parâmetros úteis (ambos os scripts):
+- `VUS` (padrão: 1)
+- `DURATION` (padrão: 5s no hello-world, 10s no business-endpoints)
+- `RUN_ID` (default automático)
+
+Exemplo com Prometheus remote write:
+```bash
+VUS=5 DURATION=30s RUN_ID=simulacao_01 k6 run --out experimental-prometheus-rw=http://localhost:9090/api/v1/write monitoramento/k6/scripts/business-endpoints.js
+```
+
 ## Convenções de implementação
 - Identificadores numéricos (long) para Pessoa e VínculoAcadêmico; evitar chaves compostas.
 - Eventos em português, em snake_case ou CamelCase consistente com os mapeamentos das libs (definir por linguagem).
