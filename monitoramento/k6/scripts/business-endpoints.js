@@ -3,6 +3,9 @@ import { check, sleep, fail } from 'k6';
 
 // Carrega endpoints de negocio e baseUrls por servico.
 const config = JSON.parse(open('../configs/business.json'));
+const scenario = 'business-endpoints';
+const runId = __ENV.RUN_ID || `run_${Date.now()}`;
+
 // Configuracao de execucao para chamadas de negocio basicas.
 export const options = {
   vus: Number(__ENV.VUS || 1),
@@ -11,6 +14,10 @@ export const options = {
     // Alvo de estabilidade e latencia para endpoints de negocio.
     http_req_failed: ['rate<0.01'],
     http_req_duration: ['p(95)<800'],
+  },
+  tags: {
+    run_id: runId,
+    scenario,
   },
 };
 
@@ -29,6 +36,7 @@ export default function () {
       const res = http.get(url, {
         // Tags para filtrar por servico e endpoint no Prometheus/Grafana.
         tags: { service: target.name, endpoint },
+        headers: { 'X-Run-Id': runId, 'X-Scenario': scenario },
       });
 
       // Verifica apenas que o endpoint responde com 2xx.
