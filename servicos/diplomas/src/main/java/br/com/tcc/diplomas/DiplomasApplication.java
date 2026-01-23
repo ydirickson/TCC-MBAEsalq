@@ -38,12 +38,17 @@ class DiplomasConfiguration {
     @Override
     public KeyValues getLowCardinalityKeyValues(ServerRequestObservationContext context) {
       KeyValues keyValues = super.getLowCardinalityKeyValues(context);
-      String runId = Optional.ofNullable(context.getCarrier().getHeader("X-Run-Id")).orElse("NONE");
       String scenario =
           Optional.ofNullable(context.getCarrier().getHeader("X-Scenario")).orElse("NONE");
-      keyValues = keyValues.and("run.id", runId);
       keyValues = keyValues.and("scenario", scenario);
       return keyValues;
+    }
+
+    @Override
+    public KeyValues getHighCardinalityKeyValues(ServerRequestObservationContext context) {
+      KeyValues keyValues = super.getHighCardinalityKeyValues(context);
+      String runId = Optional.ofNullable(context.getCarrier().getHeader("X-Run-Id")).orElse("NONE");
+      return keyValues.and("run.id", runId);
     }
   }
 }

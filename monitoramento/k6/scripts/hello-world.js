@@ -2,7 +2,7 @@ import http from 'k6/http';
 import { check, sleep } from 'k6';
 
 // Carrega a lista de alvos (nome + URL) para healthcheck.
-const config = JSON.parse(open('../configs/dev.json'));
+const config = JSON.parse(open('monitoramento/k6/configs/dev.json'));
 const scenario = 'hello-world';
 const runId = __ENV.RUN_ID || `run_${Date.now()}`;
 
