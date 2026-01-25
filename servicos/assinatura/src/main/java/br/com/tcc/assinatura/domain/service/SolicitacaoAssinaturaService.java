@@ -26,7 +26,16 @@ public class SolicitacaoAssinaturaService {
 
   @Transactional
   public Optional<SolicitacaoAssinatura> criar(SolicitacaoAssinaturaRequest request) {
+    if (request.documentoAssinavelId() == null) {
+      return Optional.empty();
+    }
     return documentoAssinavelRepository.findById(request.documentoAssinavelId())
+        .map(documento -> repository.save(mapper.toEntity(request, documento)));
+  }
+
+  @Transactional
+  public Optional<SolicitacaoAssinatura> criar(Long documentoAssinavelId, SolicitacaoAssinaturaRequest request) {
+    return documentoAssinavelRepository.findById(documentoAssinavelId)
         .map(documento -> repository.save(mapper.toEntity(request, documento)));
   }
 
@@ -34,12 +43,26 @@ public class SolicitacaoAssinaturaService {
     return repository.findAll();
   }
 
+  public Optional<List<SolicitacaoAssinatura>> listarPorDocumentoAssinavelId(Long documentoAssinavelId) {
+    if (!documentoAssinavelRepository.existsById(documentoAssinavelId)) {
+      return Optional.empty();
+    }
+    return Optional.of(repository.findAllByDocumentoAssinavelIdOrderByDataSolicitacaoDesc(documentoAssinavelId));
+  }
+
   public Optional<SolicitacaoAssinatura> buscarPorId(Long id) {
     return repository.findById(id);
   }
 
+  public Optional<SolicitacaoAssinatura> buscarPorId(Long documentoAssinavelId, Long id) {
+    return repository.findByIdAndDocumentoAssinavelId(id, documentoAssinavelId);
+  }
+
   @Transactional
   public Optional<SolicitacaoAssinatura> atualizar(Long id, SolicitacaoAssinaturaRequest request) {
+    if (request.documentoAssinavelId() == null) {
+      return Optional.empty();
+    }
     var documentoOpt = documentoAssinavelRepository.findById(request.documentoAssinavelId());
     if (documentoOpt.isEmpty()) {
       return Optional.empty();
@@ -51,8 +74,30 @@ public class SolicitacaoAssinaturaService {
   }
 
   @Transactional
+  public Optional<SolicitacaoAssinatura> atualizar(Long documentoAssinavelId, Long id,
+      SolicitacaoAssinaturaRequest request) {
+    var documentoOpt = documentoAssinavelRepository.findById(documentoAssinavelId);
+    if (documentoOpt.isEmpty()) {
+      return Optional.empty();
+    }
+    return repository.findByIdAndDocumentoAssinavelId(id, documentoAssinavelId).map(solicitacao -> {
+      mapper.updateEntityFromRequest(request, solicitacao, documentoOpt.get());
+      return solicitacao;
+    });
+  }
+
+  @Transactional
   public boolean remover(Long id) {
     if (!repository.existsById(id)) {
+      return false;
+    }
+    repository.deleteById(id);
+    return true;
+  }
+
+  @Transactional
+  public boolean remover(Long documentoAssinavelId, Long id) {
+    if (!repository.existsByIdAndDocumentoAssinavelId(id, documentoAssinavelId)) {
       return false;
     }
     repository.deleteById(id);
