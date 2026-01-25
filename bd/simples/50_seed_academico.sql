@@ -39,55 +39,6 @@ SELECT c.id,
 FROM pessoas_professor p
 JOIN cursos c ON c.rn = ((p.rn - 1) % (SELECT COUNT(*) FROM cursos)) + 1;
 
-INSERT INTO vinculo_academico (
-  pessoa_id,
-  curso_id,
-  curso_codigo,
-  curso_nome,
-  curso_tipo,
-  tipo_vinculo,
-  data_ingresso,
-  data_conclusao,
-  situacao
-)
-SELECT p.id,
-       c.id,
-       c.codigo,
-       c.nome,
-       'GRADUACAO',
-       'GRADUACAO',
-       DATE '2024-02-01',
-       NULL,
-       'ATIVO'
-FROM aluno_graduacao a
-JOIN pessoa p ON p.id = a.pessoa_id
-JOIN turma_graduacao t ON t.id = a.turma_graduacao_id
-JOIN curso_graduacao c ON c.id = t.curso_id;
-
-INSERT INTO vinculo_academico (
-  pessoa_id,
-  curso_id,
-  curso_codigo,
-  curso_nome,
-  curso_tipo,
-  tipo_vinculo,
-  data_ingresso,
-  data_conclusao,
-  situacao
-)
-SELECT p.id,
-       c.id,
-       c.codigo,
-       c.nome,
-       'GRADUACAO',
-       'PROFESSOR',
-       DATE '2010-01-15',
-       NULL,
-       'ATIVO'
-FROM professor_graduacao pr
-JOIN pessoa p ON p.id = pr.pessoa_id
-JOIN curso_graduacao c ON c.id = pr.curso_id;
-
 WITH disciplinas_por_curso AS (
   SELECT d.id,
          d.curso_id,

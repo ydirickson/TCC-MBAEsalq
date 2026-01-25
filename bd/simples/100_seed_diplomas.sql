@@ -2,7 +2,8 @@ WITH selecionados AS (
   SELECT id,
          row_number() OVER (ORDER BY id) AS rn
   FROM vinculo_academico
-  WHERE tipo_vinculo = 'GRADUACAO'
+  WHERE tipo_vinculo = 'ALUNO'
+    AND curso_tipo = 'GRADUACAO'
     AND situacao = 'ATIVO'
   ORDER BY id
   LIMIT 6

@@ -49,62 +49,6 @@ FROM pessoas_aluno p
 JOIN programas pr ON pr.rn = ((p.rn - 1) % (SELECT COUNT(*) FROM programas)) + 1
 LEFT JOIN orientadores o ON o.programa_id = pr.id AND o.rn = 1;
 
-INSERT INTO vinculo_academico (
-  pessoa_id,
-  curso_id,
-  curso_codigo,
-  curso_nome,
-  curso_tipo,
-  tipo_vinculo,
-  data_ingresso,
-  data_conclusao,
-  situacao
-)
-SELECT p.id,
-       pr.id,
-       pr.codigo,
-       pr.nome,
-       CASE pr.codigo
-         WHEN 'PPGCC' THEN 'MESTRADO'
-         WHEN 'PPGAG' THEN 'DOUTORADO'
-         ELSE 'ESPECIALIZACAO'
-       END,
-       'POS_GRADUACAO',
-       DATE '2024-03-01',
-       NULL,
-       'ATIVO'
-FROM aluno_pos_graduacao a
-JOIN pessoa p ON p.id = a.pessoa_id
-JOIN programa_pos pr ON pr.id = a.programa_id;
-
-INSERT INTO vinculo_academico (
-  pessoa_id,
-  curso_id,
-  curso_codigo,
-  curso_nome,
-  curso_tipo,
-  tipo_vinculo,
-  data_ingresso,
-  data_conclusao,
-  situacao
-)
-SELECT p.id,
-       pr.id,
-       pr.codigo,
-       pr.nome,
-       CASE pr.codigo
-         WHEN 'PPGCC' THEN 'MESTRADO'
-         WHEN 'PPGAG' THEN 'DOUTORADO'
-         ELSE 'ESPECIALIZACAO'
-       END,
-       'PROFESSOR',
-       DATE '2012-01-15',
-       NULL,
-       'ATIVO'
-FROM professor_pos pp
-JOIN pessoa p ON p.id = pp.pessoa_id
-JOIN programa_pos pr ON pr.id = pp.programa_id;
-
 WITH disciplinas_por_programa AS (
   SELECT d.id,
          d.programa_id,
