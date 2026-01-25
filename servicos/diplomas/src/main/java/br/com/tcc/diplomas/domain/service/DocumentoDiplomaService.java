@@ -26,7 +26,16 @@ public class DocumentoDiplomaService {
 
   @Transactional
   public Optional<DocumentoDiploma> criar(DocumentoDiplomaRequest request) {
+    if (request.diplomaId() == null) {
+      return Optional.empty();
+    }
     return diplomaRepository.findById(request.diplomaId())
+        .map(diploma -> repository.save(mapper.toEntity(request, diploma)));
+  }
+
+  @Transactional
+  public Optional<DocumentoDiploma> criar(Long diplomaId, DocumentoDiplomaRequest request) {
+    return diplomaRepository.findById(diplomaId)
         .map(diploma -> repository.save(mapper.toEntity(request, diploma)));
   }
 
@@ -34,12 +43,26 @@ public class DocumentoDiplomaService {
     return repository.findAll();
   }
 
+  public Optional<List<DocumentoDiploma>> listarPorDiplomaId(Long diplomaId) {
+    if (!diplomaRepository.existsById(diplomaId)) {
+      return Optional.empty();
+    }
+    return Optional.of(repository.findAllByDiplomaIdOrderByVersaoDesc(diplomaId));
+  }
+
   public Optional<DocumentoDiploma> buscarPorId(Long id) {
     return repository.findById(id);
   }
 
+  public Optional<DocumentoDiploma> buscarPorId(Long diplomaId, Long id) {
+    return repository.findByIdAndDiplomaId(id, diplomaId);
+  }
+
   @Transactional
   public Optional<DocumentoDiploma> atualizar(Long id, DocumentoDiplomaRequest request) {
+    if (request.diplomaId() == null) {
+      return Optional.empty();
+    }
     var diplomaOpt = diplomaRepository.findById(request.diplomaId());
     if (diplomaOpt.isEmpty()) {
       return Optional.empty();
@@ -51,8 +74,29 @@ public class DocumentoDiplomaService {
   }
 
   @Transactional
+  public Optional<DocumentoDiploma> atualizar(Long diplomaId, Long id, DocumentoDiplomaRequest request) {
+    var diplomaOpt = diplomaRepository.findById(diplomaId);
+    if (diplomaOpt.isEmpty()) {
+      return Optional.empty();
+    }
+    return repository.findByIdAndDiplomaId(id, diplomaId).map(documento -> {
+      mapper.updateEntityFromRequest(request, documento, diplomaOpt.get());
+      return documento;
+    });
+  }
+
+  @Transactional
   public boolean remover(Long id) {
     if (!repository.existsById(id)) {
+      return false;
+    }
+    repository.deleteById(id);
+    return true;
+  }
+
+  @Transactional
+  public boolean remover(Long diplomaId, Long id) {
+    if (!repository.existsByIdAndDiplomaId(id, diplomaId)) {
       return false;
     }
     repository.deleteById(id);

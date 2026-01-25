@@ -51,11 +51,13 @@ public class AlunoPosGraduacaoController {
             request.programaId(),
             request.orientadorId(),
             request.dataMatricula(),
+            request.dataConclusao(),
             request.status())
         .map(aluno -> {
           URI location = uriBuilder.path("/alunos/{id}").buildAndExpand(aluno.getId()).toUri();
-          log.info("Aluno criado id={} pessoaId={} programaId={} dataMatricula={} status={}",
-              aluno.getId(), aluno.getPessoaId(), request.programaId(), request.dataMatricula(), request.status());
+          log.info("Aluno criado id={} pessoaId={} programaId={} dataMatricula={} dataConclusao={} status={}",
+              aluno.getId(), aluno.getPessoaId(), request.programaId(), request.dataMatricula(),
+              request.dataConclusao(), request.status());
           return ResponseEntity.created(location).body(mapper.toResponse(aluno));
         })
         .orElseGet(() -> {
@@ -99,10 +101,12 @@ public class AlunoPosGraduacaoController {
             request.programaId(),
             request.orientadorId(),
             request.dataMatricula(),
+            request.dataConclusao(),
             request.status())
         .map(aluno -> {
-          log.info("Aluno atualizado id={} pessoaId={} programaId={} dataMatricula={} status={}",
-              id, request.pessoaId(), request.programaId(), request.dataMatricula(), request.status());
+          log.info("Aluno atualizado id={} pessoaId={} programaId={} dataMatricula={} dataConclusao={} status={}",
+              id, request.pessoaId(), request.programaId(), request.dataMatricula(),
+              request.dataConclusao(), request.status());
           return ResponseEntity.ok(mapper.toResponse(aluno));
         })
         .orElseGet(() -> {

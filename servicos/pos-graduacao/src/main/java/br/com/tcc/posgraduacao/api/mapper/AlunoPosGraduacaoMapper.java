@@ -28,6 +28,7 @@ public class AlunoPosGraduacaoMapper {
         programaNome,
         orientadorId,
         entity.getDataMatricula(),
+        entity.getDataConclusao(),
         entity.getStatus());
   }
 }

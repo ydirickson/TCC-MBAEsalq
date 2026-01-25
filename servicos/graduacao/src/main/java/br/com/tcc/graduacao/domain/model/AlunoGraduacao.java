@@ -31,6 +31,9 @@ public class AlunoGraduacao {
   @Column(name = "data_matricula", nullable = false)
   private LocalDate dataMatricula;
 
+  @Column(name = "data_conclusao")
+  private LocalDate dataConclusao;
+
   @Enumerated(EnumType.STRING)
   @Column(nullable = false, length = 30)
   private SituacaoAcademica status;
@@ -80,6 +83,14 @@ public class AlunoGraduacao {
 
   public void setDataMatricula(LocalDate dataMatricula) {
     this.dataMatricula = dataMatricula;
+  }
+
+  public LocalDate getDataConclusao() {
+    return dataConclusao;
+  }
+
+  public void setDataConclusao(LocalDate dataConclusao) {
+    this.dataConclusao = dataConclusao;
   }
 
   public SituacaoAcademica getStatus() {
