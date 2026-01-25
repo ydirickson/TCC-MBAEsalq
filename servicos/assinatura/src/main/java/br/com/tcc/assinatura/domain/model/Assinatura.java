@@ -24,15 +24,15 @@ public class Assinatura {
   @JoinColumn(name = "solicitacao_id", nullable = false)
   private SolicitacaoAssinatura solicitacao;
 
-  @ManyToOne(optional = false)
-  @JoinColumn(name = "usuario_assinante_id", nullable = false)
+  @ManyToOne(optional = true)
+  @JoinColumn(name = "usuario_assinante_id")
   private UsuarioAssinante usuarioAssinante;
 
   @Enumerated(EnumType.STRING)
   @Column(nullable = false, length = 30)
   private StatusAssinatura status;
 
-  @Column(name = "data_assinatura", nullable = false)
+  @Column(name = "data_assinatura")
   private LocalDateTime dataAssinatura;
 
   @Column(name = "motivo_recusa", length = 255)

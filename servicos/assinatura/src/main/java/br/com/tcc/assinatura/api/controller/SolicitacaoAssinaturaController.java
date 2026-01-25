@@ -124,14 +124,14 @@ public class SolicitacaoAssinaturaController {
   }
 
   @DeleteMapping("/{id}")
-  @Operation(summary = "Remover solicitacao", description = "Remove uma solicitacao de assinatura pelo identificador.")
+  @Operation(summary = "Cancelar solicitacao", description = "Cancela uma solicitacao de assinatura pelo identificador.")
   public ResponseEntity<Void> remover(@PathVariable Long documentoAssinavelId, @PathVariable Long id) {
     boolean removido = service.remover(documentoAssinavelId, id);
     if (!removido) {
-      log.warn("Falha ao remover solicitacao: nao encontrada id={} documentoAssinavelId={}", id, documentoAssinavelId);
+      log.warn("Falha ao cancelar solicitacao: nao encontrada id={} documentoAssinavelId={}", id, documentoAssinavelId);
       return ResponseEntity.notFound().build();
     }
-    log.info("Solicitacao removida id={}", id);
+    log.info("Solicitacao cancelada id={}", id);
     return ResponseEntity.noContent().build();
   }
 }

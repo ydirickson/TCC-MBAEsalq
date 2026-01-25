@@ -4,5 +4,6 @@ public enum StatusSolicitacaoAssinatura {
   PENDENTE,
   PARCIAL,
   CONCLUIDA,
-  REJEITADA
+  REJEITADA,
+  CANCELADA
 }

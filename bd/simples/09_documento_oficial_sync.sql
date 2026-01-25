@@ -85,9 +85,15 @@ BEGIN
   WHERE documento_oficial_id = v_documento_oficial_id;
 
   IF v_documento_assinavel_id IS NOT NULL THEN
-    INSERT INTO solicitacao_assinatura (documento_assinavel_id, status, data_solicitacao, data_conclusao)
-    VALUES (v_documento_assinavel_id, 'PENDENTE', NOW(), NULL)
-    ON CONFLICT (documento_assinavel_id) DO NOTHING;
+    IF NOT EXISTS (
+      SELECT 1
+      FROM solicitacao_assinatura
+      WHERE documento_assinavel_id = v_documento_assinavel_id
+        AND status IN ('PENDENTE', 'PARCIAL', 'CONCLUIDA')
+    ) THEN
+      INSERT INTO solicitacao_assinatura (documento_assinavel_id, status, data_solicitacao, data_conclusao)
+      VALUES (v_documento_assinavel_id, 'PENDENTE', NOW(), NULL);
+    END IF;
   END IF;
 END;
 $$;

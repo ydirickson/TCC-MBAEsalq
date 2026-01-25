@@ -1,7 +1,12 @@
 package br.com.tcc.assinatura.domain.repository;
 
 import br.com.tcc.assinatura.domain.model.Assinatura;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface AssinaturaRepository extends JpaRepository<Assinatura, Long> {
+
+  boolean existsBySolicitacaoId(Long solicitacaoId);
+
+  List<Assinatura> findAllBySolicitacaoId(Long solicitacaoId);
 }
