@@ -56,7 +56,7 @@ public class DocumentoDiplomaController {
     var salvoOpt = service.criar(diplomaId, ajustado);
     if (salvoOpt.isEmpty()) {
       log.warn("Falha ao criar documento: diploma nao encontrado id={}", diplomaId);
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
     var salvo = salvoOpt.get();
     log.info("Documento criado id={} diplomaId={}", salvo.getId(), diplomaId);
