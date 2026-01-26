@@ -56,8 +56,14 @@ public class SolicitacaoAssinaturaController {
         request.dataConclusao());
     var salvoOpt = service.criar(documentoAssinavelId, ajustado);
     if (salvoOpt.isEmpty()) {
-      log.warn("Falha ao criar solicitacao: documento assinavel nao encontrado id={}", documentoAssinavelId);
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+      var solicitacoesOpt = service.listarPorDocumentoAssinavelId(documentoAssinavelId);
+      if (solicitacoesOpt.isEmpty()) {
+        log.warn("Falha ao criar solicitacao: documento assinavel nao encontrado id={}", documentoAssinavelId);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+      }
+      log.warn("Falha ao criar solicitacao: ja existe solicitacao ativa ou concluida para documentoAssinavelId={}",
+          documentoAssinavelId);
+      return ResponseEntity.status(HttpStatus.CONFLICT).build();
     }
     var salvo = salvoOpt.get();
     log.info("Solicitacao criada id={} documentoAssinavelId={}", salvo.getId(), documentoAssinavelId);
