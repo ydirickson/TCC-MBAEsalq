@@ -3,8 +3,10 @@ package br.com.tcc.diplomas.domain.service;
 import br.com.tcc.diplomas.api.dto.DiplomaRequest;
 import br.com.tcc.diplomas.api.mapper.DiplomaMapper;
 import br.com.tcc.diplomas.domain.model.Diploma;
+import br.com.tcc.diplomas.domain.model.DocumentoDiploma;
 import br.com.tcc.diplomas.domain.model.StatusEmissaoTipo;
 import br.com.tcc.diplomas.domain.repository.DiplomaRepository;
+import br.com.tcc.diplomas.domain.repository.DocumentoDiplomaRepository;
 import br.com.tcc.diplomas.domain.repository.RequerimentoDiplomaRepository;
 import br.com.tcc.diplomas.domain.repository.StatusEmissaoRepository;
 import java.time.LocalDateTime;
@@ -19,13 +21,16 @@ public class DiplomaService {
   private final DiplomaRepository repository;
   private final RequerimentoDiplomaRepository requerimentoRepository;
   private final StatusEmissaoRepository statusRepository;
+  private final DocumentoDiplomaRepository documentoRepository;
   private final DiplomaMapper mapper;
 
   public DiplomaService(DiplomaRepository repository, RequerimentoDiplomaRepository requerimentoRepository,
-      StatusEmissaoRepository statusRepository, DiplomaMapper mapper) {
+      StatusEmissaoRepository statusRepository, DocumentoDiplomaRepository documentoRepository,
+      DiplomaMapper mapper) {
     this.repository = repository;
     this.requerimentoRepository = requerimentoRepository;
     this.statusRepository = statusRepository;
+    this.documentoRepository = documentoRepository;
     this.mapper = mapper;
   }
 
@@ -43,6 +48,7 @@ public class DiplomaService {
         status.setDataAtualizacao(LocalDateTime.now());
         statusRepository.save(status);
       }
+      criarDocumentoInicial(diploma, request);
       requerimento.setDiploma(diploma);
       return diploma;
     });
@@ -77,5 +83,19 @@ public class DiplomaService {
     }
     repository.deleteById(id);
     return true;
+  }
+
+  private void criarDocumentoInicial(Diploma diploma, DiplomaRequest request) {
+    if (diploma == null || request == null) {
+      return;
+    }
+    if (documentoRepository.existsByDiplomaIdAndVersao(diploma.getId(), 1)) {
+      return;
+    }
+    DocumentoDiploma documento = new DocumentoDiploma();
+    documento.setDiploma(diploma);
+    documento.setVersao(1);
+    documento.setDataGeracao(request.dataEmissao());
+    documentoRepository.save(documento);
   }
 }

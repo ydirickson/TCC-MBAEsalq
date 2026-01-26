@@ -45,6 +45,41 @@ Comparar replicação tradicional (recursos nativos do PostgreSQL) com replicaç
 - **Idempotência:** aplicar por `id` + `versao`/`timestamp`.
 - **Auditoria:** manter histórico de VínculoAcadêmico quando houver mudança de status/curso.
 
+## Fluxo de diploma (simplificado com entidades existentes)
+Este fluxo considera **apenas** as entidades já existentes nos serviços (sem matrícula).
+
+### Entidades envolvidas (já existentes)
+- **Graduação/Pós (produtores):** `Pessoa`, `DocumentoIdentificacao`, `Contato`, `Endereco`, `VinculoAcademico` (com `CursoProgramaReferencia`, `TipoVinculo`, `SituacaoAcademica`), `DocumentoOficialGraduacao` / `DocumentoOficialPos`.
+- **Diplomas:** `RequerimentoDiploma`, `BaseEmissaoDiploma`, `StatusEmissao`, `Diploma`, `DocumentoDiploma`.
+- **Assinatura:** `DocumentoDiploma` (espelho com `diploma_id`), `DocumentoOficial` (espelho dos documentos oficiais), `DocumentoAssinavel`, `SolicitacaoAssinatura`, `Assinatura`, `ManifestoAssinatura`.
+
+### Disparo do requerimento (Grad/Pós → Diplomas)
+- **Gatilho:** `VinculoAcademico.situacao = CONCLUIDO` com `dataConclusao` preenchida.
+- **Ação:** criação de `RequerimentoDiploma` com `pessoa_id` e `vinculo_id`.
+
+### Emissão e assinatura (Diplomas → Assinatura)
+- `RequerimentoDiploma` gera `BaseEmissaoDiploma` (snapshot de pessoa/curso/datas).
+- `StatusEmissao` inicia em `SOLICITADO`, evolui para `EMITIDO` e `ASSINADO`.
+- Ao emitir, `Diploma` e `DocumentoDiploma` (versão inicial) são gerados automaticamente.
+- Assinatura consome `DocumentoDiploma` e cria `DocumentoAssinavel`.
+- Criação de `SolicitacaoAssinatura` ocorre somente se **não houver** solicitação ativa/concluída para o mesmo documento.
+- Ao criar a solicitação, uma `Assinatura` é gerada em `PENDENTE`; ao assinar, gera `ManifestoAssinatura`.
+- `SolicitacaoAssinatura` concluída atualiza o `StatusEmissao` para `ASSINADO`; rejeição cancela o fluxo e permite nova solicitação.
+
+### Documentos oficiais (Grad/Pós → Assinatura)
+- Grad/Pós criam `DocumentoOficialGraduacao` / `DocumentoOficialPos` (ex.: histórico escolar, atas, atestados).
+- O documento é espelhado em `DocumentoOficial` e gera `DocumentoAssinavel`.
+- É aberta `SolicitacaoAssinatura` quando não existe solicitação ativa/concluída para o mesmo documento.
+- A solicitação cria uma `Assinatura` em `PENDENTE`; ao assinar, gera `ManifestoAssinatura`.
+- Solicitações `CANCELADA`/`REJEITADA` permitem nova solicitação; `CONCLUIDA` bloqueia novas.
+
+### Disponibilização no Grad/Pós (leitura)
+- Grad/Pós considera o diploma “disponível” quando:
+  - existe `Diploma` para o `RequerimentoDiploma`, **e**
+  - `StatusEmissao = ASSINADO`, **e**
+  - há ao menos um `DocumentoDiploma` associado.
+- A leitura pode ser direta (cenário 1), por replicação (cenários 2–4) ou por view/materialização.
+
 ## Fluxos por cenário (tradicional vs eventos)
 **Legenda rápida:** "Tradicional" = recursos nativos do PostgreSQL; "Eventos" = Kafka + outbox/inbox.
 

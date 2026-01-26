@@ -33,6 +33,7 @@ public class AlunoGraduacaoService {
       Pessoa novaPessoa,
       String turmaId,
       LocalDate dataMatricula,
+      LocalDate dataConclusao,
       SituacaoAcademica status) {
     Optional<Pessoa> pessoaOpt = obterOuCriarPessoa(pessoaId, novaPessoa);
     Optional<TurmaGraduacao> turmaOpt = turmaRepository.findById(turmaId);
@@ -41,6 +42,7 @@ public class AlunoGraduacaoService {
     }
 
     AlunoGraduacao novo = new AlunoGraduacao(pessoaOpt.get(), turmaOpt.get(), dataMatricula, status);
+    novo.setDataConclusao(dataConclusao);
     return Optional.of(alunoRepository.save(novo));
   }
 
@@ -68,6 +70,7 @@ public class AlunoGraduacaoService {
       Long pessoaId,
       String turmaId,
       LocalDate dataMatricula,
+      LocalDate dataConclusao,
       SituacaoAcademica status) {
     Optional<Pessoa> pessoaOpt = pessoaRepository.findById(pessoaId);
     Optional<TurmaGraduacao> turmaOpt = turmaRepository.findById(turmaId);
@@ -79,6 +82,7 @@ public class AlunoGraduacaoService {
       aluno.setPessoa(pessoaOpt.get());
       aluno.setTurma(turmaOpt.get());
       aluno.setDataMatricula(dataMatricula);
+      aluno.setDataConclusao(dataConclusao);
       aluno.setStatus(status);
       return aluno;
     });

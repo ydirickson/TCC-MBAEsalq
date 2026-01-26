@@ -11,6 +11,9 @@
 ## Regras de Negócio da Simulação
 - Consome `VinculoAcademicoAtualizado` e `ConclusaoPublicada` para manter elegibilidade local.
 - Ao registrar `RequerimentoDiploma`, valida elegibilidade (status concluído) e cria `BaseEmissaoDiploma` fixando os dados.
-- Emissão cria `Diploma` e `DocumentoDiploma`; publica `DiplomaEmitido` e `DocumentoDiplomaCriado`.
+- Emissão cria `Diploma` e **gera automaticamente** `DocumentoDiploma` (versão inicial).
 - Reemissão gera nova versão do documento e publica `DocumentoDiplomaAtualizado`.
 - Consome `AssinaturaConcluida` para atualizar `StatusEmissao` (ex.: emitido-assinado).
+
+## Interfaces REST (simulação)
+- Documento do diploma é um subrecurso de diploma: `GET/POST/PUT/DELETE /diplomas/{id}/documentos`.

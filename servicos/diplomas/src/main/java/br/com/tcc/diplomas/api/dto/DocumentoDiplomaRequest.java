@@ -4,7 +4,6 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 public record DocumentoDiplomaRequest(
-    @NotNull(message = "Diploma e obrigatorio")
     Long diplomaId,
     @NotNull(message = "Versao e obrigatoria")
     Integer versao,

@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
-@RequestMapping("/documentos-diploma")
+@RequestMapping("/diplomas/{diplomaId}/documentos")
 @Tag(name = "06 - Documentos de diploma", description = "Operacoes de documentos PDF emitidos")
 public class DocumentoDiplomaController {
 
@@ -41,31 +41,49 @@ public class DocumentoDiplomaController {
 
   @PostMapping
   @Operation(summary = "Criar documento", description = "Cria um documento de diploma associado a um diploma.")
-  public ResponseEntity<DocumentoDiplomaResponse> criar(@Valid @RequestBody DocumentoDiplomaRequest request,
-      UriComponentsBuilder uriBuilder) {
-    var salvoOpt = service.criar(request);
-    if (salvoOpt.isEmpty()) {
-      log.warn("Falha ao criar documento: diploma nao encontrado id={}", request.diplomaId());
+  public ResponseEntity<DocumentoDiplomaResponse> criar(@PathVariable Long diplomaId,
+      @Valid @RequestBody DocumentoDiplomaRequest request, UriComponentsBuilder uriBuilder) {
+    if (request.diplomaId() != null && !request.diplomaId().equals(diplomaId)) {
+      log.warn("Falha ao criar documento: diplomaId divergente path={} body={}", diplomaId, request.diplomaId());
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
+    DocumentoDiplomaRequest ajustado = new DocumentoDiplomaRequest(
+        diplomaId,
+        request.versao(),
+        request.dataGeracao(),
+        request.urlArquivo(),
+        request.hashDocumento());
+    var salvoOpt = service.criar(diplomaId, ajustado);
+    if (salvoOpt.isEmpty()) {
+      log.warn("Falha ao criar documento: diploma nao encontrado id={}", diplomaId);
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
     var salvo = salvoOpt.get();
-    log.info("Documento criado id={} diplomaId={}", salvo.getId(), request.diplomaId());
-    URI location = uriBuilder.path("/documentos-diploma/{id}").buildAndExpand(salvo.getId()).toUri();
+    log.info("Documento criado id={} diplomaId={}", salvo.getId(), diplomaId);
+    URI location = uriBuilder.path("/diplomas/{diplomaId}/documentos/{id}")
+        .buildAndExpand(diplomaId, salvo.getId()).toUri();
     return ResponseEntity.created(location).body(mapper.toResponse(salvo));
   }
 
   @GetMapping
-  @Operation(summary = "Listar documentos", description = "Retorna a lista de documentos de diploma cadastrados.")
-  public List<DocumentoDiplomaResponse> listar() {
-    var documentos = service.listar();
-    log.info("Listando documentos de diploma total={}", documentos.size());
-    return documentos.stream().map(mapper::toResponse).collect(Collectors.toList());
+  @Operation(summary = "Listar documentos", description = "Retorna a lista de documentos de um diploma.")
+  public ResponseEntity<List<DocumentoDiplomaResponse>> listar(@PathVariable Long diplomaId) {
+    return service.listarPorDiplomaId(diplomaId)
+        .map(documentos -> {
+          log.info("Listando documentos do diploma id={} total={}", diplomaId, documentos.size());
+          var resposta = documentos.stream().map(mapper::toResponse).collect(Collectors.toList());
+          return ResponseEntity.ok(resposta);
+        })
+        .orElseGet(() -> {
+          log.warn("Diploma nao encontrado id={}", diplomaId);
+          return ResponseEntity.notFound().build();
+        });
   }
 
   @GetMapping("/{id}")
   @Operation(summary = "Buscar documento", description = "Busca um documento de diploma pelo identificador.")
-  public ResponseEntity<DocumentoDiplomaResponse> buscarPorId(@PathVariable Long id) {
-    return service.buscarPorId(id)
+  public ResponseEntity<DocumentoDiplomaResponse> buscarPorId(@PathVariable Long diplomaId, @PathVariable Long id) {
+    return service.buscarPorId(diplomaId, id)
         .map(documento -> {
           log.info("Documento encontrado id={}", id);
           return ResponseEntity.ok(mapper.toResponse(documento));
@@ -78,9 +96,19 @@ public class DocumentoDiplomaController {
 
   @PutMapping("/{id}")
   @Operation(summary = "Atualizar documento", description = "Atualiza um documento de diploma existente.")
-  public ResponseEntity<DocumentoDiplomaResponse> atualizar(@PathVariable Long id,
+  public ResponseEntity<DocumentoDiplomaResponse> atualizar(@PathVariable Long diplomaId, @PathVariable Long id,
       @Valid @RequestBody DocumentoDiplomaRequest request) {
-    return service.atualizar(id, request)
+    if (request.diplomaId() != null && !request.diplomaId().equals(diplomaId)) {
+      log.warn("Falha ao atualizar documento: diplomaId divergente path={} body={}", diplomaId, request.diplomaId());
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
+    DocumentoDiplomaRequest ajustado = new DocumentoDiplomaRequest(
+        diplomaId,
+        request.versao(),
+        request.dataGeracao(),
+        request.urlArquivo(),
+        request.hashDocumento());
+    return service.atualizar(diplomaId, id, ajustado)
         .map(documento -> {
           log.info("Documento atualizado id={}", id);
           return ResponseEntity.ok(mapper.toResponse(documento));
@@ -93,10 +121,10 @@ public class DocumentoDiplomaController {
 
   @DeleteMapping("/{id}")
   @Operation(summary = "Remover documento", description = "Remove um documento de diploma pelo identificador.")
-  public ResponseEntity<Void> remover(@PathVariable Long id) {
-    boolean removido = service.remover(id);
+  public ResponseEntity<Void> remover(@PathVariable Long diplomaId, @PathVariable Long id) {
+    boolean removido = service.remover(diplomaId, id);
     if (!removido) {
-      log.warn("Falha ao remover documento: nao encontrado id={}", id);
+      log.warn("Falha ao remover documento: nao encontrado id={} diplomaId={}", id, diplomaId);
       return ResponseEntity.notFound().build();
     }
     log.info("Documento removido id={}", id);

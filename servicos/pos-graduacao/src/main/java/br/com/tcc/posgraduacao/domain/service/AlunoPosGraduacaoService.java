@@ -41,6 +41,7 @@ public class AlunoPosGraduacaoService {
       Long programaId,
       Long orientadorId,
       LocalDate dataMatricula,
+      LocalDate dataConclusao,
       SituacaoAcademica status) {
     Optional<Pessoa> pessoaOpt = obterOuCriarPessoa(pessoaId, novaPessoa);
     Optional<ProgramaPos> programaOpt = programaRepository.findById(programaId);
@@ -55,6 +56,7 @@ public class AlunoPosGraduacaoService {
         orientadorOpt.orElse(null),
         dataMatricula,
         status);
+    novo.setDataConclusao(dataConclusao);
     return Optional.of(alunoRepository.save(novo));
   }
 
@@ -83,6 +85,7 @@ public class AlunoPosGraduacaoService {
       Long programaId,
       Long orientadorId,
       LocalDate dataMatricula,
+      LocalDate dataConclusao,
       SituacaoAcademica status) {
     Optional<Pessoa> pessoaOpt = pessoaRepository.findById(pessoaId);
     Optional<ProgramaPos> programaOpt = programaRepository.findById(programaId);
@@ -96,6 +99,7 @@ public class AlunoPosGraduacaoService {
       aluno.setPrograma(programaOpt.get());
       aluno.setOrientador(orientadorOpt.orElse(null));
       aluno.setDataMatricula(dataMatricula);
+      aluno.setDataConclusao(dataConclusao);
       aluno.setStatus(status);
       return aluno;
     });

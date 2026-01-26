@@ -28,6 +28,7 @@ public class AlunoGraduacaoMapper {
         cursoNome,
         turmaId,
         entity.getDataMatricula(),
+        entity.getDataConclusao(),
         entity.getStatus());
   }
 }

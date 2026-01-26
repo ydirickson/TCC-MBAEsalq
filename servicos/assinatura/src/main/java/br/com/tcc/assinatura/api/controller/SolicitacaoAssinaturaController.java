@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
-@RequestMapping("/solicitacoes-assinatura")
+@RequestMapping("/documentos-assinaveis/{documentoAssinavelId}/solicitacoes-assinatura")
 @Tag(name = "05 - Solicitacoes de assinatura", description = "Operacoes de solicitacoes de assinatura")
 public class SolicitacaoAssinaturaController {
 
@@ -41,31 +41,58 @@ public class SolicitacaoAssinaturaController {
 
   @PostMapping
   @Operation(summary = "Criar solicitacao", description = "Cria uma solicitacao de assinatura para um documento assinavel.")
-  public ResponseEntity<SolicitacaoAssinaturaResponse> criar(@Valid @RequestBody SolicitacaoAssinaturaRequest request,
-      UriComponentsBuilder uriBuilder) {
-    var salvoOpt = service.criar(request);
-    if (salvoOpt.isEmpty()) {
-      log.warn("Falha ao criar solicitacao: documento assinavel nao encontrado id={}", request.documentoAssinavelId());
+  public ResponseEntity<SolicitacaoAssinaturaResponse> criar(@PathVariable Long documentoAssinavelId,
+      @Valid @RequestBody SolicitacaoAssinaturaRequest request, UriComponentsBuilder uriBuilder) {
+    if (request.documentoAssinavelId() != null
+        && !request.documentoAssinavelId().equals(documentoAssinavelId)) {
+      log.warn("Falha ao criar solicitacao: documentoAssinavelId divergente path={} body={}",
+          documentoAssinavelId, request.documentoAssinavelId());
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
+    SolicitacaoAssinaturaRequest ajustado = new SolicitacaoAssinaturaRequest(
+        documentoAssinavelId,
+        request.status(),
+        request.dataSolicitacao(),
+        request.dataConclusao());
+    var salvoOpt = service.criar(documentoAssinavelId, ajustado);
+    if (salvoOpt.isEmpty()) {
+      var solicitacoesOpt = service.listarPorDocumentoAssinavelId(documentoAssinavelId);
+      if (solicitacoesOpt.isEmpty()) {
+        log.warn("Falha ao criar solicitacao: documento assinavel nao encontrado id={}", documentoAssinavelId);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+      }
+      log.warn("Falha ao criar solicitacao: ja existe solicitacao ativa ou concluida para documentoAssinavelId={}",
+          documentoAssinavelId);
+      return ResponseEntity.status(HttpStatus.CONFLICT).build();
+    }
     var salvo = salvoOpt.get();
-    log.info("Solicitacao criada id={} documentoAssinavelId={}", salvo.getId(), request.documentoAssinavelId());
-    URI location = uriBuilder.path("/solicitacoes-assinatura/{id}").buildAndExpand(salvo.getId()).toUri();
+    log.info("Solicitacao criada id={} documentoAssinavelId={}", salvo.getId(), documentoAssinavelId);
+    URI location = uriBuilder.path("/documentos-assinaveis/{documentoAssinavelId}/solicitacoes-assinatura/{id}")
+        .buildAndExpand(documentoAssinavelId, salvo.getId()).toUri();
     return ResponseEntity.created(location).body(mapper.toResponse(salvo));
   }
 
   @GetMapping
-  @Operation(summary = "Listar solicitacoes", description = "Retorna a lista de solicitacoes de assinatura cadastradas.")
-  public List<SolicitacaoAssinaturaResponse> listar() {
-    var solicitacoes = service.listar();
-    log.info("Listando solicitacoes de assinatura total={}", solicitacoes.size());
-    return solicitacoes.stream().map(mapper::toResponse).collect(Collectors.toList());
+  @Operation(summary = "Listar solicitacoes", description = "Retorna a lista de solicitacoes de um documento assinavel.")
+  public ResponseEntity<List<SolicitacaoAssinaturaResponse>> listar(@PathVariable Long documentoAssinavelId) {
+    return service.listarPorDocumentoAssinavelId(documentoAssinavelId)
+        .map(solicitacoes -> {
+          log.info("Listando solicitacoes do documentoAssinavelId={} total={}",
+              documentoAssinavelId, solicitacoes.size());
+          var resposta = solicitacoes.stream().map(mapper::toResponse).collect(Collectors.toList());
+          return ResponseEntity.ok(resposta);
+        })
+        .orElseGet(() -> {
+          log.warn("Documento assinavel nao encontrado id={}", documentoAssinavelId);
+          return ResponseEntity.notFound().build();
+        });
   }
 
   @GetMapping("/{id}")
   @Operation(summary = "Buscar solicitacao", description = "Busca uma solicitacao de assinatura pelo identificador.")
-  public ResponseEntity<SolicitacaoAssinaturaResponse> buscarPorId(@PathVariable Long id) {
-    return service.buscarPorId(id)
+  public ResponseEntity<SolicitacaoAssinaturaResponse> buscarPorId(@PathVariable Long documentoAssinavelId,
+      @PathVariable Long id) {
+    return service.buscarPorId(documentoAssinavelId, id)
         .map(solicitacao -> {
           log.info("Solicitacao encontrada id={}", id);
           return ResponseEntity.ok(mapper.toResponse(solicitacao));
@@ -78,9 +105,20 @@ public class SolicitacaoAssinaturaController {
 
   @PutMapping("/{id}")
   @Operation(summary = "Atualizar solicitacao", description = "Atualiza uma solicitacao de assinatura existente.")
-  public ResponseEntity<SolicitacaoAssinaturaResponse> atualizar(@PathVariable Long id,
-      @Valid @RequestBody SolicitacaoAssinaturaRequest request) {
-    return service.atualizar(id, request)
+  public ResponseEntity<SolicitacaoAssinaturaResponse> atualizar(@PathVariable Long documentoAssinavelId,
+      @PathVariable Long id, @Valid @RequestBody SolicitacaoAssinaturaRequest request) {
+    if (request.documentoAssinavelId() != null
+        && !request.documentoAssinavelId().equals(documentoAssinavelId)) {
+      log.warn("Falha ao atualizar solicitacao: documentoAssinavelId divergente path={} body={}",
+          documentoAssinavelId, request.documentoAssinavelId());
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
+    SolicitacaoAssinaturaRequest ajustado = new SolicitacaoAssinaturaRequest(
+        documentoAssinavelId,
+        request.status(),
+        request.dataSolicitacao(),
+        request.dataConclusao());
+    return service.atualizar(documentoAssinavelId, id, ajustado)
         .map(solicitacao -> {
           log.info("Solicitacao atualizada id={}", id);
           return ResponseEntity.ok(mapper.toResponse(solicitacao));
@@ -92,14 +130,14 @@ public class SolicitacaoAssinaturaController {
   }
 
   @DeleteMapping("/{id}")
-  @Operation(summary = "Remover solicitacao", description = "Remove uma solicitacao de assinatura pelo identificador.")
-  public ResponseEntity<Void> remover(@PathVariable Long id) {
-    boolean removido = service.remover(id);
+  @Operation(summary = "Cancelar solicitacao", description = "Cancela uma solicitacao de assinatura pelo identificador.")
+  public ResponseEntity<Void> remover(@PathVariable Long documentoAssinavelId, @PathVariable Long id) {
+    boolean removido = service.remover(documentoAssinavelId, id);
     if (!removido) {
-      log.warn("Falha ao remover solicitacao: nao encontrada id={}", id);
+      log.warn("Falha ao cancelar solicitacao: nao encontrada id={} documentoAssinavelId={}", id, documentoAssinavelId);
       return ResponseEntity.notFound().build();
     }
-    log.info("Solicitacao removida id={}", id);
+    log.info("Solicitacao cancelada id={}", id);
     return ResponseEntity.noContent().build();
   }
 }

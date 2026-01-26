@@ -83,7 +83,7 @@ BEGIN
     'GRADUACAO',
     'ALUNO',
     NEW.data_matricula,
-    NULL,
+    NEW.data_conclusao,
     NEW.status
   );
 
@@ -150,7 +150,7 @@ BEGIN
     v_curso_tipo,
     'ALUNO',
     NEW.data_matricula,
-    NULL,
+    NEW.data_conclusao,
     NEW.status
   );
 

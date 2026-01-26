@@ -8,5 +8,6 @@ Implementaremos todos os domínios descritos, sem recorte mínimo. O escopo cons
 3. **Marcação de conclusão** (grad e pós)
 4. **Emissão de diploma** com geração de documento
 5. **Fluxo de assinatura** do documento do diploma e retorno de status
+6. **Fluxo de assinatura de documentos oficiais** (grad/pós → assinatura)
 
-Esse fluxo garante intersecções reais (Pessoa → Conclusão → Diploma → Documento → Assinatura → Status).
+Esse fluxo garante intersecções reais (Pessoa → Conclusão → Diploma → Documento → Assinatura → Status) e também documentos oficiais fora do diploma.

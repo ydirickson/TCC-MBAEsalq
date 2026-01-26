@@ -11,6 +11,7 @@ public record AlunoGraduacaoResponse(
     String cursoNome,
     String turmaId,
     LocalDate dataMatricula,
+    LocalDate dataConclusao,
     SituacaoAcademica status
 ) {
 }

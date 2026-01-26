@@ -11,6 +11,7 @@ public record AlunoPosGraduacaoResponse(
     String programaNome,
     Long orientadorId,
     LocalDate dataMatricula,
+    LocalDate dataConclusao,
     SituacaoAcademica status
 ) {
 }

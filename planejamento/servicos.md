@@ -12,6 +12,7 @@
 - **DisciplinaGraduação / TurmaGraduação / OfertaDisciplina**: oferta acadêmica.
 - **MatrículaDisciplina**: vínculo do aluno com uma oferta.
 - **AvaliaçãoOfertaDisciplina / AvaliaçãoAluno**: avaliações e notas.
+- **DocumentoOficialGraduação**: documentos oficiais emitidos pela graduação (ata, histórico, atestado).
 
 ### 4.1.2. Entidades (descrição)
 - **Pessoa**
@@ -42,11 +43,14 @@
   - Oferta, nome e peso da avaliação.
 - **AvaliaçãoAluno**
   - Matrícula, avaliação e nota.
+- **DocumentoOficialGraduação**
+  - Ex.: `pessoaId`, `tipoDocumento`, `dataEmissao`, `versao`, `urlArquivo`, `hashDocumento`.
 
 ### 4.1.3. Dados replicados (read models locais)
 - Pode replicar documentos e assinaturas para exibição/consulta (opcional):
   - **DocumentoDiploma (cópia)**: status do diploma/arquivo emitido.
   - **Assinatura (cópia)**: estado de assinaturas relacionadas.
+  - **DocumentoAssinavel/SolicitacaoAssinatura (cópia)**: situação do fluxo de assinatura.
 
 ---
 
@@ -60,6 +64,7 @@
 - **Qualificação**: registros de qualificação (se aplicável).
 - **Defesa**: registros de defesa e resultado.
 - **SituaçãoAcadêmicaPós**: status (ativo, em pesquisa, concluído, desligado).
+- **DocumentoOficialPós**: documentos oficiais emitidos pela pós (ata, histórico, atestado).
 
 ### 4.2.2. Entidades (descrição)
 - **Pessoa** (mesmo conceito do serviço de graduação, mas com ownership definido por decisão de arquitetura)
@@ -73,11 +78,14 @@
   - Ex.: `vinculoId`, orientador(es).
 - **Qualificação / Defesa**
   - Ex.: datas, resultado, ata/registro (metadados).
+- **DocumentoOficialPós**
+  - Ex.: `pessoaId`, `tipoDocumento`, `dataEmissao`, `versao`, `urlArquivo`, `hashDocumento`.
 
 ### 4.2.3. Dados replicados (read models locais)
 - Opcionalmente, replicar documentos/diplomas/assinaturas para consulta:
   - **DocumentoDiploma (cópia)**
   - **Assinatura (cópia)**
+  - **DocumentoAssinavel/SolicitacaoAssinatura (cópia)**
 
 ---
 
@@ -102,6 +110,7 @@
   - Ex.: número, livro/folha (simulado), data emissão, status, referência à base/snapshot.
 - **DocumentoDiploma**
   - Ex.: `documentoId`, tipo (PDF), hash, versão, localização, timestamp.
+  - Documento inicial é criado automaticamente após emissão.
 
 ### 4.3.3. Dados replicados (read models locais)
 - **Pessoa (cópia)**: necessária para emissão/validação (ou via snapshot).
@@ -124,13 +133,18 @@
   - Ex.: `assinanteId`, `pessoaId`, perfil/permissões.
 - **DocumentoAssinável**
   - Ex.: `documentoId`, origem (diplomas, grad, pós), tipo, hash, versão, status.
+  - Pode referenciar `DocumentoDiploma` ou `DocumentoOficial`.
 - **SolicitaçãoAssinatura**
   - Ex.: `solicitacaoId`, `documentoId`, lista de signatários, ordem, prazo, status.
+  - Regras: só existe uma solicitação ativa/concluída por documento.
+  - Status típicos: `PENDENTE`, `PARCIAL`, `CONCLUIDA`, `REJEITADA`, `CANCELADA`.
 - **Assinatura**
-  - Ex.: `assinaturaId`, `solicitacaoId`, `assinanteId`, data, resultado, hash final.
+  - Ex.: `assinaturaId`, `solicitacaoId`, `assinanteId` (nulo até assinar), data, resultado.
+  - Status típicos: `PENDENTE`, `ASSINADA`, `REJEITADA`.
 - **ManifestoAssinatura**
   - Ex.: `manifestoId`, trilha de auditoria, carimbo, dados de validação (simulados).
 
 ### 4.4.3. Dados replicados (read models locais)
 - **Pessoa (cópia)**: para exibir e vincular signatários.
 - **DocumentoDiploma (cópia)**: para incorporar e assinar o PDF emitido em Diplomas.
+- **DocumentoOficial (cópia)**: documentos emitidos por Graduação/Pós para assinatura.
