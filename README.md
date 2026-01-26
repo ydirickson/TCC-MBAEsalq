@@ -10,7 +10,7 @@ A partir desse contexto, a ideia é propor uma solução que retire a dependênc
 
 ## Visão geral
 - Objetivo: medir latência, throughput e impacto arquitetural ao migrar de replicação baseada em banco para replicação por eventos (Kafka).
-- Domínio: serviços acadêmicos com entidades compartilhadas (Pessoa, VínculoAcadêmico) e fluxos de diploma/assinatura.
+- Domínio: serviços acadêmicos com entidades compartilhadas (Pessoa, VínculoAcadêmico) e fluxos de diploma/assinatura (incluindo documentos oficiais).
 - Fases: 1) acoplado por replicação de banco; 2) desacoplado por eventos Kafka.
 
 ## Estrutura do repositório
@@ -130,7 +130,7 @@ VUS=5 DURATION=30s RUN_ID=simulacao_01 k6 run --out experimental-prometheus-rw=h
 
 ## Plano inicial de tarefas
 - Infraestrutura: montar `docker-compose` com bancos (por serviço) e Kafka/ZooKeeper; criar scripts de bootstrap de tópicos.
-- Modelagem: definir schema inicial de Pessoa e VínculoAcadêmico em SQL; tabelas de histórico e pedidos de diploma/assinatura.
+- Modelagem: definir schema inicial de Pessoa e VínculoAcadêmico em SQL; tabelas de histórico e pedidos de diploma/assinatura/documentos oficiais.
 - Contratos de eventos: descrever payload mínimo de cada evento em `planejamento/regras-replicacao.md` (id, versão/timestamp, origem).
 - Serviços: scaffolds para Graduação, Pós, Diplomas e Assinatura com APIs REST básicas e produtores/consumidores Kafka.
 - Replicação acoplada: implementar triggers/jobs para replicar Pessoa/Vínculo/PedidoDiploma/Assinatura na fase 1.

@@ -18,4 +18,6 @@ As entidades a seguir aparecem em múltiplos serviços e são candidatas naturai
 
 **Documentos formais (diplomas → assinatura):**
 - Documento (arquivo, versão, metadados)
+- DocumentoOficial (grad/pós → assinatura)
+- DocumentoAssinavel (diplomas e documentos oficiais)
 - SolicitaçãoAssinatura / Assinatura / Manifesto

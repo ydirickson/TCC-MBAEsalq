@@ -7,12 +7,15 @@
 - Endereço: logradouro, cidade, UF, CEP
 - VínculoAcadêmico: `id`, `pessoaId`, `cursoId`, `cursoCodigo`, `cursoNome`, `tipoCursoPrograma`, `tipoVinculo`, `dataIngresso`, `dataConclusao` (opcional), `situacao`
 - DocumentoBase: `documentoId`, tipo, hash, versão, localizacao (metadados)
+- DocumentoOficial: `id`, `origemServico`, `origemId`, `pessoaId`, `tipoDocumento`, `dataEmissao`, `versao`, `urlArquivo`, `hashDocumento`
 
 ## Eventos Canônicos (Kafka)
 - PessoaCriada, PessoaAtualizada
 - VinculoAcademicoCriado, VinculoAcademicoAtualizado
 - ConclusaoPublicada
 - DiplomaEmitido, DocumentoDiplomaCriado, DocumentoDiplomaAtualizado
+- DocumentoOficialCriado, DocumentoOficialAtualizado
+- SolicitacaoAssinaturaCriada, SolicitacaoAssinaturaCancelada
 - AssinaturaParcial, AssinaturaConcluida, AssinaturaRejeitada
 
 ## Regras Gerais
