@@ -42,7 +42,7 @@ ENV_FILE=.env.pesado
 Defina `K6_EXECUTION_MODE` no `.env`.
 
 Valores suportados:
-- `constant-vus`
+- `constant-vus` (valor padrão)
 - `ramping-vus`
 - `constant-arrival-rate`
 - `ramping-arrival-rate`
@@ -62,7 +62,7 @@ TEST_PROFILE=leve
 ```
 
 Profiles disponíveis:
-- `leve`
+- `leve` (padrão)
 - `medio`
 - `pesado`
 

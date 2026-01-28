@@ -55,6 +55,4 @@ export function expect2xx(res, label, failFn, checkFn) {
   if (!ok) {
     failFn(`${label} falhou status=${res.status} body=${res.body}`);
   }
-
-  return ok;
 }

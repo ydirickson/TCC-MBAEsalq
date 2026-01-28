@@ -15,7 +15,7 @@ export function buildOptions({ envValue, envNumber, envJson, runId, scenario }) 
     },
   };
 
-  const executionModeRaw = envValue('K6_EXECUTION_MODE', envValue('K6_MODE', ''));
+  const executionModeRaw = envValue('K6_EXECUTION_MODE', 'constant-vus');
   if (!executionModeRaw) {
     fail('Defina K6_EXECUTION_MODE com um executor valido do k6.');
   }
@@ -117,7 +117,7 @@ export function buildOptions({ envValue, envNumber, envJson, runId, scenario }) 
     };
   }
 
-  const profile = normalizeProfile(envValue('TEST_PROFILE', envValue('PERFIL', '')));
+  const profile = normalizeProfile(envValue('TEST_PROFILE', 'leve'));
   if (executionMode === 'ramping-vus' && !profile) {
     fail('Defina TEST_PROFILE (leve/medio/pesado) para usar ramping-vus.');
   }
