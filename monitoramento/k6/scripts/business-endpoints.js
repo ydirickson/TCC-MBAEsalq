@@ -2,7 +2,7 @@ import http from 'k6/http';
 import { check, sleep, fail } from 'k6';
 
 // Carrega endpoints de negocio e baseUrls por servico.
-const config = JSON.parse(open('monitoramento/k6/configs/business.json'));
+const config = JSON.parse(open('monitoramento/k6/configs/endpoints.json'));
 const scenario = 'business-endpoints';
 const runId = __ENV.RUN_ID || `run_${Date.now()}`;
 
