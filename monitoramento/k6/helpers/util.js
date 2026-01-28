@@ -26,7 +26,8 @@ export function alphaCode(seed, length) {
     out = letters[value % 26] + out;
     value = Math.floor(value / 26);
   }
-  return out;
+  // Garante que o código sempre tenha o tamanho requisitado usando left-padding com 'A'
+  return out.padStart(length, 'A');
 }
 
 export function uniqueSeed(vu, iter) {
