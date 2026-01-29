@@ -30,6 +30,12 @@ Fluxo completo (CRUD) do serviço de graduação, cria dados e valida GETs.
 k6 run monitoramento/k6/scripts/graduacao-crud.js
 ```
 
+### 4) pos-graduacao-crud.js
+Fluxo completo (CRUD) do serviço de pós-graduação, cria dados e valida GETs.
+```bash
+k6 run monitoramento/k6/scripts/pos-graduacao-crud.js
+```
+
 ## Configuração via .env
 O `graduacao-crud.js` lê `.env` na raiz do projeto (ou caminho especificado em `ENV_FILE`).
 
@@ -45,9 +51,10 @@ ENV_FILE=.env.pesado
   - Valores: `constant-vus`, `ramping-vus`, `constant-arrival-rate`, `ramping-arrival-rate`
 
 ### Opcionais com Padrões
-- **GRADUACAO_BASE_URL**: URL do serviço (padrão: `http://localhost:8081`)
+- **GRADUACAO_BASE_URL**: URL do serviço de graduação (padrão: `http://localhost:8081`)
+- **POS_GRADUACAO_BASE_URL**: URL do serviço de pós-graduação (padrão: `http://localhost:8082`)
 - **RUN_ID**: Identificador da execução (padrão: `run_<timestamp>`)
-- **SCENARIO**: Nome do cenário (padrão: `graduacao-crud`)
+- **SCENARIO**: Nome do cenário (padrão: `graduacao-crud` ou `pos-graduacao-crud`)
 - **SLEEP_S**: Pausa entre iterações em segundos (padrão: `1`)
 - **ENV_FILE**: Caminho do arquivo .env (padrão: `.env`)
 
@@ -133,6 +140,6 @@ K6_ARRIVAL_DURATION=4m
 ```
 
 ## Observações
-- `graduacao-crud.js` cria dados a cada iteração e não faz cleanup.
+- `graduacao-crud.js` e `pos-graduacao-crud.js` criam dados a cada iteração e não fazem cleanup.
 - Para cargas altas, acompanhe o crescimento do banco.
 - Use `RUN_ID` para correlacionar requisições e logs.
