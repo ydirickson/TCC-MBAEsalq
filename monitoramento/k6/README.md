@@ -41,7 +41,7 @@ ENV_FILE=.env.pesado
 ## Variáveis de Configuração
 
 ### Obrigatórias
-- **K6_EXECUTION_MODE**: Modo de execução do k6 (sem padrão, deve ser definido)
+- **K6_EXECUTION_MODE**: Modo de execução do k6 (padrão: `constant-vus`)
   - Valores: `constant-vus`, `ramping-vus`, `constant-arrival-rate`, `ramping-arrival-rate`
 
 ### Opcionais com Padrões
