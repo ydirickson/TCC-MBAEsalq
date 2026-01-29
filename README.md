@@ -97,16 +97,19 @@ k6 run monitoramento/k6/scripts/business-endpoints.js
 
 CRUD de graduação (cria dados + leituras):
 ```bash
-k6 run monitoramento/k6/scripts/graduacao-crud.js
+# Requer K6_EXECUTION_MODE definido no .env ou via variável de ambiente
+K6_EXECUTION_MODE=constant-vus VUS=5 DURATION=30s k6 run monitoramento/k6/scripts/graduacao-crud.js
 ```
 
-Parâmetros úteis (ambos os scripts):
-- `VUS` (padrão: 1)
-- `DURATION` (padrão: 5s no hello-world, 10s no business-endpoints)
-- `RUN_ID` (default automático)
+Parâmetros úteis:
+- `VUS` (padrão: 1) - Número de usuários virtuais
+- `DURATION` (padrão: 5s no hello-world, 10s no business-endpoints) - Duração do teste
+- `RUN_ID` (gerado automaticamente) - Identificador único da execução
+- `K6_EXECUTION_MODE` (obrigatório para graduacao-crud.js) - Modo de execução: constant-vus, ramping-vus, constant-arrival-rate, ramping-arrival-rate
+- `GRADUACAO_BASE_URL` (padrão: http://localhost:8081) - URL base do serviço
+- `SLEEP_S` (padrão: 1) - Segundos de pausa entre iterações
 
-O script `graduacao-crud.js` usa `.env` (ou `ENV_FILE`) e requer `K6_EXECUTION_MODE`.
-Consulte o guia detalhado em `monitoramento/k6/README.md`.
+Consulte o guia detalhado em `monitoramento/k6/README.md` para mais opções de configuração.
 
 Exemplo com Prometheus remote write:
 ```bash

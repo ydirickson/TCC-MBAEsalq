@@ -45,6 +45,11 @@ export function loadEnvFile(candidates) {
     try {
       return parseEnvFile(open(resolvePath(path)));
     } catch (err) {
+      // Ignora erros de "arquivo nao encontrado", mas loga outros erros inesperados
+      if (err && err.message && !err.message.includes('no such file')) {
+        // eslint-disable-next-line no-console
+        console.error(`Falha ao carregar arquivo de ambiente em "${path}":`, err.message || err);
+      }
       // tenta o proximo caminho
     }
   }
