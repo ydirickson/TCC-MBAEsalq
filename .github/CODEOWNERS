@@ -1,0 +1,18 @@
+# Este arquivo define os revisores padrão para o código
+# O GitHub Copilot revisará automaticamente os Pull Requests
+
+# Revisor padrão para todo o repositório
+* @ydirickson
+
+# Scripts k6 e configurações de monitoramento
+/monitoramento/ @ydirickson
+
+# Serviços Java
+/servicos/ @ydirickson
+
+# Configurações de banco de dados
+/bd/ @ydirickson
+
+# Documentação e planejamento
+/planejamento/ @ydirickson
+*.md @ydirickson
