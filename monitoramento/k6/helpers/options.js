@@ -97,14 +97,21 @@ export function buildOptions({ envValue, envNumber, envJson, runId, scenario }) 
       scenarioConfig.duration = envValue('K6_ARRIVAL_DURATION',
         arrivalPreset ? arrivalPreset.duration : '3m');
     } else {
-      scenarioConfig.startRate = envNumber('K6_ARRIVAL_START_RATE', arrivalPreset.startRate);
-      scenarioConfig.stages = envJson('K6_ARRIVAL_STAGES', arrivalPreset.stages);
+      // ramping-arrival-rate: adiciona fallbacks para evitar falhas se propriedades estiverem ausentes
+      scenarioConfig.startRate = envNumber('K6_ARRIVAL_START_RATE',
+        arrivalPreset && typeof arrivalPreset.startRate === 'number'
+          ? arrivalPreset.startRate
+          : 5);
+      scenarioConfig.stages = envJson('K6_ARRIVAL_STAGES',
+        arrivalPreset && Array.isArray(arrivalPreset.stages)
+          ? arrivalPreset.stages
+          : [{ duration: '1m', target: 10 }, { duration: '1m', target: 0 }]);
     }
 
     return {
       ...base,
       scenarios: {
-        graduacao: scenarioConfig,
+        [scenario]: scenarioConfig,
       },
     };
   }
