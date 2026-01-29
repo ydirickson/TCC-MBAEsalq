@@ -17,7 +17,7 @@ const runId = envValue('RUN_ID', `run_${Date.now()}`);
 const baseUrl = envValue('GRADUACAO_BASE_URL', config.baseUrls && config.baseUrls.graduacao);
 
 if (!baseUrl) {
-  fail('Base URL nao configurada para graduacao. Use GRADUACAO_BASE_URL ou config baseUrls.graduacao.');
+  fail('Base URL não configurada para graduacao. Use GRADUACAO_BASE_URL ou config baseUrls.graduacao.');
 }
 
 // Duração total do fluxo de graduação por iteração (métrica de tempo de resposta de ponta a ponta).
