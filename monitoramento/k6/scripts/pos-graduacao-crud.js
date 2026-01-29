@@ -95,7 +95,7 @@ export default function () {
     orientadorId: professorId,
     dataMatricula: today,
     dataConclusao: null,
-    status: 'CURSANDO',
+    status: 'ATIVO',
   });
   const alunoRes = http.post(`${baseUrl}/alunos`, alunoPayload, params('POST /alunos'));
   expect2xx(alunoRes, 'POST /alunos', fail, check);
