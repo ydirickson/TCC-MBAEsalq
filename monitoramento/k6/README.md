@@ -69,8 +69,8 @@ Valores suportados:
 Manutém número constante de usuários virtuais.
 
 **Variáveis:**
-- `VUS` (padrão: `10`) - Número de usuários virtuais
-- `DURATION` (padrão: `1m`) - Duração do teste
+- `VUS` (padrão: `1`) - Número de usuários virtuais
+- `DURATION` (padrão: `30s`) - Duração do teste
 
 ```env
 K6_EXECUTION_MODE=constant-vus
