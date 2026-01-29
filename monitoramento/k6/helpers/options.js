@@ -23,15 +23,15 @@ export function buildOptions({ envValue, envNumber, envJson, runId, scenario }) 
   const validModes = new Set([
     'constant-vus', // vus fixos por duracao
     'ramping-vus', // rampa de vus por estagios
-    'ramping-arrival-rate', // rampa a taxa (iteracoes/seg) em estagios
-    'constant-arrival-rate', // taxa fixa (iteracoes/seg) por um tempo
+    'ramping-arrival-rate', // rampa a taxa (iterações/seg) em estagios
+    'constant-arrival-rate', // taxa fixa (iterações/seg) por um tempo
   ]);
   if (!validModes.has(executionMode)) {
     fail(`K6_EXECUTION_MODE invalido: ${executionMode}. Use constant-vus, ramping-vus, constant-arrival-rate ou ramping-arrival-rate.`);
   }
   const arrivalModes = new Set([
-    'ramping-arrival-rate', // rampa a taxa (iteracoes/seg) em estagios
-    'constant-arrival-rate', // taxa fixa (iteracoes/seg) por um tempo
+    'ramping-arrival-rate', // rampa a taxa (iterações/seg) em estagios
+    'constant-arrival-rate', // taxa fixa (iterações/seg) por um tempo
   ]);
 
   if (executionMode && arrivalModes.has(executionMode)) {
