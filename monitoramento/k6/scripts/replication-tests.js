@@ -1,12 +1,11 @@
 import http from 'k6/http';
 import { check, sleep } from 'k6';
-import { SharedArray } from 'k6/data';
-import { Counter, Trend } from 'k6/metrics';
-
-// Métricas customizadas
-const replicationLatency = new Trend('replication_latency_ms');
-const replicationSuccess = new Counter('replication_success_total');
-const replicationFailure = new Counter('replication_failure_total');
+import {
+  waitForReplication,
+  registerReplicationOutcome,
+  markReplicationFailure,
+  readReplicationConfig,
+} from '../helpers/replication.js';
 
 // Configuração de URLs base
 const BASE_URLS = {
@@ -17,9 +16,17 @@ const BASE_URLS = {
 };
 
 // Configuração de timeout e polling
-const REPLICATION_TIMEOUT_MS = parseInt(__ENV.REPLICATION_TIMEOUT_MS || '30000');
-const POLL_INTERVAL_MS = parseInt(__ENV.POLL_INTERVAL_MS || '500');
-const MAX_POLL_ATTEMPTS = Math.floor(REPLICATION_TIMEOUT_MS / POLL_INTERVAL_MS);
+const replicationConfig = readReplicationConfig({
+  defaults: {
+    timeoutMs: 30000,
+    pollIntervalMs: 500,
+    mode: 'strict',
+    sampleRate: 1,
+  },
+});
+const REPLICATION_TIMEOUT_MS = replicationConfig.timeoutMs;
+const POLL_INTERVAL_MS = replicationConfig.pollIntervalMs;
+const MAX_POLL_ATTEMPTS = replicationConfig.maxAttempts;
 
 export const options = {
   scenarios: {
@@ -35,50 +42,6 @@ export const options = {
     'http_req_duration': ['p(95)<5000'],
   },
 };
-
-/**
- * Aguarda até que um recurso seja replicado verificando sua existência via GET
- * @param {string} url - URL do endpoint de consulta
- * @param {function} validateFn - Função que valida se o recurso foi replicado corretamente
- * @param {number} maxAttempts - Número máximo de tentativas
- * @param {number} intervalMs - Intervalo entre tentativas em ms
- * @returns {object} - {success: boolean, attempts: number, latency: number, data: object}
- */
-function waitForReplication(url, validateFn, maxAttempts = MAX_POLL_ATTEMPTS, intervalMs = POLL_INTERVAL_MS) {
-  const startTime = Date.now();
-  
-  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-    const response = http.get(url);
-    
-    if (response.status === 200) {
-      try {
-        const data = JSON.parse(response.body);
-        const isValid = validateFn(data);
-        
-        if (isValid) {
-          const latency = Date.now() - startTime;
-          console.log(`✓ Replicação confirmada após ${attempt} tentativa(s), ${latency}ms`);
-          return { 
-            success: true, 
-            attempts: attempt, 
-            latency: latency,
-            data: data 
-          };
-        }
-      } catch (e) {
-        console.warn(`Erro ao validar resposta (tentativa ${attempt}): ${e}`);
-      }
-    }
-    
-    if (attempt < maxAttempts) {
-      sleep(intervalMs / 1000);
-    }
-  }
-  
-  const latency = Date.now() - startTime;
-  console.error(`✗ Replicação falhou após ${maxAttempts} tentativas, ${latency}ms`);
-  return { success: false, attempts: maxAttempts, latency: latency, data: null };
-}
 
 /**
  * Teste 1: Pessoa criada em Graduação deve ser replicada para todos os serviços
@@ -127,7 +90,7 @@ function testPessoaReplication() {
   
   if (!createCheck) {
     console.error('Falha ao criar pessoa em Graduação');
-    replicationFailure.add(1);
+    markReplicationFailure({ entity: 'pessoa', source: 'graduacao' });
     return;
   }
   
@@ -142,31 +105,33 @@ function testPessoaReplication() {
   for (const service of servicesToCheck) {
     console.log(`\n  Verificando replicação em ${service}...`);
     
-    const result = waitForReplication(
-      `${BASE_URLS[service]}/pessoas/${pessoaId}`,
-      (data) => {
-        // Validar que os dados essenciais foram replicados corretamente
-        return data.id === pessoaId &&
-               data.nome === pessoaCriada.nome &&
-               data.dataNascimento === pessoaCriada.dataNascimento;
-      }
-    );
-    
-    replicationLatency.add(result.latency);
-    
-    const replicationCheck = check(result, {
-      [`${service}: Pessoa replicada com sucesso`]: (r) => r.success,
-      [`${service}: Dados consistentes`]: (r) => {
-        if (!r.data) return false;
-        return r.data.nome === pessoaCriada.nome;
+    const result = waitForReplication({
+      url: `${BASE_URLS[service]}/pessoas/${pessoaId}`,
+      validateFn: (data) => {
+        // Validar que os dados essenciais foram replicados corretamente.
+        return data.id === pessoaId
+          && data.nome === pessoaCriada.nome
+          && data.dataNascimento === pessoaCriada.dataNascimento;
+      },
+      maxAttempts: MAX_POLL_ATTEMPTS,
+      intervalMs: POLL_INTERVAL_MS,
+    });
+
+    const replicationCheck = registerReplicationOutcome({
+      result,
+      successLabel: `${service}: Pessoa replicada com sucesso`,
+      dataLabel: `${service}: Dados consistentes`,
+      dataValidator: (data) => data.nome === pessoaCriada.nome,
+      tags: {
+        entity: 'pessoa',
+        source: 'graduacao',
+        target: service,
       },
     });
     
     if (replicationCheck) {
-      replicationSuccess.add(1);
       console.log(`  ✓ ${service}: OK (${result.latency}ms)`);
     } else {
-      replicationFailure.add(1);
       allReplicationSuccess = false;
       console.error(`  ✗ ${service}: FALHOU`);
     }
@@ -190,14 +155,14 @@ function testVinculoAcademicoReplication(pessoaId) {
   const cursosResponse = http.get(`${BASE_URLS.graduacao}/cursos`);
   if (cursosResponse.status !== 200) {
     console.error('Falha ao buscar cursos');
-    replicationFailure.add(1);
+    markReplicationFailure({ entity: 'vinculo', source: 'graduacao' });
     return;
   }
   
   const cursos = JSON.parse(cursosResponse.body);
   if (!cursos || cursos.length === 0) {
     console.error('Nenhum curso disponível');
-    replicationFailure.add(1);
+    markReplicationFailure({ entity: 'vinculo', source: 'graduacao' });
     return;
   }
   
@@ -208,14 +173,14 @@ function testVinculoAcademicoReplication(pessoaId) {
   const turmasResponse = http.get(`${BASE_URLS.graduacao}/cursos/${curso.id}/turmas`);
   if (turmasResponse.status !== 200) {
     console.error('Falha ao buscar turmas');
-    replicationFailure.add(1);
+    markReplicationFailure({ entity: 'vinculo', source: 'graduacao' });
     return;
   }
   
   const turmas = JSON.parse(turmasResponse.body);
   if (!turmas || turmas.length === 0) {
     console.error('Nenhuma turma disponível para o curso');
-    replicationFailure.add(1);
+    markReplicationFailure({ entity: 'vinculo', source: 'graduacao' });
     return;
   }
   
@@ -239,7 +204,7 @@ function testVinculoAcademicoReplication(pessoaId) {
   if (createResponse.status !== 201) {
     console.error(`Falha ao criar aluno: ${createResponse.status}`);
     console.error(`Response body: ${createResponse.body}`);
-    replicationFailure.add(1);
+    markReplicationFailure({ entity: 'vinculo', source: 'graduacao' });
     return;
   }
   
@@ -249,26 +214,30 @@ function testVinculoAcademicoReplication(pessoaId) {
   // Verificar replicação do VínculoAcademico em Diplomas
   console.log('\n  Verificando replicação em diplomas...');
   
-  const result = waitForReplication(
-    `${BASE_URLS.diplomas}/vinculos`,
-    (data) => {
-      // Verifica se existe ao menos um vínculo para a pessoa
-      return Array.isArray(data) && data.length > 0 &&
-             data.some(v => v.pessoaId === pessoaId);
-    }
-  );
-  
-  replicationLatency.add(result.latency);
-  
-  const replicationCheck = check(result, {
-    'Diplomas: VínculoAcademico replicado': (r) => r.success,
+  const result = waitForReplication({
+    url: `${BASE_URLS.diplomas}/vinculos`,
+    validateFn: (data) => {
+      // Verifica se existe ao menos um vínculo para a pessoa.
+      return Array.isArray(data) && data.length > 0
+        && data.some((v) => v.pessoaId === pessoaId);
+    },
+    maxAttempts: MAX_POLL_ATTEMPTS,
+    intervalMs: POLL_INTERVAL_MS,
+  });
+
+  const replicationCheck = registerReplicationOutcome({
+    result,
+    successLabel: 'Diplomas: VínculoAcademico replicado',
+    tags: {
+      entity: 'vinculo',
+      source: 'graduacao',
+      target: 'diplomas',
+    },
   });
   
   if (replicationCheck) {
-    replicationSuccess.add(1);
     console.log(`  ✓ diplomas: OK (${result.latency}ms)`);
   } else {
-    replicationFailure.add(1);
     console.error(`  ✗ diplomas: FALHOU`);
   }
 }
@@ -288,21 +257,18 @@ function testPessoaUpdateReplication(pessoaId) {
   const getResponse = http.get(`${BASE_URLS.graduacao}/pessoas/${pessoaId}`);
   if (getResponse.status !== 200) {
     console.error('Falha ao buscar pessoa para atualização');
-    replicationFailure.add(1);
+    markReplicationFailure({ entity: 'pessoa_update', source: 'graduacao' });
     return;
   }
   
   const pessoaAtual = JSON.parse(getResponse.body);
   const novoNomeSocial = `Nome Social ${Date.now()}`;
   
-  // Atualizar pessoa com todos os campos (PUT requer todos os dados)
+  // Atualizar pessoa
   const updatePayload = JSON.stringify({
     nome: pessoaAtual.nome,
     dataNascimento: pessoaAtual.dataNascimento,
     nomeSocial: novoNomeSocial,
-    documentoIdentificacao: pessoaAtual.documentoIdentificacao,
-    contato: pessoaAtual.contato,
-    endereco: pessoaAtual.endereco
   });
   
   const updateResponse = http.put(
@@ -317,7 +283,7 @@ function testPessoaUpdateReplication(pessoaId) {
   
   if (!updateCheck) {
     console.error(`Falha ao atualizar pessoa. Status: ${updateResponse.status}`);
-    replicationFailure.add(1);
+    markReplicationFailure({ entity: 'pessoa_update', source: 'graduacao' });
     return;
   }
   
@@ -326,27 +292,28 @@ function testPessoaUpdateReplication(pessoaId) {
   // Verificar replicação da atualização em Diplomas
   console.log('\n  Verificando replicação da atualização em diplomas...');
   
-  const result = waitForReplication(
-    `${BASE_URLS.diplomas}/pessoas/${pessoaId}`,
-    (data) => {
-      return data.nomeSocial === novoNomeSocial;
-    }
-  );
-  
-  replicationLatency.add(result.latency);
-  
-  const replicationCheck = check(result, {
-    'Diplomas: Atualização de Pessoa replicada': (r) => r.success,
-    'Diplomas: nomeSocial atualizado corretamente': (r) => {
-      return r.data && r.data.nomeSocial === novoNomeSocial;
+  const result = waitForReplication({
+    url: `${BASE_URLS.diplomas}/pessoas/${pessoaId}`,
+    validateFn: (data) => data.nomeSocial === novoNomeSocial,
+    maxAttempts: MAX_POLL_ATTEMPTS,
+    intervalMs: POLL_INTERVAL_MS,
+  });
+
+  const replicationCheck = registerReplicationOutcome({
+    result,
+    successLabel: 'Diplomas: Atualização de Pessoa replicada',
+    dataLabel: 'Diplomas: nomeSocial atualizado corretamente',
+    dataValidator: (data) => data.nomeSocial === novoNomeSocial,
+    tags: {
+      entity: 'pessoa_update',
+      source: 'graduacao',
+      target: 'diplomas',
     },
   });
   
   if (replicationCheck) {
-    replicationSuccess.add(1);
     console.log(`  ✓ diplomas: OK (${result.latency}ms)`);
   } else {
-    replicationFailure.add(1);
     console.error(`  ✗ diplomas: FALHOU`);
   }
 }

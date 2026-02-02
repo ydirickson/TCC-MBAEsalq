@@ -36,6 +36,15 @@ Fluxo completo (CRUD) do serviço de pós-graduação, cria dados e valida GETs.
 k6 run monitoramento/k6/scripts/pos-graduacao-crud.js
 ```
 
+### 5) cenario1-integrado.js
+Executa os dois fluxos de CRUD (graduação + pós-graduação) e valida replicação no Cenário 1 (sem Kafka), com modo configurável (`off`, `sampled`, `strict`).
+```bash
+K6_EXECUTION_MODE=ramping-vus TEST_PROFILE=medio \
+REPLICATION_MODE=sampled REPLICATION_SAMPLE_RATE=0.2 \
+k6 run --out experimental-prometheus-rw=http://localhost:9090/api/v1/write \
+  monitoramento/k6/scripts/cenario1-integrado.js
+```
+
 ## Configuração via .env
 O `graduacao-crud.js` lê `.env` na raiz do projeto (ou caminho especificado em `ENV_FILE`).
 
@@ -57,6 +66,10 @@ ENV_FILE=.env.pesado
 - **SCENARIO**: Nome do cenário (padrão: `graduacao-crud` ou `pos-graduacao-crud`)
 - **SLEEP_S**: Pausa entre iterações em segundos (padrão: `1`)
 - **ENV_FILE**: Caminho do arquivo .env (padrão: `.env`)
+- **REPLICATION_MODE**: Controle da validação de replicação no script integrado (`off`, `sampled`, `strict`; padrão: `sampled`)
+- **REPLICATION_SAMPLE_RATE**: Taxa de amostragem quando `REPLICATION_MODE=sampled` (0 a 1; padrão: `0.2`)
+- **REPLICATION_TIMEOUT_MS**: Timeout máximo para confirmação de replicação (padrão: `30000`)
+- **POLL_INTERVAL_MS**: Intervalo entre tentativas de polling da replicação (padrão: `500`)
 
 ### Thresholds (Limites de Qualidade)
 - **K6_HTTP_REQ_FAILED**: Taxa de falhas HTTP (padrão: `rate<0.01` = menos de 1%)
@@ -141,5 +154,6 @@ K6_ARRIVAL_DURATION=4m
 
 ## Observações
 - `graduacao-crud.js` e `pos-graduacao-crud.js` criam dados a cada iteração e não fazem cleanup.
+- `cenario1-integrado.js` aumenta bastante o volume de escrita; use `REPLICATION_MODE=off` para medir só carga e `sampled/strict` para medir carga + consistência.
 - Para cargas altas, acompanhe o crescimento do banco.
 - Use `RUN_ID` para correlacionar requisições e logs.
