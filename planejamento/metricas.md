@@ -1,7 +1,7 @@
-# 7. Métricas previstas (alto nível)
+  # 7. Métricas previstas (alto nível)
 [← Voltar ao índice](./README.md)
 
-Este detalhamento conecta as métricas previstas aos **cenários definidos** e descreve **coleta e visualização** na stack Grafana (Prometheus + Grafana + Loki).
+Este detalhamento conecta as métricas previstas aos **cenários definidos** e descreve **coleta e visualização** na stack atual do projeto (Prometheus + Grafana + k6 via remote write + postgres_exporter).
 
 ## 7.1 Métricas da pesquisa (significado, unidade e relevância)
 
@@ -48,28 +48,91 @@ Em termos de conclusão, o ambiente distribuído só é considerado equivalente/
 
 ## 7.2 Aplicação por cenário (tradicional x eventos)
 
-Esta seção será detalhada na próxima etapa, separando as métricas por cenário (Simples, Schema, Databases e Servers), com critérios de comparação e metas de aceitação.
+### 7.2.1 Cenário 1 (Simples: mesmo BD e mesmo schema, com triggers/procedures)
+
+No cenário 1, a replicação é síncrona no PostgreSQL (sem Kafka/CDC), implementada pelos scripts:
+
+- `bd/simples/05_vinculo_academico_sync.sql`
+- `bd/simples/07_requerimento_diploma_sync.sql`
+- `bd/simples/08_assinatura_sync.sql`
+- `bd/simples/09_documento_oficial_sync.sql`
+
+Para obter as métricas da pesquisa neste cenário, a fonte de dados será:
+
+- **k6** (`monitoramento/k6/scripts/replication-tests.js`) para latência de replicação, sucesso/falha e checks de consistência.
+- **Prometheus** (`monitoramento/prometheus/prometheus.yml`) coletando `postgres-exporter` e `/actuator/prometheus` dos 4 serviços.
+- **Grafana** para visualização dos percentis, séries temporais e comparação com baseline.
+- **Consultas SQL de reconciliação** (via `psql`) para validação de consistência funcional entre tabelas origem e tabelas sincronizadas por trigger.
+
+#### Como cada métrica (M1-M8) será obtida no cenário 1
+
+| ID | Como obter | Fonte principal | Critério de leitura no cenário 1 |
+|---|---|---|---|
+| M1 (Latência ponta-a-ponta) | Rodar `replication-tests.js` e coletar a métrica customizada `replication_latency_ms` (Trend), calculada no tempo entre criação na origem e confirmação no destino via polling. | k6 + Grafana/Prometheus | Usar média, P95 e P99 por execução e comparar com baseline do cenário centralizado. |
+| M2 (Throughput) | Calcular taxa por `replication_success_total` ao longo do tempo de teste; complementar com taxa de requisições HTTP por endpoint de escrita/leitura (`http_server_requests_seconds_count`). | k6 + métricas Micrometer (Actuator) | Medir eventos/s estáveis sob perfis leve/médio/pesado sem queda progressiva. |
+| M3 (Taxa de erro/perda) | Usar `replication_failure_total`, `checks` (rate) e falhas HTTP (`http_req_failed` no k6). Fórmula principal: `falhas / (sucessos + falhas)`. | k6 | Taxa próxima de zero, sem tendência de crescimento ao aumentar carga. |
+| M4 (Consistência dos dados replicados) | Combinar checks funcionais do `replication-tests.js` (comparação de campos essenciais entre serviços) com consultas SQL de reconciliação entre tabelas de origem e tabelas sincronizadas por trigger. | k6 + SQL no PostgreSQL | Divergência deve ser zero (ou residual justificada) para entidades críticas (`pessoa`, `vinculo_academico`, `requerimento_diploma`, `documento_assinavel`). |
+| M5 (Inconsistência temporária / lag) | No cenário 1, usar `replication_latency_ms` como proxy de staleness (não há fila/consumer). Complementar com contagem de timeouts de replicação (`replication_failure_total` por timeout). | k6 | Janela curta e previsível (esperado baixo), sem acúmulo de atrasos. |
+| M6 (Recursos computacionais) | Coletar CPU/memória/JVM/conexões dos serviços via Actuator (`process_*`, `jvm_*`, `hikaricp_*`) e carga de banco via `postgres-exporter` (`pg_stat_*`). | Prometheus (Spring + postgres-exporter) | Verificar estabilidade de uso por serviço e ausência de saturação contínua no banco. |
+| M7 (Disponibilidade) | Calcular uptime com `up` dos jobs `spring_*`, `postgres_exporter` e `prometheus`. Ex.: `%uptime = avg_over_time(up[janela]) * 100`. | Prometheus | Uptime alto dos componentes críticos durante as execuções de teste. |
+| M8 (Complexidade operacional) | Medir por inventário operacional do cenário: número de componentes ativos no `docker-compose`, número de scripts SQL de sincronização, número de scripts de teste/monitoramento e passos manuais de recuperação. | `docker-compose.yml` + docs/scripts | Usar comparação qualitativa e contagem objetiva para contrastar com cenários 2-4. |
+
+#### Consultas SQL de reconciliação sugeridas para M4
+
+```sql
+-- 1) Vinculos concluidos sem requerimento de diploma (deve ser 0)
+SELECT COUNT(*) AS vinculos_sem_requerimento
+FROM vinculo_academico v
+LEFT JOIN requerimento_diploma r ON r.vinculo_id = v.id
+WHERE v.tipo_vinculo = 'ALUNO'
+  AND v.situacao = 'CONCLUIDO'
+  AND r.id IS NULL;
+```
+
+```sql
+-- 2) Documentos de diploma sem documento assinavel (deve ser 0)
+SELECT COUNT(*) AS diplomas_sem_documento_assinavel
+FROM documento_diploma dd
+LEFT JOIN documento_assinavel da ON da.documento_diploma_id = dd.id
+WHERE da.id IS NULL;
+```
+
+```sql
+-- 3) Documentos oficiais sem documento assinavel (deve ser 0)
+SELECT COUNT(*) AS oficiais_sem_documento_assinavel
+FROM documento_oficial dof
+LEFT JOIN documento_assinavel da ON da.documento_oficial_id = dof.id
+WHERE da.id IS NULL;
+```
+
+#### Execução padrão para coleta do cenário 1
+
+```bash
+docker compose up -d
+k6 run --out experimental-prometheus-rw=http://localhost:9090/api/v1/write \
+  monitoramento/k6/scripts/replication-tests.js
+```
 
 ## 7.3 Encaixe na stack Grafana (coleta e visualização)
 
 ### Coleta (Prometheus)
 - **Prometheus** coleta métricas via `scrape_configs` definidos na configuração do servidor.  
   Referência: [Prometheus configuration](https://prometheus.io/docs/prometheus/latest/configuration/configuration/)
-- **Aplicações** expõem `/metrics` no formato Prometheus.  
+- **Aplicações** expõem `/actuator/prometheus` no formato Prometheus.  
   Referência: [Exposition formats](https://prometheus.io/docs/instrumenting/exposition_formats/)
 - **Postgres:** usar `postgres_exporter` para expor `pg_stat_*` ao Prometheus.  
   Referência: [postgres_exporter](https://github.com/prometheus-community/postgres_exporter)
-- **Kafka:** Kafka expõe métricas via JMX; usar `jmx_exporter` para publicar em `/metrics`.  
+- **Kafka (cenários 2-4):** Kafka expõe métricas via JMX; usar `jmx_exporter` para publicar em `/metrics`.  
   Referências: [Kafka monitoring (JMX)](https://kafka.apache.org/38/documentation/#monitoring), [jmx_exporter](https://github.com/prometheus/jmx_exporter)
-- **Hosts (DB e consumer):** usar `node_exporter` para CPU/mem/disk.  
+- **Hosts (opcional):** usar `node_exporter` para CPU/mem/disk quando necessário.  
   Referência: [node_exporter](https://prometheus.io/docs/guides/node-exporter/)
-- **Logs (correlação):** enviar logs para Loki e correlacionar com métricas quando necessário.  
+- **Logs (opcional):** enviar logs para Loki e correlacionar com métricas quando necessário.  
   Referências: [Loki data source](https://grafana.com/docs/grafana/latest/datasources/loki/), [Logs in Explore](https://grafana.com/docs/grafana/latest/explore/logs-integration/)
 
 ### Visualização (Grafana)
 - **Datasource Prometheus** para métricas (dashboards de latência, throughput, carga e lag).  
   Referências: [Grafana Prometheus datasource](https://grafana.com/docs/grafana/latest/datasources/prometheus/), [Grafana for Prometheus](https://prometheus.io/docs/visualization/grafana/)
-- **Datasource Loki** para logs e correlação de incidentes.  
+- **Datasource Loki (opcional)** para logs e correlação de incidentes.  
   Referência: [Grafana Loki datasource](https://grafana.com/docs/grafana/latest/datasources/loki/)
 - **Painéis recomendados (por métrica):**  
   - **M1/M5:** séries temporais e percentis de latência/lag.  
