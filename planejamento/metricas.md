@@ -3,95 +3,52 @@
 
 Este detalhamento conecta as métricas previstas aos **cenários definidos** e descreve **coleta e visualização** na stack Grafana (Prometheus + Grafana + Loki).
 
-## 7.1 Métricas detalhadas (definição + referências)
+## 7.1 Métricas da pesquisa (significado, unidade e relevância)
 
-### M1) Latência ponta-a-ponta (origem → persistência no consumidor)
-**O que mede:** tempo entre a mudança ser registrada no produtor e a persistência no destino.  
-**Como medir:**  
-- **Eventos (Kafka):** incluir `timestamp_origem` no evento (outbox) e registrar `timestamp_aplicacao` no consumer. Latência = `timestamp_aplicacao - timestamp_origem`.  
-- **Replicação tradicional (Postgres):** usar `write_lag`, `flush_lag`, `replay_lag` de `pg_stat_replication` para o atraso de escrita/flush/replay (visibilidade no standby).  
-**Por que avalia bem:** latência de replicação/consumo representa diretamente a janela de desatualização do dado no destino.  
-**Referências:** [pg_stat_replication](https://www.postgresql.org/docs/12/monitoring-stats.html#PG-STAT-REPLICATION-VIEW), [Kafka consumer metrics (lag)](https://kafka.apache.org/36/documentation/#consumer_monitoring)
+Objetivo desta seção: definir as métricas que sustentam a hipótese de que um ambiente distribuído de replicação pode substituir um ambiente centralizado **sem perda significativa de desempenho e confiabilidade dos dados**.
 
-### M2) Throughput (eventos/segundo)
-**O que mede:** volume de mudanças processadas por unidade de tempo.  
-**Como medir:**  
-- **Kafka:** `records-consumed-rate` e `bytes-consumed-rate` do consumidor.  
-- **Postgres:** contadores `xact_commit`, `tup_inserted`, `tup_updated` em `pg_stat_database` (taxa por intervalo).  
-**Por que avalia bem:** taxas de consumo e de transações traduzem a capacidade de replicação sob carga.  
-**Referências:** [Kafka consumer metrics](https://kafka.apache.org/36/documentation/#consumer_monitoring), [pg_stat_database](https://www.postgresql.org/docs/12/monitoring-stats.html#PG-STAT-DATABASE-VIEW)
+| ID | Métrica | O que significa | Bom sinal | Sinal de alerta | Unidade | Relevância para a pesquisa | Referências base |
+|---|---|---|---|---|---|---|---|
+| M1 | Latência ponta-a-ponta | Tempo entre a mudança na origem e a persistência no destino. | P95/P99 estáveis e próximos ao baseline centralizado. | Crescimento de cauda (P95/P99), picos longos e imprevisíveis. | ms | Mede impacto direto no tempo de atualização dos dados replicados. | [R1], [R2], [R4] |
+| M2 | Throughput | Taxa de eventos efetivamente processados na replicação. | Mantém ou supera o baseline sob carga equivalente. | Queda de taxa com aumento de carga ou filas crescentes. | eventos/s | Demonstra capacidade do modelo distribuído sem degradação relevante. | [R1], [R3], [R4] |
+| M3 | Taxa de erro/perda | Percentual de eventos não processados corretamente (falha, descarte ou perda). | Próximo de zero e sem tendência de aumento. | Crescimento contínuo ou falhas intermitentes recorrentes. | % | É um dos principais indicadores de confiabilidade da replicação. | [R1], [R2], [R10], [R11] |
+| M4 | Consistência dos dados replicados | Grau de integridade/correção entre origem e destino após replicação. | Registros críticos íntegros e sem divergências de negócio. | Diferenças de campos-chave, ausência de registros ou ordens incorretas. | % de validações corretas (ou sim/não por caso) | Prova que a troca arquitetural preserva a confiabilidade dos dados. | [R2], [R6], [R10], [R11] |
+| M5 | Inconsistência temporária (lag/staleness) | Janela em que o destino fica desatualizado em relação à origem. | Janela curta e previsível dentro do SLA. | Janela longa, variável e com acúmulo de backlog. | ms e/ou eventos em atraso | Complementa latência ao mostrar desatualização temporária percebida. | [R3], [R4], [R5] |
+| M6 | Recursos computacionais | Consumo de CPU, memória e I/O no banco e nos consumidores. | Uso estável e proporcional à carga aplicada. | Saturação frequente, gargalos de I/O ou crescimento sem controle. | % CPU, GB RAM, IOPS/MB/s | Mostra custo operacional e eficiência do modelo distribuído. | [R1], [R8], [R9], [R12] |
+| M7 | Disponibilidade da plataforma de replicação | Tempo em que os componentes de replicação estão operacionais. | Uptime alto e recuperação rápida após falhas. | Quedas frequentes, indisponibilidade prolongada ou recuperação lenta. | % uptime | Valida resiliência da solução distribuída frente a falhas. | [R2], [R7], [R13] |
+| M8 | Complexidade operacional | Esforço adicional para operar, monitorar e recuperar o ambiente. | Processos claros, baixo retrabalho manual e observabilidade adequada. | Muitos pontos de falha, tarefas manuais e alto custo de operação. | contagem de componentes/dependências e avaliação qualitativa | Apoia a decisão arquitetural além de performance e confiabilidade. | [R14] |
 
-### M3) Carga no banco (CPU/IO) no acoplado vs no desacoplado
-**O que mede:** pressão de leitura/escrita no banco e impacto do mecanismo de sincronização.  
-**Como medir:**  
-- **Postgres:** `blks_read`, `blks_hit`, `xact_commit` e contadores de tuplas em `pg_stat_database` (comparar cenários).  
-- **Host do banco:** CPU/mem/IO via `node_exporter`.  
-**Por que avalia bem:** `pg_stat_database` fornece estatísticas de I/O e transações, e métricas do host mostram custo real de CPU/memória.  
-**Referências:** [pg_stat_database](https://www.postgresql.org/docs/12/monitoring-stats.html#PG-STAT-DATABASE-VIEW), [node_exporter](https://prometheus.io/docs/guides/node-exporter/)
+### 7.1.2 Referências confiáveis das medidas (fontes primárias)
 
-### M4) Carga na aplicação (CPU/memória) no consumidor Kafka
-**O que mede:** custo de processamento no consumer para aplicar eventos.  
-**Como medir:**  
-- **Host do consumer:** CPU/mem via `node_exporter`.  
-- **Aplicação:** expor métricas próprias (ex.: tempo médio de processamento por evento) em `/metrics`.  
-**Por que avalia bem:** recursos do host e métricas da aplicação refletem o custo real de consumo.  
-**Referências:** [node_exporter](https://prometheus.io/docs/guides/node-exporter/), [Prometheus exposition formats](https://prometheus.io/docs/instrumenting/exposition_formats/)
+- **[R1] Google SRE Book - Monitoring Distributed Systems (Four Golden Signals: latency, traffic, errors, saturation):** https://sre.google/sre-book/monitoring-distributed-systems/
+- **[R2] Google SRE Book - Service Level Objectives (SLI/SLO, disponibilidade, latência e percentis):** https://sre.google/sre-book/service-level-objectives/
+- **[R3] Apache Kafka - Monitoring (consumer metrics, `records-consumed-rate`, `records-lag-max`):** https://kafka.apache.org/36/operations/monitoring/
+- **[R4] Prometheus - Query functions (`rate`, `histogram_quantile`):** https://prometheus.io/docs/prometheus/latest/querying/functions/
+- **[R5] PostgreSQL - Monitoring statistics (`pg_stat_replication`, lag de replicação):** https://www.postgresql.org/docs/current/monitoring-stats.html
+- **[R6] PostgreSQL - Logical replication conflicts (integridade/consistência em conflitos):** https://www.postgresql.org/docs/current/logical-replication-conflicts.html
+- **[R7] Google SRE Book - Availability Table (cálculo de disponibilidade por janela):** https://sre.google/sre-book/availability-table/
+- **[R8] Prometheus Node Exporter (métricas de host: CPU, memória, disco, rede):** https://github.com/prometheus/node_exporter
+- **[R9] cAdvisor (uso de recursos e performance de containers):** https://github.com/google/cadvisor
+- **[R10] Grafana k6 - Built-in metrics (`checks`, counters, trends):** https://grafana.com/docs/k6/latest/using-k6/metrics/reference/
+- **[R11] Grafana k6 - Checks e thresholds (taxa de sucesso/falha e critérios de aprovação):** https://grafana.com/docs/k6/latest/using-k6/checks/
+- **[R12] Prometheus - Metric types (counter, gauge, histogram, summary e unidades):** https://prometheus.io/docs/concepts/metric_types/
+- **[R13] Prometheus - Alerting rules (`up == 0`, monitoramento de disponibilidade de alvos):** https://prometheus.io/docs/prometheus/latest/configuration/alerting_rules/
+- **[R14] Google SRE Book - Eliminating Toil (base para complexidade operacional):** https://sre.google/sre-book/eliminating-toil/
 
-### M5) Incidência de inconsistência temporária
-**O que mede:** proporção/tempo em que o destino está “atrasado” em relação ao produtor.  
-**Como medir:**  
-- **Eventos:** staleness = `timestamp_aplicacao - timestamp_origem` (p95/p99) e `records-lag-max` do consumer.  
-- **Replicação:** `replay_lag` em `pg_stat_replication`.  
-**Por que avalia bem:** lag do consumidor/replicação traduz a janela de divergência entre produtor e consumidor.  
-**Referências:** [Kafka consumer metrics (records-lag-max)](https://kafka.apache.org/36/documentation/#consumer_monitoring), [pg_stat_replication](https://www.postgresql.org/docs/12/monitoring-stats.html#PG-STAT-REPLICATION-VIEW)
+### 7.1.3 Prioridade para decisão (centralizado x distribuído)
 
-### M6) Complexidade operacional (número de componentes, pontos de falha)
-**O que mede:** esforço operacional (toil) e risco por dependências adicionais.  
-**Como medir:** contagem de componentes (DBs, brokers, exporters, jobs), dependências críticas e tarefas manuais recorrentes.  
-**Por que avalia bem:** o conceito de *toil* mapeia o custo operacional gerado por tarefas repetitivas e por aumento de complexidade.  
-**Referências:** [SRE – Eliminating Toil](https://sre.google/sre-book/eliminating-toil/)
+Para responder ao objetivo da pesquisa, a ordem de importância para comparação é:
+
+1. **Confiabilidade de dados:** M3 + M4  
+2. **Desempenho:** M1 + M2 + M5  
+3. **Resiliência:** M7  
+4. **Eficiência e operação:** M6 + M8
+
+Em termos de conclusão, o ambiente distribuído só é considerado equivalente/superior quando mantém confiabilidade (M3/M4) e desempenho (M1/M2/M5) em nível comparável ao baseline centralizado.
 
 ## 7.2 Aplicação por cenário (tradicional x eventos)
 
-### 1) Simples (mesmo BD e mesmos schemas)
-- **Tradicional (triggers/procedures):**
-  - **M1:** medir tempo entre trigger/procedure e escrita na tabela alvo (timestamp interno).  
-  - **M2:** taxa por `xact_commit`/`tup_*` no mesmo DB.  
-  - **M3:** `blks_read/blks_hit` e CPU/IO do host.  
-  - **M5:** staleness tende a ser baixo; medir delta entre timestamps.  
-  - **M6:** menor número de componentes.  
-- **Eventos (outbox + Kafka local):**
-  - **M1/M5:** `timestamp_origem` → `timestamp_aplicacao` + `records-lag-max`.  
-  - **M2:** `records-consumed-rate` + taxa de escrita no DB.  
-  - **M3/M4:** CPU/IO do DB e CPU/mem do consumer.  
-  - **M6:** adiciona broker + worker + consumer.
-
-### 2) Schema (mesmo BD, schemas distintos)
-- **Tradicional (triggers cross-schema):**  
-  - **M1:** latência entre trigger e persistência no schema consumidor.  
-  - **M2/M3:** `pg_stat_database` no mesmo DB (sem separar por schema).  
-- **Eventos (outbox + Kafka):**  
-  - **M1/M5:** `timestamp_origem` → `timestamp_aplicacao` + lag do consumer.  
-  - **M2:** throughput no Kafka + taxa de escrita no schema consumidor.  
-  - **M3/M4:** impacto no DB e no consumer.  
-
-### 3) Databases (bancos distintos no mesmo servidor)
-- **Tradicional (logical replication):**  
-  - **M1/M5:** `write_lag/flush_lag/replay_lag` em `pg_stat_replication`.  
-  - **M2/M3:** comparar taxas e I/O entre publisher e subscriber.  
-- **Eventos (outbox + Kafka):**  
-  - **M1/M5:** `timestamp_origem` → `timestamp_aplicacao` + `records-lag-max`.  
-  - **M2:** `records-consumed-rate` vs taxa de escrita no DB consumidor.  
-  - **M3/M4:** DBs no mesmo host + consumer.
-
-### 4) Servers (bancos em servidores diferentes)
-- **Tradicional (logical replication):**  
-  - **M1/M5:** `replay_lag` + monitoramento de rede e disponibilidade.  
-  - **M2/M3:** comparar publisher/subscriber e CPU/IO por servidor.  
-- **Eventos (outbox + Kafka):**  
-  - **M1/M5:** `timestamp_origem` → `timestamp_aplicacao` + lag do consumer.  
-  - **M2/M4:** throughput do consumer + CPU/mem em host remoto.  
-  - **M3:** I/O no DB destino e custos de rede.
+Esta seção será detalhada na próxima etapa, separando as métricas por cenário (Simples, Schema, Databases e Servers), com critérios de comparação e metas de aceitação.
 
 ## 7.3 Encaixe na stack Grafana (coleta e visualização)
 
@@ -117,5 +74,7 @@ Este detalhamento conecta as métricas previstas aos **cenários definidos** e d
 - **Painéis recomendados (por métrica):**  
   - **M1/M5:** séries temporais e percentis de latência/lag.  
   - **M2:** taxa de eventos (consumo e escrita no DB).  
-  - **M3/M4:** CPU/mem/IO por host e por serviço.  
-  - **M6:** tabela simples com componentes, pontos de falha e tarefas de operação.
+  - **M3/M4:** taxa de erro e taxa de validações de consistência aprovadas.  
+  - **M6:** CPU/mem/IO por host e por serviço.  
+  - **M7:** uptime e indisponibilidade por componente crítico.  
+  - **M8:** tabela simples com componentes, pontos de falha e tarefas operacionais.

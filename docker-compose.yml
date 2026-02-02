@@ -21,26 +21,6 @@ services:
     networks:
       - tcc-network
 
-  pgadmin:
-    image: dpage/pgadmin4:9
-    container_name: tcc_pgadmin
-    restart: unless-stopped
-    environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-admin@tcc.local}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin123}
-      PGADMIN_CONFIG_SERVER_MODE: "False"
-      PGADMIN_REPLACE_SERVERS_ON_STARTUP: "True"
-    ports:
-      - "${PGADMIN_PORT:-8080}:80"
-    volumes:
-      - pgadmin_data:/var/lib/pgadmin
-      - ./bd/pgadmin/servers.json:/pgadmin4/servers.json:ro
-    depends_on:
-      postgres:
-        condition: service_healthy
-    networks:
-      - tcc-network
-
   prometheus:
     image: prom/prometheus:v2.54.1
     container_name: tcc_prometheus
@@ -174,6 +154,20 @@ networks:
 
 volumes:
   postgres_data:
-  pgadmin_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${POSTGRES_DATA_PATH:-./data/postgres}
   prometheus_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${PROMETHEUS_DATA_PATH:-./data/prometheus}
   grafana_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${GRAFANA_DATA_PATH:-./data/grafana}
