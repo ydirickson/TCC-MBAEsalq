@@ -12,6 +12,7 @@ Os documentos existentes aqui serão atualizados conforme o andamento do projeto
 - [6. Replicação por cenários de banco](./replicacao-cenarios.md)
 - [6.1 Tipos de arquitetura de replicação (DB Based, CDC+Kafka, EDA+Kafka)](./arquiteturas.md)
 - [6.2 Metodologia comparativa (execução e análise)](./metodologia.md)
+- [6.3 CDC+Kafka com Connect Sink (foco em Pessoa)](./cdckafka.md)
 - [7. Escopo previsto (todos os domínios)](./escopo.md)
 - [8. Métricas previstas (alto nível)](./metricas.md)
 - [9. Pontos em aberto para decisão](./pontos-abertos.md)
