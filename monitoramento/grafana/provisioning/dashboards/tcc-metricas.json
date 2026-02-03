@@ -1,0 +1,241 @@
+{
+  "uid": "tcc-metricas",
+  "title": "TCC - Métricas de Replicação e Performance",
+  "timezone": "browser",
+  "schemaVersion": 38,
+  "version": 1,
+  "refresh": "10s",
+  "tags": ["tcc", "replicacao", "k6", "prometheus"],
+  "time": {
+    "from": "now-30m",
+    "to": "now"
+  },
+  "templating": {
+    "list": [
+      {
+        "name": "scenario",
+        "type": "query",
+        "datasource": "Prometheus",
+        "definition": "label_values(k6_http_reqs_total, scenario)",
+        "query": "label_values(k6_http_reqs_total, scenario)",
+        "includeAll": true,
+        "allValue": ".*",
+        "multi": true,
+        "refresh": 1
+      },
+      {
+        "name": "run_id",
+        "type": "query",
+        "datasource": "Prometheus",
+        "definition": "label_values(k6_http_reqs_total, run_id)",
+        "query": "label_values(k6_http_reqs_total, run_id)",
+        "includeAll": true,
+        "allValue": ".*",
+        "multi": true,
+        "refresh": 1
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "M1/M5 - Latência de replicação (p99)",
+      "gridPos": { "x": 0, "y": 0, "w": 12, "h": 8 },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "replication_latency_ms{scenario=~\"$scenario\", run_id=~\"$run_id\", quantile=\"0.95\"}",
+          "expr": "k6_replication_latency_ms{scenario=~\"$scenario\", run_id=~\"$run_id\", quantile=\"0.95\"}",
+          "legendFormat": "p95"
+        },
+        {
+          "refId": "B",
+          "expr": "k6_replication_latency_ms_p99{scenario=~\"$scenario\", run_id=~\"$run_id\"}",
+          "legendFormat": "p99"
+        }
+      }
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "M1 - Duração do fluxo integrado (p99)",
+      "gridPos": { "x": 12, "y": 0, "w": 12, "h": 8 },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "k6_cenario1_integrado_flow_duration_p99{scenario=~\"$scenario\", run_id=~\"$run_id\"}",
+          "legendFormat": "p99"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "unit": "ms" },
+        "overrides": []
+      }
+    },
+    {
+      "id": 3,
+      "type": "timeseries",
+      "title": "M2 - Throughput de replicação (sucessos/s)",
+      "gridPos": { "x": 0, "y": 8, "w": 8, "h": 8 },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(rate(k6_replication_success_total_total{scenario=~\"$scenario\", run_id=~\"$run_id\"}[1m]))",
+          "legendFormat": "sucessos/s"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "unit": "ops" },
+        "overrides": []
+      }
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "M3 - Falhas de replicação (rate)",
+      "gridPos": { "x": 8, "y": 8, "w": 8, "h": 8 },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(rate(k6_replication_failure_total_total{scenario=~\"$scenario\", run_id=~\"$run_id\"}[1m])) OR vector(0)",
+          "legendFormat": "falhas/s"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "unit": "ops" },
+        "overrides": []
+      }
+    },
+    {
+      "id": 5,
+      "type": "timeseries",
+      "title": "M3 - Taxa de erro de replicação",
+      "gridPos": { "x": 16, "y": 8, "w": 8, "h": 8 },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "(sum(rate(k6_replication_failure_total_total{scenario=~\"$scenario\", run_id=~\"$run_id\"}[1m])) OR vector(0)) / clamp_min((sum(rate(k6_replication_success_total_total{scenario=~\"$scenario\", run_id=~\"$run_id\"}[1m])) OR vector(0)) + (sum(rate(k6_replication_failure_total_total{scenario=~\"$scenario\", run_id=~\"$run_id\"}[1m])) OR vector(0)), 1)",
+          "legendFormat": "erro"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "unit": "percentunit", "min": 0, "max": 1 },
+        "overrides": []
+      }
+    },
+    {
+      "id": 6,
+      "type": "timeseries",
+      "title": "M4 - Consistência (sucesso)",
+      "gridPos": { "x": 0, "y": 16, "w": 8, "h": 8 },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "(sum(rate(k6_replication_success_total_total{scenario=~\"$scenario\", run_id=~\"$run_id\"}[5m])) OR vector(0)) / clamp_min((sum(rate(k6_replication_success_total_total{scenario=~\"$scenario\", run_id=~\"$run_id\"}[5m])) OR vector(0)) + (sum(rate(k6_replication_failure_total_total{scenario=~\"$scenario\", run_id=~\"$run_id\"}[5m])) OR vector(0)), 1)",
+          "legendFormat": "sucesso"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "unit": "percentunit", "min": 0, "max": 1 },
+        "overrides": []
+      }
+    },
+    {
+      "id": 7,
+      "type": "timeseries",
+      "title": "HTTP p99 por serviço",
+      "gridPos": { "x": 8, "y": 16, "w": 16, "h": 8 },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "avg by (service) (k6_http_req_duration_p99{scenario=~\"$scenario\", run_id=~\"$run_id\"})",
+          "legendFormat": "{{service}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "unit": "ms" },
+        "overrides": []
+      }
+    },
+    {
+      "id": 8,
+      "type": "timeseries",
+      "title": "HTTP req failed rate",
+      "gridPos": { "x": 0, "y": 24, "w": 8, "h": 8 },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "k6_http_req_failed_rate{scenario=~\"$scenario\", run_id=~\"$run_id\"}",
+          "legendFormat": "falhas HTTP/s"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "unit": "ops" },
+        "overrides": []
+      }
+    },
+    {
+      "id": 9,
+      "type": "timeseries",
+      "title": "M7 - Disponibilidade (up)",
+      "gridPos": { "x": 8, "y": 24, "w": 8, "h": 8 },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "up{job=~\"spring_.*|postgres_exporter|prometheus\"}",
+          "legendFormat": "{{job}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "unit": "short", "min": 0, "max": 1 },
+        "overrides": []
+      }
+    },
+    {
+      "id": 10,
+      "type": "timeseries",
+      "title": "M6 - JVM heap usado",
+      "gridPos": { "x": 16, "y": 24, "w": 8, "h": 8 },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (job) (jvm_memory_used_bytes{area=\"heap\"})",
+          "legendFormat": "{{job}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "unit": "bytes" },
+        "overrides": []
+      }
+    },
+    {
+      "id": 11,
+      "type": "timeseries",
+      "title": "Postgres conexões ativas",
+      "gridPos": { "x": 0, "y": 32, "w": 12, "h": 8 },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (datname) (pg_stat_database_numbackends)",
+          "legendFormat": "{{datname}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "unit": "short" },
+        "overrides": []
+      }
+    }
+  ]
+}

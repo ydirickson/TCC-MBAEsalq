@@ -46,7 +46,26 @@ Para responder ao objetivo da pesquisa, a ordem de importância para comparaçã
 
 Em termos de conclusão, o ambiente distribuído só é considerado equivalente/superior quando mantém confiabilidade (M3/M4) e desempenho (M1/M2/M5) em nível comparável ao baseline centralizado.
 
-## 7.2 Aplicação por cenário (tradicional x eventos)
+### 7.1.4 Corte analítico por arquitetura (dentro de cada cenário)
+
+Para manter comparabilidade, a leitura recomendada é: **fixar o cenário (1-4)** e comparar **DB Based vs CDC+Kafka vs EDA+Kafka**.
+
+| Arquitetura | Métricas de foco | Sinais esperados | Sinais de alerta |
+|---|---|---|---|
+| DB Based | M1, M4, M6, M8 | Menor latência local e consistência direta no banco. | Acoplamento alto, scripts complexos e dificuldade de evolução entre serviços. |
+| CDC+Kafka | M1, M2, M3, M5, M7 | Boa escalabilidade de consumo e desacoplamento moderado com impacto controlado de latência. | Lag crescente, perda de eventos CDC, indisponibilidade de conectores/broker. |
+| EDA+Kafka | M2, M3, M5, M7, M8 | Maior autonomia entre serviços e contratos de negócio claros com boa escalabilidade. | Eventos sem versionamento/idempotência, reprocessamento complexo e DLQ crescente. |
+
+### Como medir esse corte arquitetural
+
+- **Cenário 1:** usar DB Based como baseline e rodar CDC+Kafka/EDA+Kafka para medir custo de introdução de assíncrono.
+- **Cenários 2-4:** executar as 3 arquiteturas com mesma carga k6 e comparar percentis (M1), taxa (M2), falha (M3), consistência (M4), lag (M5), recursos (M6), uptime (M7) e inventário operacional (M8).
+- **Conclusão por cenário:** registrar vencedor técnico por prioridade (M3+M4 > M1+M2+M5 > M7 > M6+M8) e depois consolidar a visão global.
+
+## 7.2 Aplicação por cenário (DB Based, CDC+Kafka e EDA+Kafka)
+
+Nesta versão, o passo-a-passo detalhado abaixo está descrito para o **cenário 1 em DB Based**.  
+Para **CDC+Kafka** e **EDA+Kafka** (cenários 1-4), aplicar o mesmo protocolo de carga e acrescentar métricas do broker/consumidores (ex.: lag, taxa de consumo, retries, DLQ) para leitura de M2, M3, M5 e M7.
 
 ### 7.2.1 Cenário 1 (Simples: mesmo BD e mesmo schema, com triggers/procedures)
 

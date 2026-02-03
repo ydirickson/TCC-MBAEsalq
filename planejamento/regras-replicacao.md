@@ -1,6 +1,20 @@
 # 5. Definição das intersecções e regras de replicação
 [← Voltar ao índice](./README.md)
 
+## 5.0. Taxonomia das replicações (globais e de comunicação)
+- Este documento adota dois tipos de replicação: **globais** e **de comunicação**.
+- **Replicações globais:** dados que nascem em um ou mais serviços e precisam alimentar todos os demais serviços (padrão fan-out).
+- **Replicações de comunicação:** dados que nascem em um serviço e precisam migrar para outro como parte de um fluxo de negócio (cadeia de processo entre serviços).
+- **Enquadramento neste documento:** `Pessoa` (5.1) e `VinculoAcademico` (5.2) são replicações globais; seções 5.3 a 5.7 são replicações de comunicação.
+- **Regras operacionais por tipo:**
+  - Globais: contrato de dados comum, idempotência por `id` + `versao`/`timestamp` e propagação para todos os consumidores.
+  - Comunicação: contrato orientado ao fluxo (entrada/saída por etapa), confirmação de processamento e retorno de status quando aplicável.
+- **Aplicação nos cenários de replicação:**
+  - Cenário 1 (mesmo BD/schema): global com ownership lógico (sem réplica física) e comunicação por tabelas/eventos internos.
+  - Cenário 2 (schemas): global com sincronização do produtor para todos os schemas consumidores; comunicação apenas entre os schemas envolvidos no fluxo.
+  - Cenário 3 (databases): global e comunicação de forma assíncrona (outbox/inbox), com global em fan-out e comunicação em cadeia.
+  - Cenário 4 (servers): mesmo padrão do cenário 3, com reforço de retry, DLQ, observabilidade e reprocessamento.
+
 ## 5.1. Pessoa (intersecção principal)
 - Pessoa é usada por todos os serviços.
 - **Esquema comum:** todos os serviços possuem a mesma entidade e tabela de Pessoa.
@@ -43,3 +57,64 @@
 - Graduação e Pós publicam documentos oficiais próprios (`DocumentoOficialGraduacao` / `DocumentoOficialPos`).
 - Esses documentos são espelhados em `DocumentoOficial` e viram `DocumentoAssinavel`.
 - O fluxo de assinatura segue a mesma regra de criação de solicitação e geração de manifesto.
+
+## 5.8. Diagramas de comunicação
+Os diagramas abaixo representam a visão lógica das comunicações definidas neste documento.
+
+### 5.8.1. Replicações globais (fan-out)
+```mermaid
+flowchart LR
+  Grad[Graduação] -->|PessoaCriada/PessoaAtualizada<br/>VinculoAcademicoCriado/VinculoAcademicoAtualizado| CanalGlobal[(Canal de replicação global)]
+  Pos[Pós] -->|PessoaCriada/PessoaAtualizada<br/>VinculoAcademicoCriado/VinculoAcademicoAtualizado| CanalGlobal
+
+  CanalGlobal --> GradRM[Graduação]
+  CanalGlobal --> PosRM[Pós-Graduação]
+  CanalGlobal --> DiplomasRM[Diplomas]
+  CanalGlobal --> AssinaturaRM[Assinatura]
+```
+
+### 5.8.2. Comunicação do fluxo de diploma (Grad/Pós → Diplomas → Assinatura → retorno)
+```mermaid
+sequenceDiagram
+  participant Origem as Graduação/Pós
+  participant Diplomas as Serviço de Diplomas
+  participant Assinatura as Serviço de Assinatura
+
+  Origem->>Diplomas: ConclusaoPublicada(vinculoId, dataConclusao)
+  Origem->>Diplomas: PedidoDiploma/RequerimentoDiploma
+  Diplomas->>Diplomas: Gera BaseEmissao + DocumentoDiploma
+  Diplomas->>Diplomas: StatusEmissao = EMITIDO
+  Diplomas->>Assinatura: DocumentoDiploma disponibilizado
+  Assinatura->>Assinatura: Cria DocumentoAssinavel + SolicitacaoAssinatura + Assinatura(PENDENTE)
+  Assinatura-->>Diplomas: ManifestoAssinatura(resultado)
+
+  alt assinatura concluída
+    Diplomas->>Diplomas: StatusEmissao = ASSINADO
+    Diplomas-->>Origem: PedidoDiploma atualizado (ASSINADO)
+  else rejeição/cancelamento
+    Diplomas->>Diplomas: Documento permanece pendente
+    Diplomas-->>Origem: PedidoDiploma atualizado (PENDENTE/REJEITADO)
+  end
+```
+
+### 5.8.3. Comunicação de documentos oficiais (Grad/Pós → Assinatura → retorno)
+```mermaid
+sequenceDiagram
+  participant GP as GraduacaoPos
+  participant AS as Assinatura
+
+  GP->>AS: Publica DocumentoOficialGraduacao ou DocumentoOficialPos
+  AS->>AS: Espelha DocumentoOficial
+  AS->>AS: Cria DocumentoAssinavel
+
+  alt sem solicitacao ativa ou concluida
+    AS->>AS: Cria SolicitacaoAssinatura
+    AS->>AS: Cria Assinatura PENDENTE
+  else com solicitacao ativa ou concluida
+    AS->>AS: Nao cria nova solicitacao
+  end
+
+  AS-->>GP: Retorna status CONCLUIDA REJEITADA ou CANCELADA
+  Note over GP,AS: REJEITADA ou CANCELADA permite nova solicitacao
+  Note over GP,AS: CONCLUIDA bloqueia nova solicitacao
+```

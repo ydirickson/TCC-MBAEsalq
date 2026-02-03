@@ -154,20 +154,5 @@ networks:
 
 volumes:
   postgres_data:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ${POSTGRES_DATA_PATH:-./data/postgres}
   prometheus_data:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ${PROMETHEUS_DATA_PATH:-./data/prometheus}
   grafana_data:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ${GRAFANA_DATA_PATH:-./data/grafana}

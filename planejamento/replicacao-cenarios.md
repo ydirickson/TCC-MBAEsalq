@@ -6,6 +6,14 @@ Este documento descreve sugestões de replicação de dados para o VínculoAcad�
 ## Objetivo da simulação
 Comparar replicação tradicional (recursos nativos do PostgreSQL) com replicação baseada em eventos via Kafka. A simulação busca demonstrar que a abordagem por eventos pode manter desempenho e confiabilidade sem perda, ao mesmo tempo em que oferece maior flexibilidade e desacoplamento do modelo de dados.
 
+## Eixo arquitetural aplicado aos cenários
+Além do eixo de infraestrutura (cenários 1-4), este documento usa o eixo arquitetural definido em [`arquiteturas.md`](./arquiteturas.md):
+- **DB Based:** integração via recursos nativos do banco.
+- **CDC+Kafka:** captura de mudanças do banco e publicação em tópicos.
+- **EDA com Kafka:** publicação de eventos de domínio pela aplicação (outbox/inbox).
+
+A comparação formal deve sempre ocorrer dentro do mesmo cenário, variando apenas a arquitetura.
+
 ## 1) Simples (mesmo BD e mesmos schemas)
 **Contexto:** todos os serviços compartilham o mesmo banco e os mesmos schemas.
 - **Padrão sugerido:** modelo único e tabelas comuns únicas (Pessoa, VínculoAcadêmico, Contato, Endereço, DocumentoIdentificação).
@@ -80,56 +88,72 @@ Este fluxo considera **apenas** as entidades já existentes nos serviços (sem m
   - há ao menos um `DocumentoDiploma` associado.
 - A leitura pode ser direta (cenário 1), por replicação (cenários 2–4) ou por view/materialização.
 
-## Fluxos por cenário (tradicional vs eventos)
-**Legenda rápida:** "Tradicional" = recursos nativos do PostgreSQL; "Eventos" = Kafka + outbox/inbox.
+## Fluxos por cenário (DB Based, CDC+Kafka e EDA+Kafka)
+**Legenda rápida:** DB Based = recursos nativos do PostgreSQL; CDC+Kafka = captura de mudanças do banco; EDA+Kafka = eventos de domínio publicados pela aplicação.
 
 ### 1) Simples (mesmo BD e mesmos schemas)
-- **Tradicional (triggers/procedures):**
+- **DB Based (triggers/procedures):**
   1. INSERT/UPDATE nas tabelas de aluno/professor.
   2. Trigger chama `sync_vinculo_academico(...)`.
   3. UPSERT direto em `vinculo_academico`.
-- **Eventos (outbox + Kafka, mesmo DB):**
+- **CDC+Kafka (mesmo DB):**
+  1. ALTERAÇÕES são capturadas no WAL (logical decoding/publication).
+  2. Conector CDC publica eventos técnicos no Kafka.
+  3. Consumer aplica UPSERT em `vinculo_academico` (mesmo schema).
+- **EDA+Kafka (outbox + Kafka, mesmo DB):**
   1. Aplicação grava dados + evento na `outbox_eventos` na mesma transação.
   2. Worker publica no Kafka.
   3. Consumer aplica UPSERT em `vinculo_academico` (mesmo schema).
 
 ### 2) Schema (mesmo BD, schemas distintos)
-- **Tradicional (triggers/procedures cross-schema):**
+- **DB Based (triggers/procedures cross-schema):**
   1. INSERT/UPDATE no schema produtor.
   2. Trigger grava no `schema_consumidor.vinculo_academico`.
   3. Leitura no schema consumidor.
-- **Eventos (outbox + Kafka, mesmo DB):**
+- **CDC+Kafka (mesmo DB):**
+  1. CDC captura mudanças no schema produtor.
+  2. Kafka distribui eventos técnicos para consumidores.
+  3. Consumer aplica no schema consumidor com inbox para idempotência.
+- **EDA+Kafka (outbox + Kafka, mesmo DB):**
   1. Aplicação grava dados + outbox no schema produtor.
   2. Worker publica no Kafka.
   3. Consumer aplica no schema consumidor com inbox para idempotência.
 
 ### 3) Databases (bancos distintos no mesmo servidor)
-- **Tradicional (logical replication):**
+- **DB Based (logical replication):**
   1. Publisher cria publication com tabelas fonte.
   2. Subscriber aplica mudanças no DB consumidor.
   3. Ajustes de schema/DDL e sequencias feitos manualmente.
-- **Eventos (outbox + Kafka, DBs distintos):**
+- **CDC+Kafka (DBs distintos):**
+  1. CDC captura mudanças no DB produtor.
+  2. Kafka distribui eventos técnicos.
+  3. Consumer aplica no DB consumidor com inbox e retry.
+- **EDA+Kafka (outbox + Kafka, DBs distintos):**
   1. Aplicação grava dados + outbox no DB produtor.
   2. Worker publica no Kafka.
   3. Consumer aplica no DB consumidor com inbox e retry.
 
 ### 4) Servers (bancos em servidores diferentes)
-- **Tradicional (logical replication):**
+- **DB Based (logical replication):**
   1. Publisher e subscriber em servidores distintos.
   2. Replicação lógica aplica mudanças no destino.
   3. Observabilidade para lag e falhas de rede.
-- **Eventos (outbox + Kafka, servidores diferentes):**
+- **CDC+Kafka (servidores diferentes):**
+  1. CDC captura mudanças no produtor.
+  2. Kafka distribui eventos técnicos para consumidores remotos.
+  3. Consumer aplica no destino com DLQ e reprocessamento.
+- **EDA+Kafka (outbox + Kafka, servidores diferentes):**
   1. Aplicação grava dados + outbox no produtor.
   2. Kafka distribui para consumidores.
   3. Consumer aplica no destino com DLQ e reprocessamento.
 
 ## Matriz comparativa (por cenario)
-| Cenario | Tradicional (PostgreSQL) | Eventos (Kafka) | Riscos principais |
-| --- | --- | --- | --- |
-| 1) Simples | Triggers + procedures no mesmo schema | Outbox + Kafka + consumer local | Acoplamento vs overhead de eventos |
-| 2) Schema | Triggers cross-schema | Outbox no produtor + consumer no schema alvo | Divergência de schemas; idempotência |
-| 3) Databases | Logical replication entre DBs | Outbox + Kafka + consumer no DB alvo | Latência e consistência eventual |
-| 4) Servers | Logical replication entre servidores | Outbox + Kafka + consumer remoto | Falhas de rede; observabilidade |
+| Cenario | DB Based (PostgreSQL) | CDC+Kafka | EDA+Kafka | Riscos principais |
+| --- | --- | --- | --- | --- |
+| 1) Simples | Triggers + procedures no mesmo schema | CDC local (WAL) + Kafka + consumer local | Outbox + Kafka + consumer local | Acoplamento vs overhead operacional |
+| 2) Schema | Triggers cross-schema | CDC no schema produtor + consumer no schema alvo | Outbox no produtor + consumer no schema alvo | Divergência de schemas; idempotência |
+| 3) Databases | Logical replication entre DBs | CDC no DB produtor + consumer no DB alvo | Outbox + Kafka + consumer no DB alvo | Latência e consistência eventual |
+| 4) Servers | Logical replication entre servidores | CDC remoto + Kafka + consumer remoto | Outbox + Kafka + consumer remoto | Falhas de rede; observabilidade |
 
 ## Técnicas de preenchimento do VínculoAcadêmico por cenário
 **Gatilhos comuns:** sempre que houver INSERT/UPDATE em `AlunoGraduacao`, `ProfessorGraduacao`, `AlunoPosGraduacao`, `ProfessorPosGraduacao`.
