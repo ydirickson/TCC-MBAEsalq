@@ -31,6 +31,13 @@ A partir desse contexto, a ideia é propor uma solução que retire a dependênc
 ## Como executar — banco centralizado + microserviços (fase 1)
 1. Pré-requisitos: Docker/Docker Compose instalados.
 2. Copie o arquivo de variáveis: `cp .env.example .env` e ajuste senhas/portas se necessário.
+   - Cenário 1 (simples): mantenha `BD_CENARIO=simples` (default) e schemas `public`.
+   - Cenário 2 (schemas): defina `BD_CENARIO=schemas` e ajuste:
+     - `GRADUACAO_DEFAULT_SCHEMA=graduacao`
+     - `POS_GRADUACAO_DEFAULT_SCHEMA=pos_graduacao`
+     - `DIPLOMAS_DEFAULT_SCHEMA=diplomas`
+     - `ASSINATURA_DEFAULT_SCHEMA=assinatura`
+   - Ao trocar de cenário, recrie o volume do Postgres (scripts em `/docker-entrypoint-initdb.d` só rodam na primeira inicialização do volume).
 3. Suba a stack completa: `docker compose up -d`.
 4. Verifique se está saudável: `docker compose ps` deve mostrar `healthy` no Postgres; em caso de dúvida, `docker compose logs -f postgres` até ver `database system is ready to accept connections`.
 5. Acessos:
