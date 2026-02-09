@@ -1,36 +1,8 @@
 services:
-  postgres:
-    image: postgres:18
-    container_name: tcc_postgres
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER:-tcc}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-tcc123}
-      POSTGRES_DB: ${POSTGRES_DB:-tccdb}
-      PGDATA: ${PGDATA:-/var/lib/postgresql/data/pgdata}
-    ports:
-      - "${POSTGRES_PORT:-5432}:5432"
-    command: >
-      postgres
-      -c wal_level=logical
-      -c max_wal_senders=10
-      -c max_replication_slots=10
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./bd/${BD_CENARIO:-simples}:/docker-entrypoint-initdb.d:ro
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - tcc-network
-
   graduacao:
     build:
-      context: .
+      context: ..
       dockerfile: servicos/graduacao/Dockerfile
-    container_name: tcc_graduacao
     restart: unless-stopped
     environment:
       PGR_POSTGRES_HOST: postgres
@@ -40,7 +12,7 @@ services:
       PGR_POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-tcc123}
       PGR_DEFAULT_SCHEMA: ${GRADUACAO_DEFAULT_SCHEMA:-public}
     ports:
-      - "8081:8081"
+      - "${GRADUACAO_PORT:-8081}:8081"
     depends_on:
       postgres:
         condition: service_healthy
@@ -49,9 +21,8 @@ services:
 
   pos-graduacao:
     build:
-      context: .
+      context: ..
       dockerfile: servicos/pos-graduacao/Dockerfile
-    container_name: tcc_pos_graduacao
     restart: unless-stopped
     environment:
       PGR_POSTGRES_HOST: postgres
@@ -61,7 +32,7 @@ services:
       PGR_POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-tcc123}
       PGR_DEFAULT_SCHEMA: ${POS_GRADUACAO_DEFAULT_SCHEMA:-public}
     ports:
-      - "8082:8082"
+      - "${POS_GRADUACAO_PORT:-8082}:8082"
     depends_on:
       postgres:
         condition: service_healthy
@@ -70,9 +41,8 @@ services:
 
   diplomas:
     build:
-      context: .
+      context: ..
       dockerfile: servicos/diplomas/Dockerfile
-    container_name: tcc_diplomas
     restart: unless-stopped
     environment:
       PGR_POSTGRES_HOST: postgres
@@ -82,7 +52,7 @@ services:
       PGR_POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-tcc123}
       PGR_DEFAULT_SCHEMA: ${DIPLOMAS_DEFAULT_SCHEMA:-public}
     ports:
-      - "8083:8083"
+      - "${DIPLOMAS_PORT:-8083}:8083"
     depends_on:
       postgres:
         condition: service_healthy
@@ -91,9 +61,8 @@ services:
 
   assinatura:
     build:
-      context: .
+      context: ..
       dockerfile: servicos/assinatura/Dockerfile
-    container_name: tcc_assinatura
     restart: unless-stopped
     environment:
       PGR_POSTGRES_HOST: postgres
@@ -103,16 +72,9 @@ services:
       PGR_POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-tcc123}
       PGR_DEFAULT_SCHEMA: ${ASSINATURA_DEFAULT_SCHEMA:-public}
     ports:
-      - "8084:8084"
+      - "${ASSINATURA_PORT:-8084}:8084"
     depends_on:
       postgres:
         condition: service_healthy
     networks:
       - tcc-network
-
-networks:
-  tcc-network:
-    driver: bridge
-
-volumes:
-  postgres_data:

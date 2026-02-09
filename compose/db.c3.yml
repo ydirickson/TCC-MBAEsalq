@@ -1,0 +1,134 @@
+services:
+  postgres_graduacao:
+    image: postgres:18
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${GRADUACAO_DB_USER:-tcc}
+      POSTGRES_PASSWORD: ${GRADUACAO_DB_PASSWORD:-tcc123}
+      POSTGRES_DB: ${GRADUACAO_DB_NAME:-tcc_graduacao}
+      PGDATA: ${GRADUACAO_PGDATA:-/var/lib/postgresql/data/pgdata}
+    ports:
+      - "${GRADUACAO_DB_PORT:-5434}:5432"
+    volumes:
+      - postgres_graduacao_data:/var/lib/postgresql/data
+      - ../bd/${BD_CENARIO:-schemas}:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - tcc-network
+
+  postgres_pos_graduacao:
+    image: postgres:18
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POS_GRADUACAO_DB_USER:-tcc}
+      POSTGRES_PASSWORD: ${POS_GRADUACAO_DB_PASSWORD:-tcc123}
+      POSTGRES_DB: ${POS_GRADUACAO_DB_NAME:-tcc_pos_graduacao}
+      PGDATA: ${POS_GRADUACAO_PGDATA:-/var/lib/postgresql/data/pgdata}
+    ports:
+      - "${POS_GRADUACAO_DB_PORT:-5435}:5432"
+    volumes:
+      - postgres_pos_graduacao_data:/var/lib/postgresql/data
+      - ../bd/${BD_CENARIO:-schemas}:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - tcc-network
+
+  postgres_diplomas:
+    image: postgres:18
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DIPLOMAS_DB_USER:-tcc}
+      POSTGRES_PASSWORD: ${DIPLOMAS_DB_PASSWORD:-tcc123}
+      POSTGRES_DB: ${DIPLOMAS_DB_NAME:-tcc_diplomas}
+      PGDATA: ${DIPLOMAS_PGDATA:-/var/lib/postgresql/data/pgdata}
+    ports:
+      - "${DIPLOMAS_DB_PORT:-5436}:5432"
+    volumes:
+      - postgres_diplomas_data:/var/lib/postgresql/data
+      - ../bd/${BD_CENARIO:-schemas}:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - tcc-network
+
+  postgres_assinatura:
+    image: postgres:18
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${ASSINATURA_DB_USER:-tcc}
+      POSTGRES_PASSWORD: ${ASSINATURA_DB_PASSWORD:-tcc123}
+      POSTGRES_DB: ${ASSINATURA_DB_NAME:-tcc_assinatura}
+      PGDATA: ${ASSINATURA_PGDATA:-/var/lib/postgresql/data/pgdata}
+    ports:
+      - "${ASSINATURA_DB_PORT:-5437}:5432"
+    volumes:
+      - postgres_assinatura_data:/var/lib/postgresql/data
+      - ../bd/${BD_CENARIO:-schemas}:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - tcc-network
+
+  graduacao:
+    environment:
+      PGR_POSTGRES_HOST: postgres_graduacao
+      PGR_POSTGRES_PORT: 5432
+      PGR_POSTGRES_DB: ${GRADUACAO_DB_NAME:-tcc_graduacao}
+      PGR_POSTGRES_USER: ${GRADUACAO_DB_USER:-tcc}
+      PGR_POSTGRES_PASSWORD: ${GRADUACAO_DB_PASSWORD:-tcc123}
+    depends_on:
+      postgres_graduacao:
+        condition: service_healthy
+
+  pos-graduacao:
+    environment:
+      PGR_POSTGRES_HOST: postgres_pos_graduacao
+      PGR_POSTGRES_PORT: 5432
+      PGR_POSTGRES_DB: ${POS_GRADUACAO_DB_NAME:-tcc_pos_graduacao}
+      PGR_POSTGRES_USER: ${POS_GRADUACAO_DB_USER:-tcc}
+      PGR_POSTGRES_PASSWORD: ${POS_GRADUACAO_DB_PASSWORD:-tcc123}
+    depends_on:
+      postgres_pos_graduacao:
+        condition: service_healthy
+
+  diplomas:
+    environment:
+      PGR_POSTGRES_HOST: postgres_diplomas
+      PGR_POSTGRES_PORT: 5432
+      PGR_POSTGRES_DB: ${DIPLOMAS_DB_NAME:-tcc_diplomas}
+      PGR_POSTGRES_USER: ${DIPLOMAS_DB_USER:-tcc}
+      PGR_POSTGRES_PASSWORD: ${DIPLOMAS_DB_PASSWORD:-tcc123}
+    depends_on:
+      postgres_diplomas:
+        condition: service_healthy
+
+  assinatura:
+    environment:
+      PGR_POSTGRES_HOST: postgres_assinatura
+      PGR_POSTGRES_PORT: 5432
+      PGR_POSTGRES_DB: ${ASSINATURA_DB_NAME:-tcc_assinatura}
+      PGR_POSTGRES_USER: ${ASSINATURA_DB_USER:-tcc}
+      PGR_POSTGRES_PASSWORD: ${ASSINATURA_DB_PASSWORD:-tcc123}
+    depends_on:
+      postgres_assinatura:
+        condition: service_healthy
+
+volumes:
+  postgres_graduacao_data:
+  postgres_pos_graduacao_data:
+  postgres_diplomas_data:
+  postgres_assinatura_data:

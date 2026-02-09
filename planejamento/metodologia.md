@@ -36,16 +36,19 @@ Este documento define o metodo de comparacao entre arquiteturas de replicacao, m
 
 Isso evita misturar dois fatores ao mesmo tempo (arquitetura e infraestrutura).
 
+**Observacao do experimento:** o cenario 1 (C1) sera usado apenas como baseline de construcao (C1A1). As combinacoes C1A2 e C1A3 nao serao executadas; as comparacoes formais com 3 arquiteturas iniciam em C2–C4.
+
 ## 6.2.4 Matriz minima de execucao
 
 | Eixo | Valores |
 | --- | --- |
 | Arquiteturas | 3 (DB Based, CDC+Kafka, EDA+Kafka) |
-| Cenarios | 4 (1-4) |
+| Cenarios comparativos | 3 (2-4) |
+| Baseline | C1A1 (sem replicacao fisica) |
 | Perfis de carga | 3 (leve, medio, pesado) |
 | Repeticoes por combinacao | `R` (recomendado: 3) |
 
-**Total de execucoes:** `3 * 4 * 3 * R` (com `R=3`, total = `108` rodadas).
+**Total de execucoes (comparativas):** `3 * 3 * 3 * R` (com `R=3`, total = `81` rodadas) + baseline C1A1 (fora da comparacao).
 
 ## 6.2.5 Protocolo de execucao por rodada
 
@@ -90,7 +93,7 @@ Notas:
 
 ## 6.2.8 Comandos-base de referencia
 
-Exemplo de rodada no cenario 1 (script integrado atual):
+Exemplo de rodada no cenario 1 (baseline C1A1):
 
 ```bash
 K6_EXECUTION_MODE=ramping-vus TEST_PROFILE=medio \
@@ -107,6 +110,8 @@ Para cenarios/arquiteturas seguintes, manter o mesmo padrao de carga e trocar ap
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | [preencher] | [1-4] | [DB/CDC/EDA] | [leve/medio/pesado] | [x] | [x] | [x] | [x] | [x] | [x] | [x] | [x] | [texto curto] |
 
+Observacao: para C1, registrar apenas DB Based (baseline).
+
 ## 6.2.10 Template de comparacao por cenario
 
 Preencher uma tabela por cenario, comparando lado a lado:
@@ -118,6 +123,8 @@ Preencher uma tabela por cenario, comparando lado a lado:
 | Resiliencia (M7) | [resultado] | [resultado] | [resultado] | [DB/CDC/EDA] |
 | Operacao (M6+M8) | [resultado] | [resultado] | [resultado] | [DB/CDC/EDA] |
 | Decisao final do cenario | [texto] | [texto] | [texto] | [arquitetura escolhida] |
+
+Observacao: esta comparacao se aplica aos cenarios 2–4. O cenario 1 e apenas baseline.
 
 ## 6.2.11 Regra de decisao consolidada
 

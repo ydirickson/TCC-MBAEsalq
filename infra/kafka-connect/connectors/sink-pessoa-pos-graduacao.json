@@ -1,0 +1,21 @@
+{
+  "name": "sink-pessoa-pos-graduacao",
+  "config": {
+    "connector.class": "io.confluent.connect.jdbc.JdbcSinkConnector",
+    "tasks.max": "1",
+    "topics": "tcc.graduacao.pessoa",
+
+    "connection.url": "jdbc:postgresql://postgres:5432/tccdb",
+    "connection.user": "tcc",
+    "connection.password": "tcc123",
+
+    "insert.mode": "upsert",
+    "pk.mode": "record_key",
+    "pk.fields": "id",
+    "delete.enabled": "true",
+
+    "table.name.format": "pos_graduacao.pessoa",
+    "auto.create": "false",
+    "auto.evolve": "false"
+  }
+}

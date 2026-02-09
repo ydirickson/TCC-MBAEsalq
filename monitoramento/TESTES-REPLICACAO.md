@@ -29,8 +29,8 @@ Scripts k6 que testam o fluxo completo de replicação fazendo requisições HTT
 #### Como executar:
 
 ```bash
-# Com todos os serviços rodando (via docker compose)
-docker compose up -d
+# Com todos os serviços rodando (exemplo C1 — ajuste conforme o cenário)
+docker compose --env-file .env.c1 -f compose/base.yml -f compose/db.c1.yml -f compose/services.yml up -d
 
 # Executar testes de replicação
 k6 run monitoramento/k6/scripts/replication-tests.js
@@ -143,12 +143,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       
-      - name: Start services
-        run: docker compose up -d
+      - name: Start services (exemplo C1)
+        run: docker compose --env-file .env.c1 -f compose/base.yml -f compose/db.c1.yml -f compose/services.yml up -d
       
       - name: Wait for services to be healthy
         run: |
-          timeout 60 bash -c 'until docker compose ps | grep healthy; do sleep 2; done'
+          timeout 60 bash -c 'until docker compose --env-file .env.c1 -f compose/base.yml -f compose/db.c1.yml -f compose/services.yml ps | grep healthy; do sleep 2; done'
       
       - name: Run k6 replication tests
         uses: grafana/k6-action@v0.3.0
@@ -159,7 +159,7 @@ jobs:
       
       - name: Cleanup
         if: always()
-        run: docker compose down -v
+        run: docker compose --env-file .env.c1 -f compose/base.yml -f compose/db.c1.yml -f compose/services.yml down -v
 ```
 
 ## Boas Práticas

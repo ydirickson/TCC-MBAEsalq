@@ -16,7 +16,8 @@ A partir desse contexto, a ideia é propor uma solução que retire a dependênc
 ## Estrutura do repositório
 - `planejamento/` — documentos de contexto, premissas e regras (ver índice em `planejamento/README.md`).
 - `planejamento/modulos/` — visão por serviço e conceitos compartilhados.
-- `docker-compose.yml` — infraestrutura atual + microserviços Spring (grad/pós/diplomas/assinatura).
+- `compose/` — composes separados por stack (base, serviços, DB C1/C2/C3, replicação A2/A3, monitoramento).
+- `docker-compose*.yml` — legado (mantido para referência/compatibilidade).
 - `.env.example` — variáveis para parametrizar as imagens e portas do compose.
 - `bd/pgadmin/servers.json` — cadastro do servidor Postgres no pgAdmin (carregado no start).
 - `docs/` — reservado para diagramas/artefatos gerados (a criar).
@@ -28,31 +29,27 @@ A partir desse contexto, a ideia é propor uma solução que retire a dependênc
 - Entidades e intersecções: `planejamento/entidades-interseccoes.md`.
 - Módulos por serviço: `planejamento/modulos/`.
 
-## Como executar — banco centralizado + microserviços (fase 1)
+## Como executar — stacks por cenário
 1. Pré-requisitos: Docker/Docker Compose instalados.
-2. Copie o arquivo de variáveis: `cp .env.example .env` e ajuste senhas/portas se necessário.
-   - Cenário 1 (simples): mantenha `BD_CENARIO=simples` (default) e schemas `public`.
-   - Cenário 2 (schemas): defina `BD_CENARIO=schemas` e ajuste:
-     - `GRADUACAO_DEFAULT_SCHEMA=graduacao`
-     - `POS_GRADUACAO_DEFAULT_SCHEMA=pos_graduacao`
-     - `DIPLOMAS_DEFAULT_SCHEMA=diplomas`
-     - `ASSINATURA_DEFAULT_SCHEMA=assinatura`
-   - Ao trocar de cenário, recrie o volume do Postgres (scripts em `/docker-entrypoint-initdb.d` só rodam na primeira inicialização do volume).
-3. Suba a stack completa: `docker compose up -d`.
-4. Verifique se está saudável: `docker compose ps` deve mostrar `healthy` no Postgres; em caso de dúvida, `docker compose logs -f postgres` até ver `database system is ready to accept connections`.
-5. Acessos:
-   - Postgres: `localhost:${POSTGRES_PORT:-5432}` (usuário/senha definidos em `.env`). CLI rápida: `docker compose exec postgres psql -U "$POSTGRES_USER" -d "$POSTGRES_DB"`.
-   - pgAdmin: `http://localhost:${PGADMIN_PORT:-8080}` com o login de `.env`. O servidor `TCC Postgres` já vem cadastrado via `bd/pgadmin/servers.json`. Se não aparecer, limpe o volume `pgadmin_data` (`docker volume ls | grep pgadmin_data` para conferir o nome e remover).
-6. Monitoramento:
-   - Prometheus: http://localhost:9090
-   - Grafana: http://localhost:3000 (padrão: admin/admin123)
-7. Microserviços:
-   - Graduação: http://localhost:8081
-   - Pós-graduação: http://localhost:8082
-   - Diplomas: http://localhost:8083
-   - Assinatura: http://localhost:8084
-8. Actuator/Prometheus:
-   - Endpoint padrão: `/actuator/prometheus` em cada serviço.
+2. Escolha o `.env` do cenário (ou use `.env.example` como base). Opções: `C1` -> `.env.c1` (simples, `public`), `C2` -> `.env.c2` (schemas), `C3` -> `.env.c3` (bancos por serviço), `C1+A1` -> `.env.c1a1` (DB Based), `C1+A2` -> `.env.c1a2` (CDC+Kafka).
+3. Suba a base + DB + serviços conforme o cenário:
+```bash
+# C1
+docker compose --env-file .env.c1 -f compose/base.yml -f compose/db.c1.yml -f compose/services.yml up -d
+
+# C2
+docker compose --env-file .env.c2 -f compose/base.yml -f compose/db.c2.yml -f compose/services.yml up -d
+
+# C3
+docker compose --env-file .env.c3 -f compose/base.yml -f compose/db.c3.yml -f compose/services.yml up -d
+```
+Obs: no C3, o bootstrap aplica `bd/${BD_CENARIO}` em cada DB (default `schemas`) para manter as estruturas até a divisão fina dos scripts por serviço.
+4. (Opcional) Monitoramento: adicione `-f compose/monitoring.yml` ao comando acima.
+5. (Opcional) Replicação: adicione `-f compose/replication.a2.yml` (A2, CDC+Kafka + Connect) ou `-f compose/replication.a3.yml` (A3, EDA+Kafka).
+6. Ao trocar de cenário, recrie volumes (scripts em `/docker-entrypoint-initdb.d` só rodam na primeira inicialização): `docker compose down -v` usando o mesmo `--env-file` e `-f`.
+7. Verifique se está saudável: `docker compose ps` deve mostrar `healthy` nos Postgres; em caso de dúvida, `docker compose logs -f <servico>`.
+8. Acessos: Postgres (C1/C2) em `localhost:${POSTGRES_PORT:-5432}`. Prometheus `http://localhost:${PROMETHEUS_PORT:-9090}`. Grafana `http://localhost:${GRAFANA_PORT:-3000}`. Graduação `http://localhost:${GRADUACAO_PORT:-8081}`. Pós-graduação `http://localhost:${POS_GRADUACAO_PORT:-8082}`. Diplomas `http://localhost:${DIPLOMAS_PORT:-8083}`. Assinatura `http://localhost:${ASSINATURA_PORT:-8084}`.
+9. Actuator/Prometheus: endpoint padrão `/actuator/prometheus` em cada serviço.
 
 ## Monitoramento (Prometheus + Grafana)
 Stack de observabilidade acoplada ao compose principal para as simulações.

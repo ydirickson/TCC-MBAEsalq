@@ -8,7 +8,7 @@ Este guia descreve os scripts de carga e como executar cenários no k6.
 - Helpers: `monitoramento/k6/helpers/`
 
 ## Pré-requisitos
-- Serviços e banco em execução (docker-compose)
+- Serviços e banco em execução (compose do cenário)
 - `k6` instalado
 
 ## Scripts disponíveis

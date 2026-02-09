@@ -1,0 +1,8 @@
+networks:
+  tcc-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  prometheus_data:
+  grafana_data:

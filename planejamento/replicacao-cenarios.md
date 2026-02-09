@@ -13,6 +13,7 @@ Além do eixo de infraestrutura (cenários 1-4), este documento usa o eixo arqui
 - **EDA com Kafka:** publicação de eventos de domínio pela aplicação (outbox/inbox).
 
 A comparação formal deve sempre ocorrer dentro do mesmo cenário, variando apenas a arquitetura.
+**Observação do experimento:** o cenário 1 (C1) é usado apenas como baseline de construção (C1A1). As combinações C1A2 e C1A3 serão omitidas.
 
 ## 1) Simples (mesmo BD e mesmos schemas)
 **Contexto:** todos os serviços compartilham o mesmo banco e os mesmos schemas.
@@ -20,6 +21,7 @@ A comparação formal deve sempre ocorrer dentro do mesmo cenário, variando ape
 - **Replicação:** não há replicação física; há apenas **ownership lógico** (Graduação/Pós produzem; Diplomas/Assinatura consomem).
 - **Integração:** leitura direta por FK e consultas compartilhadas; use visões para separar leitura por serviço, se necessário.
 - **Risco:** acoplamento forte e concorrência; exigir contratos claros de escrita (somente produtores oficiais atualizam).
+- **Uso no experimento:** baseline de construção (C1A1). C1A2/C1A3 não serão executados.
 
 ## 2) Schema (mesmo BD, schemas distintos por serviço)
 **Contexto:** um banco único com schemas separados por serviço.
@@ -92,18 +94,11 @@ Este fluxo considera **apenas** as entidades já existentes nos serviços (sem m
 **Legenda rápida:** DB Based = recursos nativos do PostgreSQL; CDC+Kafka = captura de mudanças do banco; EDA+Kafka = eventos de domínio publicados pela aplicação.
 
 ### 1) Simples (mesmo BD e mesmos schemas)
-- **DB Based (triggers/procedures):**
-  1. INSERT/UPDATE nas tabelas de aluno/professor.
-  2. Trigger chama `sync_vinculo_academico(...)`.
-  3. UPSERT direto em `vinculo_academico`.
-- **CDC+Kafka (mesmo DB):**
-  1. ALTERAÇÕES são capturadas no WAL (logical decoding/publication).
-  2. Conector CDC publica eventos técnicos no Kafka.
-  3. Consumer aplica UPSERT em `vinculo_academico` (mesmo schema).
-- **EDA+Kafka (outbox + Kafka, mesmo DB):**
-  1. Aplicação grava dados + evento na `outbox_eventos` na mesma transação.
-  2. Worker publica no Kafka.
-  3. Consumer aplica UPSERT em `vinculo_academico` (mesmo schema).
+- **DB Based (baseline C1A1):**
+  1. Escrita direta no mesmo schema (sem replicação física).
+  2. Se necessário, sincronização interna local (ex.: procedure/view) para consolidar `vinculo_academico`.
+- **CDC+Kafka (C1A2):** não executado no experimento.
+- **EDA+Kafka (C1A3):** não executado no experimento.
 
 ### 2) Schema (mesmo BD, schemas distintos)
 - **DB Based (triggers/procedures cross-schema):**
@@ -150,7 +145,7 @@ Este fluxo considera **apenas** as entidades já existentes nos serviços (sem m
 ## Matriz comparativa (por cenario)
 | Cenario | DB Based (PostgreSQL) | CDC+Kafka | EDA+Kafka | Riscos principais |
 | --- | --- | --- | --- | --- |
-| 1) Simples | Triggers + procedures no mesmo schema | CDC local (WAL) + Kafka + consumer local | Outbox + Kafka + consumer local | Acoplamento vs overhead operacional |
+| 1) Simples | **Baseline (C1A1)**: escrita direta no mesmo schema (sem replicação física) | **N/A** (C1A2 omitido) | **N/A** (C1A3 omitido) | Acoplamento vs overhead operacional |
 | 2) Schema | Triggers cross-schema | CDC no schema produtor + consumer no schema alvo | Outbox no produtor + consumer no schema alvo | Divergência de schemas; idempotência |
 | 3) Databases | Logical replication entre DBs | CDC no DB produtor + consumer no DB alvo | Outbox + Kafka + consumer no DB alvo | Latência e consistência eventual |
 | 4) Servers | Logical replication entre servidores | CDC remoto + Kafka + consumer remoto | Outbox + Kafka + consumer remoto | Falhas de rede; observabilidade |
@@ -159,6 +154,7 @@ Este fluxo considera **apenas** as entidades já existentes nos serviços (sem m
 **Gatilhos comuns:** sempre que houver INSERT/UPDATE em `AlunoGraduacao`, `ProfessorGraduacao`, `AlunoPosGraduacao`, `ProfessorPosGraduacao`.
 
 ### 1) Simples (mesmo BD e mesmos schemas)
+- **Observação:** no C1 o preenchimento é local (mesmo schema) e não configura replicação entre serviços.
 - **Trigger SQL:** triggers em tabelas de aluno/professor que fazem UPSERT direto em `vinculo_academico`.
 - **Stored procedure:** procedure única `sync_vinculo_academico(...)` chamada por triggers ou pela aplicação.
 - **Batch leve:** job periódico para reconciliar inconsistências (recalcular vínculos a partir das tabelas fonte).
