@@ -12,7 +12,7 @@ services:
       - "${POSTGRES_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./bd/${BD_CENARIO:-c1}:/docker-entrypoint-initdb.d:ro
+      - ./bd/${BD_CENARIO:-c2a1}:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
       interval: 10s
@@ -33,7 +33,7 @@ services:
       PGR_POSTGRES_DB: ${POSTGRES_DB:-tccdb}
       PGR_POSTGRES_USER: ${POSTGRES_USER:-tcc}
       PGR_POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-tcc123}
-      PGR_DEFAULT_SCHEMA: ${GRADUACAO_DEFAULT_SCHEMA:-public}
+      PGR_DEFAULT_SCHEMA: ${GRADUACAO_DEFAULT_SCHEMA:-graduacao}
     ports:
       - "${GRADUACAO_PORT:-8081}:8081"
     depends_on:
@@ -54,7 +54,7 @@ services:
       PGR_POSTGRES_DB: ${POSTGRES_DB:-tccdb}
       PGR_POSTGRES_USER: ${POSTGRES_USER:-tcc}
       PGR_POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-tcc123}
-      PGR_DEFAULT_SCHEMA: ${POS_GRADUACAO_DEFAULT_SCHEMA:-public}
+      PGR_DEFAULT_SCHEMA: ${POS_GRADUACAO_DEFAULT_SCHEMA:-pos_graduacao}
     ports:
       - "${POS_GRADUACAO_PORT:-8082}:8082"
     depends_on:
@@ -75,7 +75,7 @@ services:
       PGR_POSTGRES_DB: ${POSTGRES_DB:-tccdb}
       PGR_POSTGRES_USER: ${POSTGRES_USER:-tcc}
       PGR_POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-tcc123}
-      PGR_DEFAULT_SCHEMA: ${DIPLOMAS_DEFAULT_SCHEMA:-public}
+      PGR_DEFAULT_SCHEMA: ${DIPLOMAS_DEFAULT_SCHEMA:-diplomas}
     ports:
       - "${DIPLOMAS_PORT:-8083}:8083"
     depends_on:
@@ -96,7 +96,7 @@ services:
       PGR_POSTGRES_DB: ${POSTGRES_DB:-tccdb}
       PGR_POSTGRES_USER: ${POSTGRES_USER:-tcc}
       PGR_POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-tcc123}
-      PGR_DEFAULT_SCHEMA: ${ASSINATURA_DEFAULT_SCHEMA:-public}
+      PGR_DEFAULT_SCHEMA: ${ASSINATURA_DEFAULT_SCHEMA:-assinatura}
     ports:
       - "${ASSINATURA_PORT:-8084}:8084"
     depends_on:
