@@ -10,6 +10,11 @@ services:
       PGDATA: ${PGDATA:-/var/lib/postgresql/data/pgdata}
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
+    command: >
+      postgres
+      -c wal_level=logical
+      -c max_wal_senders=10
+      -c max_replication_slots=10
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./bd/${BD_CENARIO:-simples}:/docker-entrypoint-initdb.d:ro
@@ -18,53 +23,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    networks:
-      - tcc-network
-
-  prometheus:
-    image: prom/prometheus:v2.54.1
-    container_name: tcc_prometheus
-    restart: unless-stopped
-    command:
-      - --config.file=/etc/prometheus/prometheus.yml
-      - --storage.tsdb.retention.time=15d
-      - --web.enable-remote-write-receiver
-    ports:
-      - "9090:9090"
-    volumes:
-      - prometheus_data:/prometheus
-      - ./monitoramento/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-    networks:
-      - tcc-network
-
-  grafana:
-    image: grafana/grafana:11.1.4
-    container_name: tcc_grafana
-    restart: unless-stopped
-    environment:
-      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
-      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin123}
-    ports:
-      - "3000:3000"
-    volumes:
-      - grafana_data:/var/lib/grafana
-      - ./monitoramento/grafana/provisioning:/etc/grafana/provisioning:ro
-    depends_on:
-      - prometheus
-    networks:
-      - tcc-network
-
-  postgres-exporter:
-    image: prometheuscommunity/postgres-exporter:v0.18.1
-    container_name: tcc_postgres_exporter
-    restart: unless-stopped
-    environment:
-      DATA_SOURCE_NAME: "postgresql://${POSTGRES_USER:-tcc}:${POSTGRES_PASSWORD:-tcc123}@${POSTGRES_HOST:-postgres}:${POSTGRES_PORT:-5432}/${POSTGRES_DB:-tccdb}?sslmode=disable"
-    ports:
-      - "9187:9187"
-    depends_on:
-      postgres:
-        condition: service_healthy
     networks:
       - tcc-network
 
@@ -80,6 +38,7 @@ services:
       PGR_POSTGRES_DB: ${POSTGRES_DB:-tccdb}
       PGR_POSTGRES_USER: ${POSTGRES_USER:-tcc}
       PGR_POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-tcc123}
+      PGR_DEFAULT_SCHEMA: ${GRADUACAO_DEFAULT_SCHEMA:-public}
     ports:
       - "8081:8081"
     depends_on:
@@ -100,6 +59,7 @@ services:
       PGR_POSTGRES_DB: ${POSTGRES_DB:-tccdb}
       PGR_POSTGRES_USER: ${POSTGRES_USER:-tcc}
       PGR_POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-tcc123}
+      PGR_DEFAULT_SCHEMA: ${POS_GRADUACAO_DEFAULT_SCHEMA:-public}
     ports:
       - "8082:8082"
     depends_on:
@@ -120,6 +80,7 @@ services:
       PGR_POSTGRES_DB: ${POSTGRES_DB:-tccdb}
       PGR_POSTGRES_USER: ${POSTGRES_USER:-tcc}
       PGR_POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-tcc123}
+      PGR_DEFAULT_SCHEMA: ${DIPLOMAS_DEFAULT_SCHEMA:-public}
     ports:
       - "8083:8083"
     depends_on:
@@ -140,6 +101,7 @@ services:
       PGR_POSTGRES_DB: ${POSTGRES_DB:-tccdb}
       PGR_POSTGRES_USER: ${POSTGRES_USER:-tcc}
       PGR_POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-tcc123}
+      PGR_DEFAULT_SCHEMA: ${ASSINATURA_DEFAULT_SCHEMA:-public}
     ports:
       - "8084:8084"
     depends_on:
@@ -154,5 +116,3 @@ networks:
 
 volumes:
   postgres_data:
-  prometheus_data:
-  grafana_data:

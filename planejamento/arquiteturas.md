@@ -32,6 +32,8 @@ Este documento define o eixo arquitetural que será comparado no TCC e conecta e
 | 3) Databases (DBs distintos no mesmo servidor) | Viável via logical replication/jobs | Muito aderente | Muito aderente | Evidencia consistência eventual e custos operacionais |
 | 4) Servers (DBs em servidores distintos) | Viável via logical replication | Muito aderente | Muito aderente | Cenário de maior estresse para resiliência e observabilidade |
 
+**Observação do experimento:** no cenário 1 (C1) será executado apenas o baseline DB Based (C1A1). As combinações C1A2 e C1A3 não serão executadas.
+
 ## 6.1.3 Relação com as métricas M1-M8
 
 | Arquitetura | Métricas mais sensíveis | Como interpretar no TCC |

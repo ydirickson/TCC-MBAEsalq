@@ -1,0 +1,138 @@
+services:
+  postgres:
+    image: postgres:18
+    container_name: tcc_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-tcc}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-tcc123}
+      POSTGRES_DB: ${POSTGRES_DB:-tccdb}
+      PGDATA: ${PGDATA:-/var/lib/postgresql/data/pgdata}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./bd/${BD_CENARIO:-c2a1}:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - tcc-network
+
+  graduacao:
+    build:
+      context: .
+      dockerfile: servicos/graduacao/Dockerfile
+    container_name: tcc_graduacao
+    restart: unless-stopped
+    environment:
+      PGR_POSTGRES_HOST: postgres
+      PGR_POSTGRES_PORT: 5432
+      PGR_POSTGRES_DB: ${POSTGRES_DB:-tccdb}
+      PGR_POSTGRES_USER: ${POSTGRES_USER:-tcc}
+      PGR_POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-tcc123}
+      PGR_DEFAULT_SCHEMA: ${GRADUACAO_DEFAULT_SCHEMA:-graduacao}
+    ports:
+      - "${GRADUACAO_PORT:-8081}:8081"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - tcc-network
+
+  pos-graduacao:
+    build:
+      context: .
+      dockerfile: servicos/pos-graduacao/Dockerfile
+    container_name: tcc_pos_graduacao
+    restart: unless-stopped
+    environment:
+      PGR_POSTGRES_HOST: postgres
+      PGR_POSTGRES_PORT: 5432
+      PGR_POSTGRES_DB: ${POSTGRES_DB:-tccdb}
+      PGR_POSTGRES_USER: ${POSTGRES_USER:-tcc}
+      PGR_POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-tcc123}
+      PGR_DEFAULT_SCHEMA: ${POS_GRADUACAO_DEFAULT_SCHEMA:-pos_graduacao}
+    ports:
+      - "${POS_GRADUACAO_PORT:-8082}:8082"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8082/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - tcc-network
+
+  diplomas:
+    build:
+      context: .
+      dockerfile: servicos/diplomas/Dockerfile
+    container_name: tcc_diplomas
+    restart: unless-stopped
+    environment:
+      PGR_POSTGRES_HOST: postgres
+      PGR_POSTGRES_PORT: 5432
+      PGR_POSTGRES_DB: ${POSTGRES_DB:-tccdb}
+      PGR_POSTGRES_USER: ${POSTGRES_USER:-tcc}
+      PGR_POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-tcc123}
+      PGR_DEFAULT_SCHEMA: ${DIPLOMAS_DEFAULT_SCHEMA:-diplomas}
+    ports:
+      - "${DIPLOMAS_PORT:-8083}:8083"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8083/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - tcc-network
+
+  assinatura:
+    build:
+      context: .
+      dockerfile: servicos/assinatura/Dockerfile
+    container_name: tcc_assinatura
+    restart: unless-stopped
+    environment:
+      PGR_POSTGRES_HOST: postgres
+      PGR_POSTGRES_PORT: 5432
+      PGR_POSTGRES_DB: ${POSTGRES_DB:-tccdb}
+      PGR_POSTGRES_USER: ${POSTGRES_USER:-tcc}
+      PGR_POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-tcc123}
+      PGR_DEFAULT_SCHEMA: ${ASSINATURA_DEFAULT_SCHEMA:-assinatura}
+    ports:
+      - "${ASSINATURA_PORT:-8084}:8084"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8084/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - tcc-network
+
+networks:
+  tcc-network:
+    name: tcc-network
+    driver: bridge
+
+volumes:
+  postgres_data:

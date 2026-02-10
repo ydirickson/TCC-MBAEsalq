@@ -1,0 +1,29 @@
+{
+  "name": "src-graduacao-pessoa",
+  "config": {
+    "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+    "tasks.max": "1",
+
+    "database.hostname": "postgres",
+    "database.port": "5432",
+    "database.user": "tcc",
+    "database.password": "tcc123",
+    "database.dbname": "tccdb",
+
+    "topic.prefix": "tcc",
+    "plugin.name": "pgoutput",
+    "slot.name": "dbz_slot_graduacao_pessoa",
+    "slot.drop.on.stop": "false",
+
+    "publication.name": "dbz_pub_graduacao_pessoa",
+    "publication.autocreate.mode": "filtered",
+    "table.include.list": "graduacao.pessoa",
+
+    "snapshot.mode": "initial",
+    "message.key.columns": "graduacao.pessoa:id",
+
+    "transforms": "unwrap",
+    "transforms.unwrap.type": "io.debezium.transforms.ExtractNewRecordState",
+    "transforms.unwrap.drop.tombstones": "false"
+  }
+}

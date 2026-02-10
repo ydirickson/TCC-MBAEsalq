@@ -1,0 +1,29 @@
+{
+  "name": "src-graduacao-vinculo",
+  "config": {
+    "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+    "tasks.max": "1",
+
+    "database.hostname": "postgres",
+    "database.port": "5432",
+    "database.user": "tcc",
+    "database.password": "tcc123",
+    "database.dbname": "tccdb",
+
+    "topic.prefix": "tcc",
+    "plugin.name": "pgoutput",
+    "slot.name": "dbz_slot_graduacao_vinculo",
+    "slot.drop.on.stop": "false",
+
+    "publication.name": "dbz_pub_graduacao_vinculo",
+    "publication.autocreate.mode": "filtered",
+    "table.include.list": "graduacao.vinculo_academico",
+
+    "snapshot.mode": "initial",
+    "message.key.columns": "graduacao.vinculo_academico:id",
+
+    "transforms": "unwrap",
+    "transforms.unwrap.type": "io.debezium.transforms.ExtractNewRecordState",
+    "transforms.unwrap.drop.tombstones": "false"
+  }
+}

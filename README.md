@@ -16,7 +16,11 @@ A partir desse contexto, a ideia é propor uma solução que retire a dependênc
 ## Estrutura do repositório
 - `planejamento/` — documentos de contexto, premissas e regras (ver índice em `planejamento/README.md`).
 - `planejamento/modulos/` — visão por serviço e conceitos compartilhados.
-- `docker-compose.yml` — infraestrutura atual + microserviços Spring (grad/pós/diplomas/assinatura).
+- `compose/` — composes separados por stack (base, serviços, DB C1/C2/C3, overlay CDC, replicação A2/A3, monitoramento).
+- `docker-compose-c1.yml` — compose único do cenário 1 (sem variação de arquitetura).
+- `docker-compose-c2a1.yml` — compose único do cenário C2+A1 (schemas + DB Based).
+- `docker-compose-c2a2.yml` — compose único do cenário C2+A2 (schemas + CDC/Kafka com Debezium Connect).
+- `docker-compose*.yml` — legado (mantido para referência/compatibilidade).
 - `.env.example` — variáveis para parametrizar as imagens e portas do compose.
 - `bd/pgadmin/servers.json` — cadastro do servidor Postgres no pgAdmin (carregado no start).
 - `docs/` — reservado para diagramas/artefatos gerados (a criar).
@@ -28,24 +32,103 @@ A partir desse contexto, a ideia é propor uma solução que retire a dependênc
 - Entidades e intersecções: `planejamento/entidades-interseccoes.md`.
 - Módulos por serviço: `planejamento/modulos/`.
 
-## Como executar — banco centralizado + microserviços (fase 1)
+## Como executar — stacks por cenário
 1. Pré-requisitos: Docker/Docker Compose instalados.
-2. Copie o arquivo de variáveis: `cp .env.example .env` e ajuste senhas/portas se necessário.
-3. Suba a stack completa: `docker compose up -d`.
-4. Verifique se está saudável: `docker compose ps` deve mostrar `healthy` no Postgres; em caso de dúvida, `docker compose logs -f postgres` até ver `database system is ready to accept connections`.
-5. Acessos:
-   - Postgres: `localhost:${POSTGRES_PORT:-5432}` (usuário/senha definidos em `.env`). CLI rápida: `docker compose exec postgres psql -U "$POSTGRES_USER" -d "$POSTGRES_DB"`.
-   - pgAdmin: `http://localhost:${PGADMIN_PORT:-8080}` com o login de `.env`. O servidor `TCC Postgres` já vem cadastrado via `bd/pgadmin/servers.json`. Se não aparecer, limpe o volume `pgadmin_data` (`docker volume ls | grep pgadmin_data` para conferir o nome e remover).
-6. Monitoramento:
-   - Prometheus: http://localhost:9090
-   - Grafana: http://localhost:3000 (padrão: admin/admin123)
-7. Microserviços:
-   - Graduação: http://localhost:8081
-   - Pós-graduação: http://localhost:8082
-   - Diplomas: http://localhost:8083
-   - Assinatura: http://localhost:8084
-8. Actuator/Prometheus:
-   - Endpoint padrão: `/actuator/prometheus` em cada serviço.
+2. Escolha o `.env` do cenário (ou use `.env.example` como base). Opções principais: `C1` -> `.env.c1` (`BD_CENARIO=c1`), `C2+A1` -> `.env.c2` (`BD_CENARIO=c2a1`) e `C2+A2` -> `.env.c2a2` (`BD_CENARIO=c2a2`).
+3. Execução simplificada do C1 (arquivo único, sem variação de arquitetura):
+```bash
+docker compose --env-file .env.c1 -f docker-compose-c1.yml up -d
+```
+4. Para derrubar o C1 simplificado:
+```bash
+docker compose --env-file .env.c1 -f docker-compose-c1.yml down -v
+```
+5. Execução simplificada do C2+A1 (arquivo único, schemas + DB Based):
+```bash
+docker compose --env-file .env.c2 -f docker-compose-c2a1.yml up -d
+```
+6. Para derrubar o C2+A1 simplificado:
+```bash
+docker compose --env-file .env.c2 -f docker-compose-c2a1.yml down -v
+```
+7. Execução simplificada do C2+A2 (arquivo único, schemas + CDC/Kafka):
+```bash
+docker compose --env-file .env.c2a2 -f docker-compose-c2a2.yml up -d
+```
+8. Para derrubar o C2+A2 simplificado:
+```bash
+docker compose --env-file .env.c2a2 -f docker-compose-c2a2.yml down -v
+```
+9. Suba a base + DB + serviços via stack modular conforme o cenário:
+```bash
+# C1
+docker compose --env-file .env.c1 -f compose/base.yml -f compose/db.c1.yml -f compose/services.yml up -d
+
+# C2 (modular)
+docker compose --env-file .env.c2 -f compose/base.yml -f compose/db.c2.yml -f compose/services.yml up -d
+
+# C3
+docker compose --env-file .env.c3 -f compose/base.yml -f compose/db.c3.yml -f compose/services.yml up -d
+```
+Obs: no C3, o bootstrap aplica `bd/${BD_CENARIO}` em cada DB (default `schemas`) para manter as estruturas até a divisão fina dos scripts por serviço.
+10. (Opcional) Monitoramento: adicione `-f compose/monitoring.yml` ao comando acima.
+11. (Opcional) Replicação:
+   - A2 (CDC+Kafka + Connect): adicione `-f compose/db.cdc.yml -f compose/replication.a2.yml`
+   - A3 (EDA+Kafka): adicione `-f compose/replication.a3.yml`
+12. Ao trocar de cenário, recrie volumes (scripts em `/docker-entrypoint-initdb.d` só rodam na primeira inicialização): `docker compose down -v` usando o mesmo `--env-file` e `-f`.
+13. Verifique se está saudável: `docker compose ps` deve mostrar `healthy` nos Postgres; em caso de dúvida, `docker compose logs -f <servico>`.
+14. Acessos: Postgres (C1/C2) em `localhost:${POSTGRES_PORT:-5432}`. Prometheus `http://localhost:${PROMETHEUS_PORT:-9090}`. Grafana `http://localhost:${GRAFANA_PORT:-3000}`. Graduação `http://localhost:${GRADUACAO_PORT:-8081}`. Pós-graduação `http://localhost:${POS_GRADUACAO_PORT:-8082}`. Diplomas `http://localhost:${DIPLOMAS_PORT:-8083}`. Assinatura `http://localhost:${ASSINATURA_PORT:-8084}`.
+15. Actuator/Prometheus: endpoint padrão `/actuator/prometheus` em cada serviço.
+
+### Exemplo C2 + A2 (recomendado)
+```bash
+docker compose --env-file .env.c2a2 -f docker-compose-c2a2.yml up -d
+```
+
+### Bootstrap automatico no A2
+- O service `connect-init` roda automaticamente no `up` e registra os conectores de `infra/kafka-connect/connectors/`.
+- O source Debezium esta com `publication.autocreate.mode=filtered`, entao a publication e criada automaticamente.
+- No `debezium/connect:3.4`, o sink JDBC (`io.debezium.connector.jdbc.JdbcSinkConnector`) ja vem no worker; `infra/kafka-connect/plugins/` fica opcional.
+- Para verificar: `docker compose --env-file .env.c2a2 -f docker-compose-c2a2.yml logs connect-init`.
+
+### Atalho automatizado
+Comando unico para montar os arquivos corretos por cenario + arquitetura:
+
+```bash
+# cenario unico (compose dedicado)
+./simulacao.sh up c1
+
+# sobe C2 + A1
+./simulacao.sh up c2a1
+
+# sobe C2 + A2
+./simulacao.sh up c2a2
+
+# sobe C2 + A2 + monitoramento
+./simulacao.sh up c2a2 --monitoring
+
+# status
+./simulacao.sh ps c2a2
+
+# logs do bootstrap de conectores
+./simulacao.sh logs c2a2 -- connect-init
+
+# derruba (com volumes)
+./simulacao.sh down c2a2
+```
+
+Opcao recomendada (entrada compacta por cenario de simulacao):
+
+```bash
+# status
+./simulacao.sh ps c2a2
+
+# logs do bootstrap de conectores
+./simulacao.sh logs c2a2 -- connect-init
+
+# derruba
+./simulacao.sh down c2a2
+```
 
 ## Monitoramento (Prometheus + Grafana)
 Stack de observabilidade acoplada ao compose principal para as simulações.

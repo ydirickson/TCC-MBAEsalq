@@ -1,0 +1,22 @@
+INSERT INTO curso_graduacao (codigo, nome, carga_horaria)
+VALUES
+('ADM', 'Administracao', 3000),
+('ADS', 'Analise e Desenvolvimento de Sistemas', 2400),
+('ARQ', 'Arquitetura e Urbanismo', 3600),
+('BIO', 'Ciencias Biologicas', 3200),
+('CIV', 'Engenharia Civil', 3600),
+('DIR', 'Direito', 3700),
+('ECO', 'Ciencias Economicas', 3000),
+('ENF', 'Enfermagem', 3200),
+('ENGMEC', 'Engenharia Mecanica', 3600),
+('ENGEL', 'Engenharia Eletrica', 3600),
+('ENGPROD', 'Engenharia de Producao', 3600),
+('FAR', 'Farmacia', 4000),
+('FIS', 'Fisica', 3200),
+('GEO', 'Geografia', 3000),
+('HIS', 'Historia', 3000),
+('LET', 'Letras', 3000),
+('MAT', 'Matematica', 3200),
+('MED', 'Medicina', 7200),
+('PED', 'Pedagogia', 3000),
+('PSI', 'Psicologia', 4000);

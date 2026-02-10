@@ -1,14 +1,19 @@
 package br.com.tcc.posgraduacao.domain.service;
 
 import br.com.tcc.posgraduacao.domain.model.AlunoPosGraduacao;
+import br.com.tcc.posgraduacao.domain.model.CursoProgramaReferencia;
 import br.com.tcc.posgraduacao.domain.model.Pessoa;
 import br.com.tcc.posgraduacao.domain.model.ProfessorPosGraduacao;
 import br.com.tcc.posgraduacao.domain.model.ProgramaPos;
 import br.com.tcc.posgraduacao.domain.model.SituacaoAcademica;
+import br.com.tcc.posgraduacao.domain.model.TipoCursoPrograma;
+import br.com.tcc.posgraduacao.domain.model.TipoVinculo;
+import br.com.tcc.posgraduacao.domain.model.VinculoAcademico;
 import br.com.tcc.posgraduacao.domain.repository.AlunoPosGraduacaoRepository;
 import br.com.tcc.posgraduacao.domain.repository.PessoaRepository;
 import br.com.tcc.posgraduacao.domain.repository.ProfessorPosGraduacaoRepository;
 import br.com.tcc.posgraduacao.domain.repository.ProgramaPosRepository;
+import br.com.tcc.posgraduacao.domain.repository.VinculoAcademicoRepository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -22,16 +27,19 @@ public class AlunoPosGraduacaoService {
   private final PessoaRepository pessoaRepository;
   private final ProgramaPosRepository programaRepository;
   private final ProfessorPosGraduacaoRepository professorRepository;
+  private final VinculoAcademicoRepository vinculoRepository;
 
   public AlunoPosGraduacaoService(
       AlunoPosGraduacaoRepository alunoRepository,
       PessoaRepository pessoaRepository,
       ProgramaPosRepository programaRepository,
-      ProfessorPosGraduacaoRepository professorRepository) {
+      ProfessorPosGraduacaoRepository professorRepository,
+      VinculoAcademicoRepository vinculoRepository) {
     this.alunoRepository = alunoRepository;
     this.pessoaRepository = pessoaRepository;
     this.programaRepository = programaRepository;
     this.professorRepository = professorRepository;
+    this.vinculoRepository = vinculoRepository;
   }
 
   @Transactional
@@ -50,14 +58,38 @@ public class AlunoPosGraduacaoService {
       return Optional.empty();
     }
 
+    Pessoa pessoa = pessoaOpt.get();
+    ProgramaPos programa = programaOpt.get();
+    
     AlunoPosGraduacao novo = new AlunoPosGraduacao(
-        pessoaOpt.get(),
-        programaOpt.get(),
+        pessoa,
+        programa,
         orientadorOpt.orElse(null),
         dataMatricula,
         status);
     novo.setDataConclusao(dataConclusao);
-    return Optional.of(alunoRepository.save(novo));
+    AlunoPosGraduacao alunoSalvo = alunoRepository.save(novo);
+    
+    // Criar VínculoAcademico correspondente (sem triggers, criação explícita)
+    TipoCursoPrograma tipoCurso = determinarTipoCursoPorPrograma(programa.getCodigo());
+    CursoProgramaReferencia programaRef = new CursoProgramaReferencia(
+        programa.getId(),
+        programa.getCodigo(),
+        programa.getNome(),
+        tipoCurso
+    );
+    
+    VinculoAcademico vinculo = new VinculoAcademico(
+        pessoa,
+        programaRef,
+        TipoVinculo.ALUNO,
+        dataMatricula,
+        status
+    );
+    vinculo.setDataConclusao(dataConclusao);
+    vinculoRepository.save(vinculo);
+    
+    return Optional.of(alunoSalvo);
   }
 
   private Optional<Pessoa> obterOuCriarPessoa(Long pessoaId, Pessoa novaPessoa) {
@@ -95,12 +127,35 @@ public class AlunoPosGraduacaoService {
     }
 
     return alunoRepository.findById(id).map(aluno -> {
-      aluno.setPessoa(pessoaOpt.get());
-      aluno.setPrograma(programaOpt.get());
+      Pessoa pessoa = pessoaOpt.get();
+      ProgramaPos programa = programaOpt.get();
+      
+      aluno.setPessoa(pessoa);
+      aluno.setPrograma(programa);
       aluno.setOrientador(orientadorOpt.orElse(null));
       aluno.setDataMatricula(dataMatricula);
       aluno.setDataConclusao(dataConclusao);
       aluno.setStatus(status);
+      
+      // Atualizar VínculoAcademico correspondente
+      TipoCursoPrograma tipoCurso = determinarTipoCursoPorPrograma(programa.getCodigo());
+      CursoProgramaReferencia programaRef = new CursoProgramaReferencia(
+          programa.getId(),
+          programa.getCodigo(),
+          programa.getNome(),
+          tipoCurso
+      );
+      
+      VinculoAcademico vinculo = new VinculoAcademico(
+          pessoa,
+          programaRef,
+          TipoVinculo.ALUNO,
+          dataMatricula,
+          status
+      );
+      vinculo.setDataConclusao(dataConclusao);
+      vinculoRepository.save(vinculo);
+      
       return aluno;
     });
   }
@@ -119,5 +174,14 @@ public class AlunoPosGraduacaoService {
       return Optional.empty();
     }
     return professorRepository.findById(orientadorId);
+  }
+  
+  private TipoCursoPrograma determinarTipoCursoPorPrograma(String codigoPrograma) {
+    // Lógica baseada em bd/c1/05_vinculo_academico_sync.sql
+    return switch (codigoPrograma) {
+      case "PPGCC" -> TipoCursoPrograma.MESTRADO;
+      case "PPGAG" -> TipoCursoPrograma.DOUTORADO;
+      default -> TipoCursoPrograma.ESPECIALIZACAO;
+    };
   }
 }

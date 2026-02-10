@@ -1,13 +1,19 @@
 package br.com.tcc.graduacao.domain.service;
 
 import br.com.tcc.graduacao.domain.model.CursoGraduacao;
+import br.com.tcc.graduacao.domain.model.CursoProgramaReferencia;
 import br.com.tcc.graduacao.domain.model.NivelDocente;
 import br.com.tcc.graduacao.domain.model.Pessoa;
 import br.com.tcc.graduacao.domain.model.ProfessorGraduacao;
+import br.com.tcc.graduacao.domain.model.SituacaoAcademica;
 import br.com.tcc.graduacao.domain.model.SituacaoFuncional;
+import br.com.tcc.graduacao.domain.model.TipoCursoPrograma;
+import br.com.tcc.graduacao.domain.model.TipoVinculo;
+import br.com.tcc.graduacao.domain.model.VinculoAcademico;
 import br.com.tcc.graduacao.domain.repository.CursoGraduacaoRepository;
 import br.com.tcc.graduacao.domain.repository.PessoaRepository;
 import br.com.tcc.graduacao.domain.repository.ProfessorGraduacaoRepository;
+import br.com.tcc.graduacao.domain.repository.VinculoAcademicoRepository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -20,13 +26,16 @@ public class ProfessorGraduacaoService {
   private final ProfessorGraduacaoRepository professorRepository;
   private final PessoaRepository pessoaRepository;
   private final CursoGraduacaoRepository cursoRepository;
+  private final VinculoAcademicoRepository vinculoRepository;
 
   public ProfessorGraduacaoService(ProfessorGraduacaoRepository professorRepository,
       PessoaRepository pessoaRepository,
-      CursoGraduacaoRepository cursoRepository) {
+      CursoGraduacaoRepository cursoRepository,
+      VinculoAcademicoRepository vinculoRepository) {
     this.professorRepository = professorRepository;
     this.pessoaRepository = pessoaRepository;
     this.cursoRepository = cursoRepository;
+    this.vinculoRepository = vinculoRepository;
   }
 
   @Transactional
@@ -43,8 +52,30 @@ public class ProfessorGraduacaoService {
       return Optional.empty();
     }
 
-    ProfessorGraduacao novo = new ProfessorGraduacao(pessoaOpt.get(), cursoOpt.get(), dataIngresso, nivelDocente, status);
-    return Optional.of(professorRepository.save(novo));
+    Pessoa pessoa = pessoaOpt.get();
+    CursoGraduacao curso = cursoOpt.get();
+    
+    ProfessorGraduacao novo = new ProfessorGraduacao(pessoa, curso, dataIngresso, nivelDocente, status);
+    ProfessorGraduacao professorSalvo = professorRepository.save(novo);
+    
+    // Criar VínculoAcademico correspondente (sem triggers, criação explícita)
+    CursoProgramaReferencia cursoRef = new CursoProgramaReferencia(
+        curso.getId(),
+        curso.getCodigo(),
+        curso.getNome(),
+        TipoCursoPrograma.GRADUACAO
+    );
+    
+    VinculoAcademico vinculo = new VinculoAcademico(
+        pessoa,
+        cursoRef,
+        TipoVinculo.PROFESSOR,
+        dataIngresso,
+        SituacaoAcademica.valueOf(status.name())
+    );
+    vinculoRepository.save(vinculo);
+    
+    return Optional.of(professorSalvo);
   }
 
   private Optional<Pessoa> obterOuCriarPessoa(Long pessoaId, Pessoa novaPessoa) {
@@ -80,11 +111,32 @@ public class ProfessorGraduacaoService {
     }
 
     return professorRepository.findById(id).map(professor -> {
-      professor.setPessoa(pessoaOpt.get());
-      professor.setCurso(cursoOpt.get());
+      Pessoa pessoa = pessoaOpt.get();
+      CursoGraduacao curso = cursoOpt.get();
+      
+      professor.setPessoa(pessoa);
+      professor.setCurso(curso);
       professor.setDataIngresso(dataIngresso);
       professor.setNivelDocente(nivelDocente);
       professor.setStatus(status);
+      
+      // Atualizar VínculoAcademico correspondente
+      CursoProgramaReferencia cursoRef = new CursoProgramaReferencia(
+          curso.getId(),
+          curso.getCodigo(),
+          curso.getNome(),
+          TipoCursoPrograma.GRADUACAO
+      );
+      
+      VinculoAcademico vinculo = new VinculoAcademico(
+          pessoa,
+          cursoRef,
+          TipoVinculo.PROFESSOR,
+          dataIngresso,
+          SituacaoAcademica.valueOf(status.name())
+      );
+      vinculoRepository.save(vinculo);
+      
       return professor;
     });
   }
