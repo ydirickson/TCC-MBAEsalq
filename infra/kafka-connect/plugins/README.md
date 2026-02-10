@@ -1,10 +1,11 @@
 Place extra Kafka Connect plugins in this folder.
 
-For C1+A2, add JDBC Sink connector here so Debezium + JDBC can run in the same Connect worker.
+For the current `debezium/connect:3.4` setup, the JDBC sink used in A2
+(`io.debezium.connector.jdbc.JdbcSinkConnector`) is already bundled.
+So this directory is optional for `c2a2`.
 
-Expected content example:
-- kafka-connect-jdbc/...
-- (optional) additional JDBC driver jars
+Use this folder only when you need additional plugins/drivers
+(for example, Confluent JDBC sink or custom connectors).
 
 This folder is mounted in the Connect container at:
 - /kafka/connect/plugins

@@ -45,6 +45,7 @@ services:
 
 networks:
   tcc-network:
+    name: tcc-network
     driver: bridge
 
 volumes:

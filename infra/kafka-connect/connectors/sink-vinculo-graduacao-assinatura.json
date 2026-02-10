@@ -1,9 +1,9 @@
 {
-  "name": "sink-pessoa-diplomas",
+  "name": "sink-vinculo-graduacao-assinatura",
   "config": {
     "connector.class": "io.debezium.connector.jdbc.JdbcSinkConnector",
     "tasks.max": "1",
-    "topics": "tcc.graduacao.pessoa",
+    "topics": "tcc.graduacao.vinculo_academico",
 
     "connection.url": "jdbc:postgresql://postgres:5432/tccdb",
     "connection.username": "tcc",
@@ -14,7 +14,7 @@
     "primary.key.fields": "id",
     "delete.enabled": "true",
 
-    "table.name.format": "diplomas.pessoa",
+    "table.name.format": "assinatura.vinculo_academico",
     "schema.evolution": "none"
   }
 }

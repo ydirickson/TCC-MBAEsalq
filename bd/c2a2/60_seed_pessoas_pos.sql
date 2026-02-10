@@ -1,5 +1,29 @@
 SET search_path TO pos_graduacao;
 
+SELECT setval(
+  pg_get_serial_sequence('pos_graduacao.pessoa', 'id'),
+  COALESCE((SELECT MAX(id) + 1 FROM pos_graduacao.pessoa), 1),
+  false
+);
+
+SELECT setval(
+  pg_get_serial_sequence('pos_graduacao.documento_identificacao', 'id'),
+  COALESCE((SELECT MAX(id) + 1 FROM pos_graduacao.documento_identificacao), 1),
+  false
+);
+
+SELECT setval(
+  pg_get_serial_sequence('pos_graduacao.contato', 'id'),
+  COALESCE((SELECT MAX(id) + 1 FROM pos_graduacao.contato), 1),
+  false
+);
+
+SELECT setval(
+  pg_get_serial_sequence('pos_graduacao.endereco', 'id'),
+  COALESCE((SELECT MAX(id) + 1 FROM pos_graduacao.endereco), 1),
+  false
+);
+
 WITH pessoa AS (
   INSERT INTO pessoa (nome, data_nascimento, nome_social)
   VALUES ('Adriana Tavares', '1983-09-11', NULL)

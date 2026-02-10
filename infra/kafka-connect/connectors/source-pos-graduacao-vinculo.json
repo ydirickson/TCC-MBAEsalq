@@ -1,5 +1,5 @@
 {
-  "name": "src-graduacao-pessoa",
+  "name": "src-pos-graduacao-vinculo",
   "config": {
     "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
     "tasks.max": "1",
@@ -12,15 +12,15 @@
 
     "topic.prefix": "tcc",
     "plugin.name": "pgoutput",
-    "slot.name": "dbz_slot_graduacao_pessoa",
+    "slot.name": "dbz_slot_pos_graduacao_vinculo",
     "slot.drop.on.stop": "false",
 
-    "publication.name": "dbz_pub_graduacao_pessoa",
+    "publication.name": "dbz_pub_pos_graduacao_vinculo",
     "publication.autocreate.mode": "filtered",
-    "table.include.list": "graduacao.pessoa",
+    "table.include.list": "pos_graduacao.vinculo_academico",
 
     "snapshot.mode": "initial",
-    "message.key.columns": "graduacao.pessoa:id",
+    "message.key.columns": "pos_graduacao.vinculo_academico:id",
 
     "transforms": "unwrap",
     "transforms.unwrap.type": "io.debezium.transforms.ExtractNewRecordState",

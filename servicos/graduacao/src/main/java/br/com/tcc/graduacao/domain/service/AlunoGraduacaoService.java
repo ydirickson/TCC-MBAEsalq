@@ -1,12 +1,17 @@
 package br.com.tcc.graduacao.domain.service;
 
 import br.com.tcc.graduacao.domain.model.AlunoGraduacao;
+import br.com.tcc.graduacao.domain.model.CursoProgramaReferencia;
 import br.com.tcc.graduacao.domain.model.Pessoa;
 import br.com.tcc.graduacao.domain.model.SituacaoAcademica;
+import br.com.tcc.graduacao.domain.model.TipoCursoPrograma;
+import br.com.tcc.graduacao.domain.model.TipoVinculo;
 import br.com.tcc.graduacao.domain.model.TurmaGraduacao;
+import br.com.tcc.graduacao.domain.model.VinculoAcademico;
 import br.com.tcc.graduacao.domain.repository.AlunoGraduacaoRepository;
 import br.com.tcc.graduacao.domain.repository.PessoaRepository;
 import br.com.tcc.graduacao.domain.repository.TurmaGraduacaoRepository;
+import br.com.tcc.graduacao.domain.repository.VinculoAcademicoRepository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -19,12 +24,14 @@ public class AlunoGraduacaoService {
   private final AlunoGraduacaoRepository alunoRepository;
   private final PessoaRepository pessoaRepository;
   private final TurmaGraduacaoRepository turmaRepository;
+  private final VinculoAcademicoRepository vinculoRepository;
 
   public AlunoGraduacaoService(AlunoGraduacaoRepository alunoRepository, PessoaRepository pessoaRepository,
-      TurmaGraduacaoRepository turmaRepository) {
+      TurmaGraduacaoRepository turmaRepository, VinculoAcademicoRepository vinculoRepository) {
     this.alunoRepository = alunoRepository;
     this.pessoaRepository = pessoaRepository;
     this.turmaRepository = turmaRepository;
+    this.vinculoRepository = vinculoRepository;
   }
 
   @Transactional
@@ -41,9 +48,32 @@ public class AlunoGraduacaoService {
       return Optional.empty();
     }
 
-    AlunoGraduacao novo = new AlunoGraduacao(pessoaOpt.get(), turmaOpt.get(), dataMatricula, status);
+    Pessoa pessoa = pessoaOpt.get();
+    TurmaGraduacao turma = turmaOpt.get();
+    
+    AlunoGraduacao novo = new AlunoGraduacao(pessoa, turma, dataMatricula, status);
     novo.setDataConclusao(dataConclusao);
-    return Optional.of(alunoRepository.save(novo));
+    AlunoGraduacao alunoSalvo = alunoRepository.save(novo);
+    
+    // Criar VínculoAcademico correspondente (c2a2: sem triggers, criação explícita)
+    CursoProgramaReferencia cursoRef = new CursoProgramaReferencia(
+        turma.getCurso().getId(),
+        turma.getCurso().getCodigo(),
+        turma.getCurso().getNome(),
+        TipoCursoPrograma.GRADUACAO
+    );
+    
+    VinculoAcademico vinculo = new VinculoAcademico(
+        pessoa,
+        cursoRef,
+        TipoVinculo.ALUNO,
+        dataMatricula,
+        status
+    );
+    vinculo.setDataConclusao(dataConclusao);
+    vinculoRepository.save(vinculo);
+    
+    return Optional.of(alunoSalvo);
   }
 
   private Optional<Pessoa> obterOuCriarPessoa(Long pessoaId, Pessoa novaPessoa) {
@@ -79,11 +109,33 @@ public class AlunoGraduacaoService {
     }
 
     return alunoRepository.findById(id).map(aluno -> {
-      aluno.setPessoa(pessoaOpt.get());
-      aluno.setTurma(turmaOpt.get());
+      Pessoa pessoa = pessoaOpt.get();
+      TurmaGraduacao turma = turmaOpt.get();
+      
+      aluno.setPessoa(pessoa);
+      aluno.setTurma(turma);
       aluno.setDataMatricula(dataMatricula);
       aluno.setDataConclusao(dataConclusao);
       aluno.setStatus(status);
+      
+      // Atualizar VínculoAcademico correspondente
+      CursoProgramaReferencia cursoRef = new CursoProgramaReferencia(
+          turma.getCurso().getId(),
+          turma.getCurso().getCodigo(),
+          turma.getCurso().getNome(),
+          TipoCursoPrograma.GRADUACAO
+      );
+      
+      VinculoAcademico vinculo = new VinculoAcademico(
+          pessoa,
+          cursoRef,
+          TipoVinculo.ALUNO,
+          dataMatricula,
+          status
+      );
+      vinculo.setDataConclusao(dataConclusao);
+      vinculoRepository.save(vinculo);
+      
       return aluno;
     });
   }
