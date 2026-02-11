@@ -125,14 +125,23 @@ public class AlunoGraduacaoService {
           turma.getCurso().getNome(),
           TipoCursoPrograma.GRADUACAO
       );
-      
-      VinculoAcademico vinculo = new VinculoAcademico(
-          pessoa,
-          cursoRef,
-          TipoVinculo.ALUNO,
-          dataMatricula,
-          status
-      );
+
+      VinculoAcademico vinculo = vinculoRepository
+        .findByPessoaAndCurso_IdAndTipoVinculo(pessoa, turma.getCurso().getId(), TipoVinculo.ALUNO)
+        .map(v -> {
+            v.setCurso(cursoRef); // Atualiza dados do curso caso tenham mudado
+            v.setDataIngresso(dataMatricula);
+            v.setSituacao(status);
+            return v;
+        })
+        .orElseGet(() -> new VinculoAcademico(
+            pessoa,
+            cursoRef,
+            TipoVinculo.ALUNO,
+            dataMatricula,
+            status
+        ));
+
       vinculo.setDataConclusao(dataConclusao);
       vinculoRepository.save(vinculo);
       

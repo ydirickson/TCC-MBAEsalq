@@ -23,6 +23,38 @@ Exemplos:
 USAGE
 }
 
+wait_for_services() {
+  local timeout=300
+  local start_time=$(date +%s)
+  local services=("http://localhost:8081/actuator/health" "http://localhost:8082/actuator/health" "http://localhost:8083/actuator/health" "http://localhost:8084/actuator/health")
+  
+  echo "Aguardando servicos ficarem saudaveis (Timeout: ${timeout}s)..."
+  
+  while true; do
+    local all_up=true
+    for url in "${services[@]}"; do
+      if ! curl -s -f "$url" > /dev/null; then
+        all_up=false
+        break
+      fi
+    done
+
+    if [ "$all_up" = "true" ]; then
+      echo "Todos os servicos estao UP!"
+      return 0
+    fi
+
+    local current_time=$(date +%s)
+    local elapsed=$((current_time - start_time))
+    if [ "$elapsed" -ge "$timeout" ]; then
+        echo "Erro: Timeout aguardando servicos!"
+        return 1
+    fi
+
+    sleep 5
+  done
+}
+
 if [ "$#" -lt 2 ]; then
   usage
   exit 1
@@ -171,3 +203,7 @@ fi
 
 echo "Executando: ${CMD[*]}"
 "${CMD[@]}"
+
+if [ "$ACTION" = "up" ]; then
+  wait_for_services
+fi

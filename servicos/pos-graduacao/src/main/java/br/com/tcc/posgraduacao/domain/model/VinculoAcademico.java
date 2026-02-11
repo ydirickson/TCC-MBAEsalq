@@ -78,6 +78,14 @@ public class VinculoAcademico {
   public void setCurso(CursoProgramaReferencia curso) {
     this.curso = curso;
   }
+  
+  public void setDataIngresso(LocalDate dataIngresso) {
+      this.dataIngresso = dataIngresso;
+  }
+
+  public void setSituacao(SituacaoAcademica situacao) {
+      this.situacao = situacao;
+  }
 
   public TipoVinculo getTipoVinculo() {
     return tipoVinculo;
