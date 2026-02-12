@@ -27,6 +27,50 @@ const replicationConfig = readReplicationConfig({
 const REPLICATION_TIMEOUT_MS = replicationConfig.timeoutMs;
 const POLL_INTERVAL_MS = replicationConfig.pollIntervalMs;
 const MAX_POLL_ATTEMPTS = replicationConfig.maxAttempts;
+const TESTE1_PESSOA_COUNT = 5;
+const PESSOA_TARGET_SERVICES = ['posGraduacao', 'diplomas', 'assinatura'];
+
+function buildTest1Summary() {
+  const perTarget = {};
+
+  for (const service of PESSOA_TARGET_SERVICES) {
+    perTarget[service] = {
+      expected: TESTE1_PESSOA_COUNT,
+      success: 0,
+      failure: 0,
+    };
+  }
+
+  return {
+    requestedPersons: TESTE1_PESSOA_COUNT,
+    createdPersons: 0,
+    failedPersonCreations: 0,
+    createdPessoaIds: [],
+    perTarget,
+  };
+}
+
+let test1Summary = buildTest1Summary();
+
+function printTest1SummaryTable() {
+  const totalExpectedTest1 = TESTE1_PESSOA_COUNT * PESSOA_TARGET_SERVICES.length;
+  const totalSuccessTest1 = PESSOA_TARGET_SERVICES
+    .reduce((acc, target) => acc + test1Summary.perTarget[target].success, 0);
+  const totalFailureTest1 = PESSOA_TARGET_SERVICES
+    .reduce((acc, target) => acc + test1Summary.perTarget[target].failure, 0);
+
+  console.log('\nTabela de sumário (Teste 1 - Pessoa):');
+  console.log('| ENTIDADE | ORIGEM | DESTINO | QUANTIDADE | SUCESSO | FALHA |');
+  console.log('| --- | --- | --- | --- | --- | --- |');
+  for (const target of PESSOA_TARGET_SERVICES) {
+    const serviceSummary = test1Summary.perTarget[target];
+    console.log(`| PESSOA | GRADUACAO | ${target.toUpperCase()} | ${serviceSummary.expected} | ${serviceSummary.success} | ${serviceSummary.failure} |`);
+  }
+  console.log(`| PESSOA | GRADUACAO | TODOS | ${totalExpectedTest1} | ${totalSuccessTest1} | ${totalFailureTest1} |`);
+  console.log(`Pessoas criadas em graduação (Teste 1): ${test1Summary.createdPersons}/${test1Summary.requestedPersons}`);
+  console.log(`Falhas de criação em graduação (Teste 1): ${test1Summary.failedPersonCreations}`);
+  console.log(`IDs criados (Teste 1): ${test1Summary.createdPessoaIds.join(', ') || 'nenhum'}`);
+}
 
 export const options = {
   scenarios: {
@@ -34,7 +78,7 @@ export const options = {
       executor: 'shared-iterations',
       vus: 1,
       iterations: 1,
-      maxDuration: '5m',
+      maxDuration: '12m',
     },
   },
   thresholds: {
@@ -47,97 +91,128 @@ export const options = {
  * Teste 1: Pessoa criada em Graduação deve ser replicada para todos os serviços
  */
 function testPessoaReplication() {
-  console.log('\n=== Teste 1: Replicação de Pessoa (Graduação → Todos) ===');
-  
-  // 1. Criar pessoa em Graduação
-  const pessoaPayload = JSON.stringify({
-    nome: `Test User ${Date.now()}`,
-    dataNascimento: '1995-05-15',
-    nomeSocial: null,
-    documentoIdentificacao: {
-      tipo: 'CPF',
-      numero: `${Math.floor(Math.random() * 90000000000) + 10000000000}`
-    },
-    contato: {
-      email: `test${Date.now()}@example.com`,
-      telefone: '11987654321'
-    },
-    endereco: {
-      logradouro: 'Rua Teste, 123',
-      cidade: 'São Paulo',
-      uf: 'SP',
-      cep: '01234-567'
-    }
-  });
-  
-  const createResponse = http.post(
-    `${BASE_URLS.graduacao}/pessoas`,
-    pessoaPayload,
-    { headers: { 'Content-Type': 'application/json' } }
-  );
-  
-  const createCheck = check(createResponse, {
-    'Pessoa criada com sucesso': (r) => r.status === 201,
-    'Pessoa possui ID': (r) => {
-      try {
-        const body = JSON.parse(r.body);
-        return body.id !== undefined;
-      } catch {
-        return false;
-      }
-    },
-  });
-  
-  if (!createCheck) {
-    console.error('Falha ao criar pessoa em Graduação');
-    markReplicationFailure({ entity: 'pessoa', source: 'graduacao' });
-    return;
-  }
-  
-  const pessoaCriada = JSON.parse(createResponse.body);
-  const pessoaId = pessoaCriada.id;
-  console.log(`Pessoa criada com ID: ${pessoaId}`);
-  
-  // 2. Verificar replicação em cada serviço
-  const servicesToCheck = ['posGraduacao', 'diplomas', 'assinatura'];
+  console.log(`\n=== Teste 1: Replicação de Pessoa (Graduação → Todos, ${TESTE1_PESSOA_COUNT} pessoas) ===`);
+
   let allReplicationSuccess = true;
-  
-  for (const service of servicesToCheck) {
-    console.log(`\n  Verificando replicação em ${service}...`);
-    
-    const result = waitForReplication({
-      url: `${BASE_URLS[service]}/pessoas/${pessoaId}`,
-      validateFn: (data) => {
-        // Validar que os dados essenciais foram replicados corretamente.
-        return data.id === pessoaId
-          && data.nome === pessoaCriada.nome
-          && data.dataNascimento === pessoaCriada.dataNascimento;
+
+  for (let i = 1; i <= TESTE1_PESSOA_COUNT; i += 1) {
+    console.log(`\n--- Pessoa ${i}/${TESTE1_PESSOA_COUNT} ---`);
+    const personTimestamp = Date.now();
+    const pessoaPayload = JSON.stringify({
+      nome: `Test User ${personTimestamp}-${i}`,
+      dataNascimento: '1995-05-15',
+      nomeSocial: null,
+      documentoIdentificacao: {
+        tipo: 'CPF',
+        numero: `${Math.floor(Math.random() * 90000000000) + 10000000000}`,
       },
-      maxAttempts: MAX_POLL_ATTEMPTS,
-      intervalMs: POLL_INTERVAL_MS,
+      contato: {
+        email: `test${personTimestamp}-${i}@example.com`,
+        telefone: '11987654321',
+      },
+      endereco: {
+        logradouro: 'Rua Teste, 123',
+        cidade: 'São Paulo',
+        uf: 'SP',
+        cep: '01234-567',
+      },
     });
 
-    const replicationCheck = registerReplicationOutcome({
-      result,
-      successLabel: `${service}: Pessoa replicada com sucesso`,
-      dataLabel: `${service}: Dados consistentes`,
-      dataValidator: (data) => data.nome === pessoaCriada.nome,
-      tags: {
-        entity: 'pessoa',
-        source: 'graduacao',
-        target: service,
+    const createResponse = http.post(
+      `${BASE_URLS.graduacao}/pessoas`,
+      pessoaPayload,
+      { headers: { 'Content-Type': 'application/json' } },
+    );
+
+    const createCheck = check(createResponse, {
+      'Pessoa criada com sucesso': (r) => r.status === 201,
+      'Pessoa possui ID': (r) => {
+        try {
+          const body = JSON.parse(r.body);
+          return body.id !== undefined;
+        } catch {
+          return false;
+        }
       },
     });
-    
-    if (replicationCheck) {
-      console.log(`  ✓ ${service}: OK (${result.latency}ms)`);
-    } else {
+
+    if (!createCheck) {
+      console.error(`Falha ao criar pessoa ${i} em Graduação`);
+      test1Summary.failedPersonCreations += 1;
       allReplicationSuccess = false;
-      console.error(`  ✗ ${service}: FALHOU`);
+
+      for (const service of PESSOA_TARGET_SERVICES) {
+        test1Summary.perTarget[service].failure += 1;
+      }
+
+      markReplicationFailure({ entity: 'pessoa', source: 'graduacao' });
+      continue;
+    }
+
+    let pessoaCriada;
+    try {
+      pessoaCriada = JSON.parse(createResponse.body);
+    } catch {
+      console.error(`Falha ao interpretar resposta da criação da pessoa ${i}`);
+      test1Summary.failedPersonCreations += 1;
+      allReplicationSuccess = false;
+
+      for (const service of PESSOA_TARGET_SERVICES) {
+        test1Summary.perTarget[service].failure += 1;
+      }
+
+      markReplicationFailure({ entity: 'pessoa', source: 'graduacao' });
+      continue;
+    }
+
+    const pessoaId = pessoaCriada.id;
+    test1Summary.createdPersons += 1;
+    test1Summary.createdPessoaIds.push(pessoaId);
+    console.log(`Pessoa criada com ID: ${pessoaId}`);
+
+    for (const service of PESSOA_TARGET_SERVICES) {
+      console.log(`  Verificando replicação em ${service}...`);
+
+      const result = waitForReplication({
+        url: `${BASE_URLS[service]}/pessoas/${pessoaId}`,
+        validateFn: (data) => {
+          // Validar que os dados essenciais foram replicados corretamente.
+          return data.id === pessoaId
+            && data.nome === pessoaCriada.nome
+            && data.dataNascimento === pessoaCriada.dataNascimento;
+        },
+        maxAttempts: MAX_POLL_ATTEMPTS,
+        intervalMs: POLL_INTERVAL_MS,
+      });
+
+      const replicationCheck = registerReplicationOutcome({
+        result,
+        successLabel: `${service}: Pessoa replicada com sucesso`,
+        dataLabel: `${service}: Dados consistentes`,
+        dataValidator: (data) => data.nome === pessoaCriada.nome,
+        tags: {
+          entity: 'pessoa',
+          source: 'graduacao',
+          target: service,
+        },
+      });
+
+      if (replicationCheck) {
+        test1Summary.perTarget[service].success += 1;
+        console.log(`  ✓ ${service}: OK (${result.latency}ms)`);
+      } else {
+        test1Summary.perTarget[service].failure += 1;
+        allReplicationSuccess = false;
+        console.error(`  ✗ ${service}: FALHOU`);
+      }
     }
   }
-  
-  return { pessoaId, allReplicationSuccess };
+
+  return {
+    pessoaId: test1Summary.createdPessoaIds[0],
+    pessoaIds: test1Summary.createdPessoaIds,
+    allReplicationSuccess,
+  };
 }
 
 /**
@@ -322,6 +397,8 @@ function testPessoaUpdateReplication(pessoaId) {
  * Função principal de teste
  */
 export default function () {
+  test1Summary = buildTest1Summary();
+
   console.log('='.repeat(60));
   console.log('INÍCIO DOS TESTES DE REPLICAÇÃO');
   console.log('='.repeat(60));
@@ -341,6 +418,8 @@ export default function () {
     sleep(1);
     testPessoaUpdateReplication(teste1Result.pessoaId);
   }
+
+  printTest1SummaryTable();
   
   console.log('\n' + '='.repeat(60));
   console.log('FIM DOS TESTES DE REPLICAÇÃO');
@@ -367,7 +446,6 @@ export function handleSummary(data) {
   console.log(`⌀ Latência P99: ${p99Latency.toFixed(2)}ms`);
   console.log('='.repeat(60));
   
-  return {
-    'stdout': JSON.stringify(data, null, 2),
-  };
+  // Não enviar o JSON completo para stdout; isso polui a saída final.
+  return {};
 }

@@ -45,6 +45,19 @@ k6 run --out experimental-prometheus-rw=http://localhost:9090/api/v1/write \
   monitoramento/k6/scripts/cenario1-integrado.js
 ```
 
+### 6) replication-batch-latency.js
+Teste de lote em duas fases para medir demora de replicação:
+1) gera escritas em sequência (criação de pessoa, criação de vínculo e atualização de pessoa);
+2) valida a replicação por fila pendente e imprime tabela com sucesso/falha e P50/P95/P99.
+```bash
+BULK_PESSOA_CREATE_COUNT=100 \
+BULK_PESSOA_UPDATE_COUNT=100 \
+BULK_ENABLE_VINCULO=true \
+BULK_ITEM_TIMEOUT_MS=60000 \
+BULK_POLL_INTERVAL_MS=1000 \
+k6 run monitoramento/k6/scripts/replication-batch-latency.js
+```
+
 ## Configuração via .env
 O `graduacao-crud.js` lê `.env` na raiz do projeto (ou caminho especificado em `ENV_FILE`).
 
@@ -70,6 +83,15 @@ ENV_FILE=.env.pesado
 - **REPLICATION_SAMPLE_RATE**: Taxa de amostragem quando `REPLICATION_MODE=sampled` (0 a 1; padrão: `0.2`)
 - **REPLICATION_TIMEOUT_MS**: Timeout máximo para confirmação de replicação (padrão: `30000`)
 - **POLL_INTERVAL_MS**: Intervalo entre tentativas de polling da replicação (padrão: `500`)
+- **BULK_PESSOA_CREATE_COUNT**: Quantidade de pessoas novas no teste de lote (padrão: `100`)
+- **BULK_PESSOA_UPDATE_COUNT**: Quantidade de atualizações de pessoa no teste de lote (padrão: `100`)
+- **BULK_ENABLE_VINCULO**: Cria vínculo acadêmico para cada pessoa criada (`true/false`; padrão: `true`)
+- **BULK_PESSOA_CREATE_TARGETS**: Destinos para validar criação de pessoa (CSV; padrão: `posGraduacao,diplomas,assinatura`)
+- **BULK_PESSOA_UPDATE_TARGETS**: Destinos para validar atualização de pessoa (CSV; padrão: `diplomas`)
+- **BULK_VINCULO_TARGETS**: Destinos para validar criação de vínculo (CSV; padrão: `diplomas`)
+- **BULK_ITEM_TIMEOUT_MS**: Timeout por item na fase de validação de replicação (padrão: `60000`)
+- **BULK_POLL_INTERVAL_MS**: Intervalo entre ciclos de polling da fila pendente (padrão: `1000`)
+- **BULK_MAX_DURATION**: Duração máxima do cenário k6 do teste de lote (padrão: `45m`)
 
 ### Thresholds (Limites de Qualidade)
 - **K6_HTTP_REQ_FAILED**: Taxa de falhas HTTP (padrão: `rate<0.01` = menos de 1%)
