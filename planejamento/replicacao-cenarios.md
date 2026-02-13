@@ -4,7 +4,7 @@
 Este documento descreve sugestões de replicação de dados para o VínculoAcadêmico e demais entidades comuns em quatro cenários de infraestrutura.
 
 ## Objetivo da simulação
-Comparar replicação tradicional (recursos nativos do PostgreSQL) com replicação baseada em eventos via Kafka. A simulação busca demonstrar que a abordagem por eventos pode manter desempenho e confiabilidade sem perda, ao mesmo tempo em que oferece maior flexibilidade e desacoplamento do modelo de dados.
+Comparar, em **estratégia faseada**, três arquiteturas de replicação: **DB Based**, **Kafka + CDC** e **EDA + Kafka**. A simulação busca demonstrar que as abordagens baseadas em eventos podem manter desempenho e confiabilidade sem perda, ao mesmo tempo em que oferecem maior flexibilidade e desacoplamento do modelo de dados.
 
 ## Eixo arquitetural aplicado aos cenários
 Além do eixo de infraestrutura (cenários 1-4), este documento usa o eixo arquitetural definido em [`arquiteturas.md`](./arquiteturas.md):
