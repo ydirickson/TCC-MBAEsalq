@@ -16,3 +16,4 @@ Os documentos existentes aqui serão atualizados conforme o andamento do projeto
 - [7. Escopo previsto (todos os domínios)](./escopo.md)
 - [8. Métricas previstas (alto nível)](./metricas.md)
 - [9. Pontos em aberto para decisão](./pontos-abertos.md)
+- [10. Pendências de implementação (arquivo de trabalho)](./pendencias.md)

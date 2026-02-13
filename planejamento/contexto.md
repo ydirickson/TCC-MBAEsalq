@@ -14,9 +14,14 @@ Serviços simulados:
 3. **Diplomas**
 4. **Certificados e assinatura eletrônica**
 
-## Documentos de módulos
-- [Conceitos Compartilhados](./modulos/compartilhadas.md)
+## Documentação de módulos
+Os documentos de serviço descrevem as regras e responsabilidades de cada domínio. O documento compartilhado consolida entidades e eventos comuns que precisam permanecer consistentes para viabilizar a replicação entre todos os serviços.
+
+### Serviços
 - [Serviço de Graduação](./modulos/graduacao.md)
 - [Serviço de Pós-graduação](./modulos/pos-graduacao.md)
 - [Serviço de Diplomas](./modulos/diplomas.md)
 - [Serviço de Assinatura Eletrônica](./modulos/assinatura-eletronica.md)
+
+### Compartilhado
+- [Conceitos Compartilhados](./modulos/compartilhadas.md)
