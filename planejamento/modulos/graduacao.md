@@ -36,12 +36,20 @@ Todas as entidades compartilhadas devem ser replicadas da mesma forma entre serv
 - Fluxo de documento oficial para assinatura no A2: previsto, ainda em implementação
 
 ### A3 - EDA + Kafka (eventos ainda a implementar)
-- `PessoaCriada`, `PessoaAtualizada`
-- `VinculoAcademicoCriado`, `VinculoAcademicoAtualizado`
-- `ConclusaoPublicada`
-- `DocumentoOficialCriado`, `DocumentoOficialAtualizado`
-- `SolicitacaoAssinaturaCriada`, `SolicitacaoAssinaturaCancelada`
-- `AssinaturaParcial`, `AssinaturaConcluida`, `AssinaturaRejeitada`
+| Evento | Significado | Compartilha |
+| --- | --- | --- |
+| `PessoaCriada` | Nova pessoa cadastrada na Graduação. | `pessoaId`, `nome`, `dataNascimento`, `nomeSocial`, `versao`/`timestamp`. |
+| `PessoaAtualizada` | Atualização cadastral de pessoa já existente. | `pessoaId`, dados cadastrais atualizados e `versao`/`timestamp`. |
+| `VinculoAcademicoCriado` | Novo vínculo acadêmico (aluno/professor) criado. | `vinculoId`, `pessoaId`, `cursoId`, `cursoCodigo`, `cursoNome`, `cursoTipo`, `tipoVinculo`, `dataIngresso`, `situacao`. |
+| `VinculoAcademicoAtualizado` | Alteração de situação ou dados do vínculo. | `vinculoId`, `pessoaId`, dados de vínculo atualizados, `dataConclusao` (quando existir), `versao`/`timestamp`. |
+| `ConclusaoPublicada` | Conclusão acadêmica publicada para consumo externo. | `vinculoId`, `pessoaId`, `dataConclusao`, `situacao=CONCLUIDO`. |
+| `DocumentoOficialCriado` | Emissão de novo documento oficial. | `documentoOficialId`, `origemServico`, `origemId`, `pessoaId`, `tipoDocumento`, `dataEmissao`, `versao`, `urlArquivo`, `hashDocumento`. |
+| `DocumentoOficialAtualizado` | Atualização de versão/metadados de documento oficial. | `documentoOficialId`, metadados atualizados, `versao`, `timestamp`. |
+| `SolicitacaoAssinaturaCriada` | Abertura de solicitação de assinatura. | `solicitacaoId`, `documentoAssinavelId`/`documentoOficialId`, `status`, `dataSolicitacao`. |
+| `SolicitacaoAssinaturaCancelada` | Cancelamento de solicitação de assinatura. | `solicitacaoId`, `status`, `motivo`, `dataAtualizacao`. |
+| `AssinaturaParcial` | Uma assinatura registrada, mas fluxo ainda incompleto. | `solicitacaoId`, `assinaturaId`, `assinanteId`, `status`, `dataAssinatura`. |
+| `AssinaturaConcluida` | Processo de assinatura concluído. | `solicitacaoId`, `status=CONCLUIDA`, `dataConclusao`, `hashFinal` (quando aplicável). |
+| `AssinaturaRejeitada` | Assinatura rejeitada por um assinante/regra. | `solicitacaoId`, `assinaturaId`, `status=REJEITADA`, `motivoRecusa`. |
 
 ## Diagrama de Entidades
 ```mermaid
