@@ -1,67 +1,124 @@
-# 3. Definição das intersecções e regras de replicação
+# 3. Cenários de replicação e regras
 [← Voltar ao índice](./README.md)
 
-## 3.0. Taxonomia das replicações (globais e de comunicação)
-- Este documento adota dois tipos de replicação: **globais** e **de comunicação**.
-- **Replicações globais:** dados que nascem em um ou mais serviços e precisam alimentar todos os demais serviços (padrão fan-out).
-- **Replicações de comunicação:** dados que nascem em um serviço e precisam migrar para outro como parte de um fluxo de negócio (cadeia de processo entre serviços).
-- **Enquadramento neste documento:** `Pessoa` (3.1) e `VinculoAcademico` (3.2) são replicações globais; seções 3.3 a 3.7 são replicações de comunicação.
-- **Regras operacionais por tipo:**
-  - Globais: contrato de dados comum, idempotência por `id` + `versao`/`timestamp` e propagação para todos os consumidores.
-  - Comunicação: contrato orientado ao fluxo (entrada/saída por etapa), confirmação de processamento e retorno de status quando aplicável.
-- **Aplicação nos cenários de replicação:**
-  - Cenário 1 (mesmo BD/schema): global com ownership lógico (sem réplica física) e comunicação por tabelas/eventos internos.
-  - Cenário 2 (schemas): global com sincronização do produtor para todos os schemas consumidores; comunicação apenas entre os schemas envolvidos no fluxo.
-  - Cenário 3 (databases): global e comunicação de forma assíncrona (outbox/inbox), com global em fan-out e comunicação em cadeia.
-  - Cenário 4 (servers): mesmo padrão do cenário 3, com reforço de retry, DLQ, observabilidade e reprocessamento.
+Este documento consolida em um único lugar:
+- as regras funcionais de replicação entre domínios;
+- os cenários de infraestrutura;
+- como DB Based, CDC+Kafka e EDA+Kafka se aplicam em cada cenário.
 
-## 3.1. Pessoa (intersecção principal)
-- Pessoa é usada por todos os serviços.
-- **Esquema comum:** todos os serviços possuem a mesma entidade e tabela de Pessoa.
-- **Fontes de produção:** Graduação e Pós criam e atualizam Pessoa; Diplomas e Assinatura consomem e mantêm cópias locais.
-- Regra de criação: Pessoa pode nascer em qualquer um dos dois serviços principais (Graduação ou Pós) e ambos publicam `PessoaCriada`.
-- Regra de atualização: Graduação e Pós podem atualizar Pessoa; ambos publicam `PessoaAtualizada`. Consumidores aplicam de forma idempotente (id + timestamp/versão) em seus read models.
+## 3.1. Taxonomia das replicações
+- **Replicações globais (fan-out):** dados que nascem em um ou mais serviços e precisam alimentar todos os consumidores.
+- **Replicações de comunicação (cadeia):** dados que transitam de um serviço para outro dentro de um fluxo de negócio.
 
-## 3.2. Vínculo Acadêmico (VinculoAcademico)
-- **Cardinalidade:** uma Pessoa pode ter múltiplos vínculos (1:N), por exemplo duas graduações, um mestrado e um doutorado, cada um com seu próprio `vinculoId`.
-- **Histórico:** manter tabela de histórico/versões de `VinculoAcademico` para registrar mudanças de status/curso/orientador (auditoria).
-- **Esquema comum:** todos os serviços possuem a mesma entidade e tabela de VínculoAcadêmico (com `cursoId`, `cursoCodigo`, `cursoNome`, `tipoCursoPrograma`).
-- **Fontes de produção:** Graduação e Pós criam e atualizam `VinculoAcademico`.
-- Eventos: `VinculoAcademicoCriado` (status inicial ativo) e `VinculoAcademicoAtualizado` (mudança de status, curso/programa, orientador/colegiado).
-- Consumo: Diplomas e Assinatura mantêm read models; Graduação e Pós também consomem para reconciliação.
-- Status “concluído” gera `ConclusaoPublicada` (coberto na seção seguinte).
+Regras operacionais:
+- Globais: contrato comum de dados, idempotência por `id` + `versao`/`timestamp`, propagação para todos os destinos necessários.
+- Comunicação: contrato orientado ao fluxo, confirmação de processamento e retorno de status quando aplicável.
 
-## 3.3. Conclusão / elegibilidade para diploma
-- Diplomas precisa saber quando um vínculo (grad/pós) está concluído.
-- Graduação e Pós produzem o estado “concluído” (ou equivalente).
-- Diplomas consome esse estado para permitir emissão.
-- Regra de consistência: status concluído exige `dataConclusao` preenchida.
+## 3.2. Regras de intersecção (o que replicar)
 
-## 3.4. Pedido de Diploma (tabela replicada)
-- Quando um vínculo é marcado como concluído, Graduação ou Pós cria um registro em uma tabela de `PedidoDiploma` (ou `RequerimentoDiploma`) local.
-- Essa tabela é replicada para o serviço de Diplomas, que consome os pedidos e inicia o fluxo de emissão.
-- Status e resposta da emissão retornam pelo mesmo caminho lógico: Diplomas atualiza o pedido (ou uma tabela espelho) e replica de volta para os serviços de origem para consulta.
+### 3.2.1 Pessoa (global)
+- Usada por todos os serviços.
+- Graduação e Pós-graduação produzem; Diplomas e Assinatura consomem read models.
+- Criação/atualização deve ser idempotente no destino.
 
-## 3.5. Documento de diploma e assinatura
-- Diplomas gera **DocumentoDiploma** automaticamente ao emitir o diploma.
-- Assinatura eletrônica cria **DocumentoAssinável** a partir de `DocumentoDiploma` ou de `DocumentoOficial`.
-- Solicitação concluída atualiza `StatusEmissao` para `ASSINADO`; rejeição/cancelamento mantém o documento pendente.
+### 3.2.2 Vínculo Acadêmico (global)
+- Pessoa pode ter múltiplos vínculos (1:N).
+- Graduação e Pós-graduação produzem; Diplomas e Assinatura consomem.
+- Mudança para `CONCLUIDO` deve carregar `dataConclusao`.
+- Recomendado manter histórico/auditoria das mudanças.
 
-## 3.6. Solicitação de Assinatura e Certificados (tabela replicada)
-- Ao criar um `DocumentoDiploma` ou `DocumentoOficial`, uma `SolicitacaoAssinatura` é aberta **somente** se não existir solicitação ativa/concluída para o mesmo documento.
-- A criação da solicitação gera uma `Assinatura` em `PENDENTE` (pronta para assinar).
-- Ao assinar, gera `ManifestoAssinatura`; em caso de rejeição/cancelamento, a solicitação é encerrada e permite nova solicitação futura.
-- O resultado (assinatura concluída ou rejeitada) é replicado de volta, permitindo que Diplomas atualize o status do documento e do pedido.
+### 3.2.3 Conclusão e elegibilidade (comunicação)
+- Diplomas depende de conclusão acadêmica para liberar emissão.
+- Conclusão válida exige consistência de status e data.
 
-## 3.7. Documentos oficiais (grad/pós → assinatura)
-- Graduação e Pós publicam documentos oficiais próprios (`DocumentoOficialGraduacao` / `DocumentoOficialPos`).
-- Esses documentos são espelhados em `DocumentoOficial` e viram `DocumentoAssinavel`.
-- O fluxo de assinatura segue a mesma regra de criação de solicitação e geração de manifesto.
+### 3.2.4 Requerimento e emissão de diploma (comunicação)
+- Conclusão gera `RequerimentoDiploma`.
+- Emissão gera `Diploma` e `DocumentoDiploma`.
+- Resultado da assinatura retorna para atualização de `StatusEmissao`.
 
-## 3.8. Diagramas de comunicação
-Os diagramas abaixo representam a visão lógica das comunicações definidas neste documento.
+### 3.2.5 Assinatura de documentos (comunicação)
+- `DocumentoDiploma` e `DocumentoOficial` podem originar `DocumentoAssinavel`.
+- `SolicitacaoAssinatura` só abre quando não há solicitação ativa/concluída para o mesmo documento.
+- Assinatura concluída gera manifesto e status final; rejeição/cancelamento permite novo ciclo conforme regra do domínio.
 
-### 3.8.1. Replicações globais (fan-out)
+## 3.3. Cenários de infraestrutura (onde a replicação roda)
+
+### 3.3.1 Cenário 1 - Simples (mesmo BD e mesmos schemas)
+- Sem replicação física entre bancos.
+- Ownership lógico entre produtores e consumidores.
+- Serve como baseline (`C1A1`) no experimento.
+
+### 3.3.2 Cenário 2 - Schemas (mesmo BD, schemas por serviço)
+- Tabelas comuns espelhadas por schema.
+- Replicação entre schemas por trigger/procedure, CDC ou eventos.
+
+### 3.3.3 Cenário 3 - Databases (DBs distintos no mesmo servidor)
+- Cada serviço com DB próprio.
+- Replicação assíncrona com maior necessidade de controle de entrega.
+
+### 3.3.4 Cenário 4 - Servers (DBs em servidores diferentes)
+- Mesmo modelo do cenário 3 com maior criticidade de rede/operação.
+- Necessário reforço de observabilidade, retry e recuperação.
+
+## 3.4. Arquiteturas por cenário (como replicar)
+
+### 3.4.1 DB Based
+- Integração via recursos nativos do PostgreSQL (trigger, procedure, logical replication, jobs).
+- Menor latência local, maior acoplamento estrutural.
+
+### 3.4.2 CDC + Kafka
+- Captura mudanças de tabela e distribui eventos técnicos.
+- Bom desacoplamento de transporte; semântica ainda tabela-cêntrica.
+
+### 3.4.3 EDA + Kafka
+- Publicação de eventos de domínio (outbox/inbox).
+- Maior autonomia evolutiva; maior disciplina operacional.
+
+### 3.4.4 Matriz resumida
+| Cenário | DB Based | CDC+Kafka | EDA+Kafka | Observação |
+| --- | --- | --- | --- | --- |
+| 1) Simples | Baseline (`C1A1`) | Não executado no experimento | Não executado no experimento | Referência inicial |
+| 2) Schemas | Trigger/procedure cross-schema | CDC no schema produtor + apply no schema consumidor | Outbox + consumer por schema | Transição gradual |
+| 3) Databases | Logical replication/jobs | CDC no DB produtor + apply no DB consumidor | Outbox/inbox entre DBs | Consistência eventual explícita |
+| 4) Servers | Logical replication entre servidores | CDC remoto + apply remoto | Outbox/inbox + broker remoto | Maior estresse operacional |
+
+## 3.5. Regras transversais (todos os cenários)
+- Ownership: Graduação/Pós produzem `Pessoa` e `VinculoAcademico`; Diplomas/Assinatura consomem.
+- Idempotência: aplicação por `id` + `versao`/`timestamp`.
+- Auditoria: rastrear mudanças críticas de vínculo, emissão e assinatura.
+- Comparação experimental: sempre comparar arquiteturas dentro do mesmo cenário.
+
+## 3.6. Fluxo funcional consolidado
+
+### 3.6.1 Grad/Pós -> Diplomas
+- Conclusão acadêmica válida dispara elegibilidade e requerimento.
+- Diplomas emite, gera documento e atualiza status do processo.
+
+### 3.6.2 Diplomas -> Assinatura
+- Documento emitido vira documento assinável.
+- Solicitação de assinatura abre com regra de não duplicidade ativa/concluída.
+
+### 3.6.3 Assinatura -> Diplomas/Origem
+- Conclusão/rejeição/cancelamento retorna para atualização de status e disponibilização.
+
+## 3.7. Técnicas por cenário para preencher `vinculo_academico`
+- Cenário 1: trigger/procedure local (sem replicação física).
+- Cenário 2: trigger cross-schema, view materializada ou eventos internos.
+- Cenário 3: outbox/inbox, CDC por DB ou batch de reconciliação.
+- Cenário 4: outbox + broker, CDC streaming e trilha de retry/DLQ.
+
+## 3.8. CDC no PostgreSQL (guia rápido)
+- Indicado principalmente para cenários 2, 3 e 4.
+- Recomendação padrão: Debezium + logical decoding.
+- Checklist mínimo:
+  - `wal_level=logical`;
+  - publication das tabelas fonte;
+  - consumidor aplicando upsert idempotente no destino.
+
+## 3.9. Diagramas de comunicação
+Os diagramas abaixo representam a visão lógica consolidada deste documento.
+
+### 3.9.1 Replicações globais (fan-out)
 ```mermaid
 flowchart LR
   Grad[Graduação] -->|PessoaCriada/PessoaAtualizada<br/>VinculoAcademicoCriado/VinculoAcademicoAtualizado| CanalGlobal[(Canal de replicação global)]
@@ -73,7 +130,7 @@ flowchart LR
   CanalGlobal --> AssinaturaRM[Assinatura]
 ```
 
-### 3.8.2. Comunicação do fluxo de diploma (Grad/Pós → Diplomas → Assinatura → retorno)
+### 3.9.2 Fluxo de diploma (Grad/Pós -> Diplomas -> Assinatura -> retorno)
 ```mermaid
 sequenceDiagram
   participant Origem as Graduação/Pós
@@ -81,23 +138,22 @@ sequenceDiagram
   participant Assinatura as Serviço de Assinatura
 
   Origem->>Diplomas: ConclusaoPublicada(vinculoId, dataConclusao)
-  Origem->>Diplomas: PedidoDiploma/RequerimentoDiploma
+  Origem->>Diplomas: RequerimentoDiploma
   Diplomas->>Diplomas: Gera BaseEmissao + DocumentoDiploma
-  Diplomas->>Diplomas: StatusEmissao = EMITIDO
   Diplomas->>Assinatura: DocumentoDiploma disponibilizado
   Assinatura->>Assinatura: Cria DocumentoAssinavel + SolicitacaoAssinatura + Assinatura(PENDENTE)
-  Assinatura-->>Diplomas: ManifestoAssinatura(resultado)
+  Assinatura-->>Diplomas: Resultado da assinatura
 
   alt assinatura concluída
     Diplomas->>Diplomas: StatusEmissao = ASSINADO
-    Diplomas-->>Origem: PedidoDiploma atualizado (ASSINADO)
+    Diplomas-->>Origem: Pedido atualizado
   else rejeição/cancelamento
-    Diplomas->>Diplomas: Documento permanece pendente
-    Diplomas-->>Origem: PedidoDiploma atualizado (PENDENTE/REJEITADO)
+    Diplomas->>Diplomas: Documento permanece pendente/rejeitado
+    Diplomas-->>Origem: Pedido atualizado
   end
 ```
 
-### 3.8.3. Comunicação de documentos oficiais (Grad/Pós → Assinatura → retorno)
+### 3.9.3 Fluxo de documentos oficiais (Grad/Pós -> Assinatura -> retorno)
 ```mermaid
 sequenceDiagram
   participant GP as GraduacaoPos
@@ -114,7 +170,5 @@ sequenceDiagram
     AS->>AS: Nao cria nova solicitacao
   end
 
-  AS-->>GP: Retorna status CONCLUIDA REJEITADA ou CANCELADA
-  Note over GP,AS: REJEITADA ou CANCELADA permite nova solicitacao
-  Note over GP,AS: CONCLUIDA bloqueia nova solicitacao
+  AS-->>GP: Retorna status CONCLUIDA/REJEITADA/CANCELADA
 ```
