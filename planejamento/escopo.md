@@ -1,4 +1,4 @@
-# 6. Escopo previsto (todos os domínios)
+# 5. Escopo previsto (todos os domínios)
 [← Voltar ao índice](./README.md)
 
 Implementaremos todos os domínios descritos, sem recorte mínimo. O escopo consolidado contempla:

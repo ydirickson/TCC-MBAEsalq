@@ -1,4 +1,4 @@
-# 8. Pontos em aberto para decisão (para próxima iteração)
+# 7. Pontos em aberto para decisão (para próxima iteração)
 [← Voltar ao índice](./README.md)
 
 - Definir **ownership final de Pessoa** (grad, pós, ou ambos com regras)

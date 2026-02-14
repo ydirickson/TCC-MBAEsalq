@@ -1,9 +1,9 @@
-# 6.1 Tipos de arquitetura de replicação (DB Based, CDC+Kafka, EDA+Kafka)
+# 4.1 Tipos de arquitetura de replicação (DB Based, CDC+Kafka, EDA+Kafka)
 [← Voltar ao índice](./README.md)
 
 Este documento define o eixo arquitetural que será comparado no TCC e conecta esse eixo aos **4 cenários de infraestrutura** e às **métricas M1-M8**.
 
-## 6.1.1 Eixos de comparação
+## 4.1.1 Eixos de comparação
 
 ### A) DB Based (integração via banco)
 - Integração pelo próprio PostgreSQL (triggers, procedures, jobs, views materializadas, logical replication).
@@ -23,7 +23,7 @@ Este documento define o eixo arquitetural que será comparado no TCC e conecta e
 - Ponto forte: maior autonomia entre serviços e maior flexibilidade evolutiva.
 - Risco principal: maior disciplina operacional (governança de contratos, ordering, retries, DLQ e reprocessamento).
 
-## 6.1.2 Relação com os cenários (infraestrutura x arquitetura)
+## 4.1.2 Relação com os cenários (infraestrutura x arquitetura)
 
 | Cenário de infraestrutura | DB Based | CDC+Kafka | EDA com Kafka | Observação prática |
 | --- | --- | --- | --- | --- |
@@ -34,7 +34,7 @@ Este documento define o eixo arquitetural que será comparado no TCC e conecta e
 
 **Observação do experimento:** no cenário 1 (C1) será executado apenas o baseline DB Based (C1A1). As combinações C1A2 e C1A3 não serão executadas.
 
-## 6.1.3 Relação com as métricas M1-M8
+## 4.1.3 Relação com as métricas M1-M8
 
 | Arquitetura | Métricas mais sensíveis | Como interpretar no TCC |
 | --- | --- | --- |
@@ -42,13 +42,13 @@ Este documento define o eixo arquitetural que será comparado no TCC e conecta e
 | CDC+Kafka | M1, M2, M3, M5, M7 | Espera-se aumento moderado de latência (M1/M5), ganho de throughput em escala (M2) e necessidade de observar retries/perdas (M3) e disponibilidade da cadeia CDC+broker (M7). |
 | EDA com Kafka | M2, M3, M5, M7, M8 | Espera-se melhor desacoplamento e evolução (M8), alta escalabilidade (M2), com foco em idempotência e governança para manter confiabilidade (M3/M5). |
 
-## 6.1.4 Hipóteses de comparação (para conclusão)
+## 4.1.4 Hipóteses de comparação (para conclusão)
 
 1. **Confiabilidade (M3 + M4):** CDC+Kafka e EDA só são aceitos se mantiverem taxa de erro/perda próxima do DB Based e consistência funcional dos dados críticos.
 2. **Desempenho (M1 + M2 + M5):** aumento de latência é aceitável se houver ganho de throughput, estabilidade de cauda (P95/P99) e lag dentro do SLA definido.
 3. **Operação (M6 + M7 + M8):** a adoção de Kafka deve justificar o custo operacional adicional com maior resiliência e flexibilidade arquitetural.
 
-## 6.1.5 Regra de leitura dos resultados
+## 4.1.5 Regra de leitura dos resultados
 
 - A comparação é sempre feita no formato: **(mesmo cenário) + (arquiteturas diferentes)**.
 - Exemplo: Cenário 2 comparado em DB Based vs CDC+Kafka vs EDA.

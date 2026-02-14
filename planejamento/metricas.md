@@ -1,9 +1,9 @@
-  # 7. Métricas previstas (alto nível)
+# 6. Métricas previstas (alto nível)
 [← Voltar ao índice](./README.md)
 
 Este detalhamento conecta as métricas previstas aos **cenários definidos** e descreve **coleta e visualização** na stack atual do projeto (Prometheus + Grafana + k6 via remote write + postgres_exporter).
 
-## 7.1 Métricas da pesquisa (significado, unidade e relevância)
+## 6.1 Métricas da pesquisa (significado, unidade e relevância)
 
 Objetivo desta seção: definir as métricas que sustentam a hipótese de que um ambiente distribuído de replicação pode substituir um ambiente centralizado **sem perda significativa de desempenho e confiabilidade dos dados**.
 
@@ -18,7 +18,7 @@ Objetivo desta seção: definir as métricas que sustentam a hipótese de que um
 | M7 | Disponibilidade da plataforma de replicação | Tempo em que os componentes de replicação estão operacionais. | Uptime alto e recuperação rápida após falhas. | Quedas frequentes, indisponibilidade prolongada ou recuperação lenta. | % uptime | Valida resiliência da solução distribuída frente a falhas. | [R2], [R7], [R13] |
 | M8 | Complexidade operacional | Esforço adicional para operar, monitorar e recuperar o ambiente. | Processos claros, baixo retrabalho manual e observabilidade adequada. | Muitos pontos de falha, tarefas manuais e alto custo de operação. | contagem de componentes/dependências e avaliação qualitativa | Apoia a decisão arquitetural além de performance e confiabilidade. | [R14] |
 
-### 7.1.2 Referências confiáveis das medidas (fontes primárias)
+### 6.1.2 Referências confiáveis das medidas (fontes primárias)
 
 - **[R1] Google SRE Book - Monitoring Distributed Systems (Four Golden Signals: latency, traffic, errors, saturation):** https://sre.google/sre-book/monitoring-distributed-systems/
 - **[R2] Google SRE Book - Service Level Objectives (SLI/SLO, disponibilidade, latência e percentis):** https://sre.google/sre-book/service-level-objectives/
@@ -35,7 +35,7 @@ Objetivo desta seção: definir as métricas que sustentam a hipótese de que um
 - **[R13] Prometheus - Alerting rules (`up == 0`, monitoramento de disponibilidade de alvos):** https://prometheus.io/docs/prometheus/latest/configuration/alerting_rules/
 - **[R14] Google SRE Book - Eliminating Toil (base para complexidade operacional):** https://sre.google/sre-book/eliminating-toil/
 
-### 7.1.3 Prioridade para decisão (centralizado x distribuído)
+### 6.1.3 Prioridade para decisão (centralizado x distribuído)
 
 Para responder ao objetivo da pesquisa, a ordem de importância para comparação é:
 
@@ -46,7 +46,7 @@ Para responder ao objetivo da pesquisa, a ordem de importância para comparaçã
 
 Em termos de conclusão, o ambiente distribuído só é considerado equivalente/superior quando mantém confiabilidade (M3/M4) e desempenho (M1/M2/M5) em nível comparável ao baseline centralizado.
 
-### 7.1.4 Corte analítico por arquitetura (dentro de cada cenário)
+### 6.1.4 Corte analítico por arquitetura (dentro de cada cenário)
 
 Para manter comparabilidade, a leitura recomendada é: **fixar o cenário (1-4)** e comparar **DB Based vs CDC+Kafka vs EDA+Kafka**.
 
@@ -62,12 +62,12 @@ Para manter comparabilidade, a leitura recomendada é: **fixar o cenário (1-4)*
 - **Cenários 2-4:** executar as 3 arquiteturas com mesma carga k6 e comparar percentis (M1), taxa (M2), falha (M3), consistência (M4), lag (M5), recursos (M6), uptime (M7) e inventário operacional (M8).
 - **Conclusão por cenário:** registrar vencedor técnico por prioridade (M3+M4 > M1+M2+M5 > M7 > M6+M8) e depois consolidar a visão global.
 
-## 7.2 Aplicação por cenário (DB Based, CDC+Kafka e EDA+Kafka)
+## 6.2 Aplicação por cenário (DB Based, CDC+Kafka e EDA+Kafka)
 
 Nesta versão, o passo-a-passo detalhado abaixo está descrito para o **cenário 1 em DB Based**.  
 Para **CDC+Kafka** e **EDA+Kafka** (cenários 1-4), aplicar o mesmo protocolo de carga e acrescentar métricas do broker/consumidores (ex.: lag, taxa de consumo, retries, DLQ) para leitura de M2, M3, M5 e M7.
 
-### 7.2.1 Cenário 1 (Simples: mesmo BD e mesmo schema, com triggers/procedures)
+### 6.2.1 Cenário 1 (Simples: mesmo BD e mesmo schema, com triggers/procedures)
 
 No cenário 1, a replicação é síncrona no PostgreSQL (sem Kafka/CDC), implementada pelos scripts:
 
@@ -132,7 +132,7 @@ k6 run --out experimental-prometheus-rw=http://localhost:9090/api/v1/write \
   monitoramento/k6/scripts/replication-tests.js
 ```
 
-## 7.3 Encaixe na stack Grafana (coleta e visualização)
+## 6.3 Encaixe na stack Grafana (coleta e visualização)
 
 ### Coleta (Prometheus)
 - **Prometheus** coleta métricas via `scrape_configs` definidos na configuração do servidor.  

@@ -1,4 +1,4 @@
-# Replicação por cenários de banco
+# 4. Replicação por cenários de banco
 [← Voltar ao índice](./README.md)
 
 Este documento descreve sugestões de replicação de dados para o VínculoAcadêmico e demais entidades comuns em quatro cenários de infraestrutura.

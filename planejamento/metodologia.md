@@ -1,4 +1,4 @@
-# 6.2 Metodologia comparativa (execucao e analise)
+# 4.2 Metodologia comparativa (execucao e analise)
 [← Voltar ao indice](./README.md)
 
 Este documento define o metodo de comparacao entre arquiteturas de replicacao, mantendo alinhamento com:
@@ -6,12 +6,12 @@ Este documento define o metodo de comparacao entre arquiteturas de replicacao, m
 - tipos de arquitetura em [`arquiteturas.md`](./arquiteturas.md);
 - metricas M1-M8 em [`metricas.md`](./metricas.md).
 
-## 6.2.1 Pergunta e hipotese
+## 4.2.1 Pergunta e hipotese
 
 - **Pergunta principal:** em cada cenario (1-4), qual arquitetura (DB Based, CDC+Kafka, EDA+Kafka) entrega melhor equilibrio entre confiabilidade, desempenho e operacao?
 - **Hipotese:** arquiteturas com Kafka (CDC+Kafka e EDA+Kafka) podem manter confiabilidade equivalente ao DB Based, com ganho de desacoplamento e escalabilidade, ao custo de maior complexidade operacional.
 
-## 6.2.2 Delineamento experimental
+## 4.2.2 Delineamento experimental
 
 ### Fatores (variaveis independentes)
 - **Arquitetura:** DB Based, CDC+Kafka, EDA+Kafka.
@@ -28,7 +28,7 @@ Este documento define o metodo de comparacao entre arquiteturas de replicacao, m
 - Mesmo tempo de teste e janela de observacao por rodada.
 - Mesma versao de codigo por bloco de execucao.
 
-## 6.2.3 Regra de comparacao (ordem obrigatoria)
+## 4.2.3 Regra de comparacao (ordem obrigatoria)
 
 1. **Comparacao primaria:** fixar um cenario e comparar as 3 arquiteturas.
 2. **Comparacao secundaria:** repetir para todos os cenarios.
@@ -38,7 +38,7 @@ Isso evita misturar dois fatores ao mesmo tempo (arquitetura e infraestrutura).
 
 **Observacao do experimento:** o cenario 1 (C1) sera usado apenas como baseline de construcao (C1A1). As combinacoes C1A2 e C1A3 nao serao executadas; as comparacoes formais com 3 arquiteturas iniciam em C2–C4.
 
-## 6.2.4 Matriz minima de execucao
+## 4.2.4 Matriz minima de execucao
 
 | Eixo | Valores |
 | --- | --- |
@@ -50,7 +50,7 @@ Isso evita misturar dois fatores ao mesmo tempo (arquitetura e infraestrutura).
 
 **Total de execucoes (comparativas):** `3 * 3 * 3 * R` (com `R=3`, total = `81` rodadas) + baseline C1A1 (fora da comparacao).
 
-## 6.2.5 Protocolo de execucao por rodada
+## 4.2.5 Protocolo de execucao por rodada
 
 1. Subir stack do cenario + arquitetura alvo (`docker compose up -d`).
 2. Validar saude basica dos servicos (`/actuator/health`).
@@ -60,7 +60,7 @@ Isso evita misturar dois fatores ao mesmo tempo (arquitetura e infraestrutura).
 6. Registrar resultado da rodada em planilha/tabela padrao.
 7. Limpar estado para proxima rodada (ou recriar ambiente).
 
-## 6.2.6 Padrao de identificacao das rodadas
+## 4.2.6 Padrao de identificacao das rodadas
 
 Use `RUN_ID` padronizado para rastrear cada execucao:
 
@@ -74,7 +74,7 @@ Exemplo:
 run_c2_cdc_medio_r02
 ```
 
-## 6.2.7 Coleta por metrica (M1-M8)
+## 4.2.7 Coleta por metrica (M1-M8)
 
 | Metrica | Fonte principal | Medida base da comparacao |
 | --- | --- | --- |
@@ -91,7 +91,7 @@ Notas:
 - Para cenario DB Based (sem Kafka), usar M1 como proxy principal de M5.
 - Para CDC+Kafka e EDA+Kafka, incluir lag de consumidor, retries e DLQ na leitura de M3/M5/M7.
 
-## 6.2.8 Comandos-base de referencia
+## 4.2.8 Comandos-base de referencia
 
 Exemplo de rodada no cenario 1 (baseline C1A1):
 
@@ -104,7 +104,7 @@ k6 run --out experimental-prometheus-rw=http://localhost:9090/api/v1/write \
 
 Para cenarios/arquiteturas seguintes, manter o mesmo padrao de carga e trocar apenas o stack alvo.
 
-## 6.2.9 Template de registro por rodada
+## 4.2.9 Template de registro por rodada
 
 | RUN_ID | Cenario | Arquitetura | Perfil | M1 p95 (ms) | M2 (ev/s) | M3 (%) | M4 (%) | M5 (ms/eventos) | M6 (resumo) | M7 (%) | M8 (score) | Observacoes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -112,7 +112,7 @@ Para cenarios/arquiteturas seguintes, manter o mesmo padrao de carga e trocar ap
 
 Observacao: para C1, registrar apenas DB Based (baseline).
 
-## 6.2.10 Template de comparacao por cenario
+## 4.2.10 Template de comparacao por cenario
 
 Preencher uma tabela por cenario, comparando lado a lado:
 
@@ -126,7 +126,7 @@ Preencher uma tabela por cenario, comparando lado a lado:
 
 Observacao: esta comparacao se aplica aos cenarios 2–4. O cenario 1 e apenas baseline.
 
-## 6.2.11 Regra de decisao consolidada
+## 4.2.11 Regra de decisao consolidada
 
 Usar prioridade fixa para conclusao:
 1. Confiabilidade de dados (**M3 + M4**)
@@ -136,7 +136,7 @@ Usar prioridade fixa para conclusao:
 
 Se uma arquitetura falhar em confiabilidade (M3/M4), ela nao pode ser vencedora global, mesmo com melhor throughput.
 
-## 6.2.12 Ameacas a validade (checklist rapido)
+## 4.2.12 Ameacas a validade (checklist rapido)
 
 - Variacao de ambiente (maquina, recursos, concorrencia externa).
 - Diferenca de massa de dados entre rodadas.

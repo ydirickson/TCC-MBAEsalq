@@ -29,7 +29,7 @@ A partir desse contexto, a ideia é propor uma solução que retire a dependênc
 ## Planejamento e regras
 - Contexto e decisões estão documentados em `planejamento/README.md`.
 - Regras de replicação e eventos canônicos: `planejamento/regras-replicacao.md`.
-- Entidades e intersecções: `planejamento/entidades-interseccoes.md`.
+- Conceitos compartilhados implementados: `planejamento/modulos/compartilhadas.md`.
 - Módulos por serviço: `planejamento/modulos/`.
 
 ## Como executar — stacks por cenário

@@ -1,4 +1,4 @@
-# CDC + Kafka com Connect Sink (foco na tabela `pessoa`)
+# 4.3 CDC + Kafka com Connect Sink (foco na tabela `pessoa`)
 [← Voltar ao indice](./README.md)
 
 ## 1. Introducao
@@ -185,4 +185,3 @@ Nao e o melhor caminho quando a replicacao exige regra de negocio complexa por e
 - [ ] CRUD validado ponta-a-ponta
 - [ ] Monitoramento de lag/erros ativo
 - [ ] Rotina de reprocessamento documentada
-
