@@ -1,4 +1,4 @@
-# 8. Pendências de implementação (arquivo de trabalho)
+# 9. Pendências de implementação (arquivo de trabalho)
 [← Voltar ao índice](./README.md)
 
 Este documento centraliza as pendências de implementação e alinhamento entre módulos e arquiteturas.

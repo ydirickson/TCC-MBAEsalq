@@ -1,4 +1,4 @@
-# 4.2 CDC + Kafka com Connect Sink (foco na tabela `pessoa`)
+# 5. CDC + Kafka com Connect Sink (foco na tabela `pessoa`)
 [← Voltar ao indice](./README.md)
 
 ## 1. Introducao

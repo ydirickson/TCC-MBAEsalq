@@ -4,7 +4,8 @@
 Este documento consolida em um único lugar:
 - as regras funcionais de replicação entre domínios;
 - os cenários de infraestrutura;
-- como DB Based, CDC+Kafka e EDA+Kafka se aplicam em cada cenário.
+- como DB Based, CDC+Kafka e EDA+Kafka se aplicam em cada cenário;
+- critérios comparativos por métricas para leitura dos resultados.
 
 ## 3.1. Taxonomia das replicações
 - **Replicações globais (fan-out):** dados que nascem em um ou mais serviços e precisam alimentar todos os consumidores.
@@ -81,6 +82,8 @@ Regras operacionais:
 | 2) Schemas | Trigger/procedure cross-schema | CDC no schema produtor + apply no schema consumidor | Outbox + consumer por schema | Transição gradual |
 | 3) Databases | Logical replication/jobs | CDC no DB produtor + apply no DB consumidor | Outbox/inbox entre DBs | Consistência eventual explícita |
 | 4) Servers | Logical replication entre servidores | CDC remoto + apply remoto | Outbox/inbox + broker remoto | Maior estresse operacional |
+
+Observação do experimento: no cenário 1 (C1), será executado apenas o baseline DB Based (`C1A1`); `C1A2` e `C1A3` não entram na comparação formal.
 
 ## 3.5. Regras transversais (todos os cenários)
 - Ownership: Graduação/Pós produzem `Pessoa` e `VinculoAcademico`; Diplomas/Assinatura consomem.
@@ -172,3 +175,21 @@ sequenceDiagram
 
   AS-->>GP: Retorna status CONCLUIDA/REJEITADA/CANCELADA
 ```
+
+## 3.10. Relação arquitetura x métricas (M1-M8)
+| Arquitetura | Métricas mais sensíveis | Como interpretar no TCC |
+| --- | --- | --- |
+| DB Based | M1, M4, M6, M8 | Espera-se baixa latência local (M1), alta consistência imediata em cenários simples (M4), mas maior acoplamento e complexidade de evolução (M8). |
+| CDC+Kafka | M1, M2, M3, M5, M7 | Espera-se aumento moderado de latência (M1/M5), ganho de throughput em escala (M2) e necessidade de observar retries/perdas (M3) e disponibilidade da cadeia CDC+broker (M7). |
+| EDA com Kafka | M2, M3, M5, M7, M8 | Espera-se melhor desacoplamento e evolução (M8), alta escalabilidade (M2), com foco em idempotência e governança para manter confiabilidade (M3/M5). |
+
+## 3.11. Hipóteses de comparação (para conclusão)
+1. **Confiabilidade (M3 + M4):** CDC+Kafka e EDA só são aceitos se mantiverem taxa de erro/perda próxima do DB Based e consistência funcional dos dados críticos.
+2. **Desempenho (M1 + M2 + M5):** aumento de latência é aceitável se houver ganho de throughput, estabilidade de cauda (P95/P99) e lag dentro do SLA definido.
+3. **Operação (M6 + M7 + M8):** a adoção de Kafka deve justificar o custo operacional adicional com maior resiliência e flexibilidade arquitetural.
+
+## 3.12. Regra de leitura dos resultados
+- A comparação é sempre feita no formato: **(mesmo cenário) + (arquiteturas diferentes)**.
+- Exemplo: cenário 2 comparado em DB Based vs CDC+Kafka vs EDA.
+- Só depois é feita leitura transversal entre cenários (1 -> 4) para avaliar efeito de distribuição física da infraestrutura.
+- O detalhamento de execução da comparação está em [`metodologia.md`](./metodologia.md).
