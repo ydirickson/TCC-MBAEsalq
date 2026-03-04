@@ -99,10 +99,6 @@ public class VinculoAcademico {
     return dataIngresso;
   }
 
-  public void setDataIngresso(LocalDate dataIngresso) {
-    this.dataIngresso = dataIngresso;
-  }
-
   public LocalDate getDataConclusao() {
     return dataConclusao;
   }
@@ -115,7 +111,4 @@ public class VinculoAcademico {
     return situacao;
   }
 
-  public void setSituacao(SituacaoAcademica situacao) {
-    this.situacao = situacao;
-  }
 }
