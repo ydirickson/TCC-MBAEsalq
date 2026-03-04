@@ -9,6 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -29,6 +30,9 @@ public class Pessoa {
 
   @Column(name = "nome_social", length = 150)
   private String nomeSocial;
+
+  @Column(name = "criado_em", insertable = false, updatable = false)
+  private Instant criadoEm;
 
   @OneToOne(mappedBy = "pessoa", cascade = CascadeType.ALL, orphanRemoval = true)
   private DocumentoIdentificacao documentoIdentificacao;
@@ -114,5 +118,9 @@ public class Pessoa {
 
   public void setVinculosAcademicos(Set<VinculoAcademico> vinculosAcademicos) {
     this.vinculosAcademicos = vinculosAcademicos;
+  }
+
+  public Instant getCriadoEm() {
+    return criadoEm;
   }
 }
