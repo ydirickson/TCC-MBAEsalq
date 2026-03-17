@@ -28,10 +28,10 @@ export default function () {
 
     group (`${GRADUACAO} -> [${POS_GRADUACAO}, ${DIPLOMAS}, ${CERTIFICADOS}]`, function(){
       testeReplicacaoPessoa(GRADUACAO, [POS_GRADUACAO, DIPLOMAS, CERTIFICADOS]);
-    })
+    });
     group (`${POS_GRADUACAO} -> [${GRADUACAO}, ${DIPLOMAS}, ${CERTIFICADOS}]`, function(){
       testeReplicacaoPessoa(POS_GRADUACAO, [GRADUACAO, DIPLOMAS, CERTIFICADOS]);
-    })
+    });
   });
 
 }

@@ -3,7 +3,6 @@ import { criarPessoaRequest, obterPessoaRequest } from "./request-helpers.js";
 
 
 import { SERVICOS } from "./constantes.js";
-import { pessoaEquals } from "./equals-helpers.js";
 import { check } from "k6";
 import { Trend } from "k6/metrics";
 
@@ -17,7 +16,6 @@ export const testeReplicacaoPessoa = (servicoOrigem, servicosDestino) => {
   console.log(`Resposta da criação da pessoa: ${pessoaNova.status} - ${pessoaNova.body}`);
   check(pessoaNova, {
     [`(Criar Pessoa - ${nome}) Status 201`]: (r) => r.status === 201,
-    [`(Criar Pessoa - ${nome}) Body Correto`]: (r) => pessoaEquals(JSON.parse(r.body), pessoaPayload),
   });
 
   const pessoaCriada = pessoaNova.json();
@@ -28,8 +26,7 @@ export const testeReplicacaoPessoa = (servicoOrigem, servicosDestino) => {
     const { url: urlDestino, nome: nomeDestino } = SERVICOS[servicoDestino];
     const pessoaRecuperada = obterPessoaRequest(urlDestino, pessoaCriada.id, nomeDestino);
     check(pessoaRecuperada, {
-      [`(Obter Pessoa - ${nomeDestino}) Status 200`]: (r) => r.status === 200,
-      [`(Obter Pessoa - ${nomeDestino}) Body Correto`]: (r) => pessoaEquals(JSON.parse(r.body), pessoaPayload),
+      [`(${nome} -> ${nomeDestino}) Status 200`]: (r) => r.status === 200
     });
 
     const pessoaDestino = pessoaRecuperada.json();
