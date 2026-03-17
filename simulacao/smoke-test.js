@@ -3,6 +3,9 @@ import { group } from 'k6';
 import { GRADUACAO, CERTIFICADOS, DIPLOMAS, POS_GRADUACAO } from './utils/constantes.js';
 import { testeReplicacaoPessoa, replicacaoLatencia } from './utils/replication-helpers.js';
 
+
+
+
 export const options = {
   thresholds: {
     'replicacao_latencia_ms': [
@@ -10,6 +13,13 @@ export const options = {
       { threshold: 'p(99)<1000', abortOnFail: false },
     ],
   },
+  scenarios: {
+    replicacao: {
+      executor: 'per-vu-iterations',
+      vus: 1,
+      iterations: 1,
+    }
+  }
 };
 
 export default function () {
