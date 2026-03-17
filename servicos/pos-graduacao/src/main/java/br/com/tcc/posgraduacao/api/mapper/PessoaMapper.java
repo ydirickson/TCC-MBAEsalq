@@ -27,7 +27,9 @@ public class PessoaMapper {
         pessoa.getId(),
         pessoa.getNome(),
         pessoa.getDataNascimento(),
-        pessoa.getNomeSocial());
+        pessoa.getNomeSocial(),
+        pessoa.getCriadoEm(),
+        pessoa.getReplicadoEm());
   }
 
   public void updateEntityFromRequest(PessoaRequest request, Pessoa pessoa) {

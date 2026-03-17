@@ -26,7 +26,8 @@ CREATE TABLE IF NOT EXISTS pessoa (
   nome VARCHAR(150) NOT NULL,
   data_nascimento DATE NOT NULL,
   nome_social VARCHAR(150),
-  criado_em TIMESTAMPTZ NOT NULL DEFAULT clock_timestamp()
+  criado_em TIMESTAMPTZ NOT NULL DEFAULT clock_timestamp(),
+  replicado_em TIMESTAMPTZ NOT NULL DEFAULT clock_timestamp()
 );
 
 CREATE TABLE IF NOT EXISTS documento_identificacao (

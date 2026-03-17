@@ -1,11 +1,16 @@
-//import http from 'k6/http';
-import { check, group } from 'k6';
-
-//import { createPessoaPayload } from './utils/payload-factory.js';
+import { group } from 'k6';
 
 import { GRADUACAO, CERTIFICADOS, DIPLOMAS, POS_GRADUACAO } from './utils/constantes.js';
-//import { criarPessoaRequest } from './utils/request-helpers.js';
-import { testeReplicacaoPessoa } from './utils/replication-helpers.js';
+import { testeReplicacaoPessoa, replicacaoLatencia } from './utils/replication-helpers.js';
+
+export const options = {
+  thresholds: {
+    'replicacao_latencia_ms': [
+      { threshold: 'p(95)<500', abortOnFail: false },
+      { threshold: 'p(99)<1000', abortOnFail: false },
+    ],
+  },
+};
 
 export default function () {
   // 1- Cria uma pessoa (Verifica resposta) e verifica que existe em: Graduação, Pós-Graduação, Diplomas e Certificados

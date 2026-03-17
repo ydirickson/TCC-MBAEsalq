@@ -5,7 +5,9 @@ import { criarPessoaRequest, obterPessoaRequest } from "./request-helpers.js";
 import { SERVICOS } from "./constantes.js";
 import { pessoaEquals } from "./equals-helpers.js";
 import { check } from "k6";
+import { Trend } from "k6/metrics";
 
+export const replicacaoLatencia = new Trend('replicacao_latencia_ms', true);
 
 export const testeReplicacaoPessoa = (servicoOrigem, servicosDestino) => {
   const pessoaPayload = createPessoaPayload();
@@ -18,14 +20,25 @@ export const testeReplicacaoPessoa = (servicoOrigem, servicosDestino) => {
     [`(Criar Pessoa - ${nome}) Body Correto`]: (r) => pessoaEquals(JSON.parse(r.body), pessoaPayload),
   });
 
+  const pessoaCriada = pessoaNova.json();
+  const criadoEmOrigem = pessoaCriada.criadoEm;
+
   // 2- Verifica que existe em: Graduação, Pós-Graduação, Diplomas e Certificados
   for (let servicoDestino of servicosDestino) {
     const { url: urlDestino, nome: nomeDestino } = SERVICOS[servicoDestino];
-    const pessoaRecuperada = obterPessoaRequest(urlDestino, pessoaNova.json().id, nomeDestino);
-    console.log(`Resposta da criação da pessoa no serviço ${nomeDestino}: ${pessoaRecuperada.status} - ${pessoaRecuperada.body}`);
+    const pessoaRecuperada = obterPessoaRequest(urlDestino, pessoaCriada.id, nomeDestino);
     check(pessoaRecuperada, {
       [`(Obter Pessoa - ${nomeDestino}) Status 200`]: (r) => r.status === 200,
       [`(Obter Pessoa - ${nomeDestino}) Body Correto`]: (r) => pessoaEquals(JSON.parse(r.body), pessoaPayload),
     });
+
+    const pessoaDestino = pessoaRecuperada.json();
+
+    // 3- Medir latência de replicação (replicadoEm - criadoEm)
+    if (pessoaDestino.replicadoEm && pessoaDestino.criadoEm) {
+      const latenciaMs = new Date(pessoaDestino.replicadoEm) - new Date(pessoaDestino.criadoEm);
+      replicacaoLatencia.add(latenciaMs, { origem: nome, destino: nomeDestino });
+      console.log(`Latência de replicação ${nome} (${pessoaDestino.criadoEm}) -> ${nomeDestino} (${pessoaDestino.replicadoEm}): ${latenciaMs}ms`);
+    }
   }
 }

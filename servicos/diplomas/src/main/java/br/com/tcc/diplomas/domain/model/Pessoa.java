@@ -34,6 +34,9 @@ public class Pessoa {
   @Column(name = "criado_em", insertable = false, updatable = false)
   private Instant criadoEm;
 
+  @Column(name = "replicado_em", insertable = false, updatable = false)
+  private Instant replicadoEm;
+
   @OneToOne(mappedBy = "pessoa", cascade = CascadeType.ALL, orphanRemoval = true)
   private DocumentoIdentificacao documentoIdentificacao;
 
@@ -122,5 +125,9 @@ public class Pessoa {
 
   public Instant getCriadoEm() {
     return criadoEm;
+  }
+
+  public Instant getReplicadoEm() {
+    return replicadoEm;
   }
 }

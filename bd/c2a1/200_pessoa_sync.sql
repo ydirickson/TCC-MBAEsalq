@@ -5,26 +5,29 @@ RETURNS TRIGGER
 LANGUAGE plpgsql
 AS $$
 BEGIN
-  INSERT INTO pos_graduacao.pessoa (id, nome, data_nascimento, nome_social)
-  VALUES (NEW.id, NEW.nome, NEW.data_nascimento, NEW.nome_social)
+  INSERT INTO pos_graduacao.pessoa (id, nome, data_nascimento, nome_social, criado_em, replicado_em)
+  VALUES (NEW.id, NEW.nome, NEW.data_nascimento, NEW.nome_social, NEW.criado_em, clock_timestamp())
   ON CONFLICT (id) DO UPDATE SET
     nome = EXCLUDED.nome,
     data_nascimento = EXCLUDED.data_nascimento,
-    nome_social = EXCLUDED.nome_social;
+    nome_social = EXCLUDED.nome_social,
+    replicado_em = clock_timestamp();
 
-  INSERT INTO diplomas.pessoa (id, nome, data_nascimento, nome_social)
-  VALUES (NEW.id, NEW.nome, NEW.data_nascimento, NEW.nome_social)
+  INSERT INTO diplomas.pessoa (id, nome, data_nascimento, nome_social, criado_em, replicado_em)
+  VALUES (NEW.id, NEW.nome, NEW.data_nascimento, NEW.nome_social, NEW.criado_em, clock_timestamp())
   ON CONFLICT (id) DO UPDATE SET
     nome = EXCLUDED.nome,
     data_nascimento = EXCLUDED.data_nascimento,
-    nome_social = EXCLUDED.nome_social;
+    nome_social = EXCLUDED.nome_social,
+    replicado_em = clock_timestamp();
 
-  INSERT INTO assinatura.pessoa (id, nome, data_nascimento, nome_social)
-  VALUES (NEW.id, NEW.nome, NEW.data_nascimento, NEW.nome_social)
+  INSERT INTO assinatura.pessoa (id, nome, data_nascimento, nome_social, criado_em, replicado_em)
+  VALUES (NEW.id, NEW.nome, NEW.data_nascimento, NEW.nome_social, NEW.criado_em, clock_timestamp())
   ON CONFLICT (id) DO UPDATE SET
     nome = EXCLUDED.nome,
     data_nascimento = EXCLUDED.data_nascimento,
-    nome_social = EXCLUDED.nome_social;
+    nome_social = EXCLUDED.nome_social,
+    replicado_em = clock_timestamp();
 
   RETURN NEW;
 END;
