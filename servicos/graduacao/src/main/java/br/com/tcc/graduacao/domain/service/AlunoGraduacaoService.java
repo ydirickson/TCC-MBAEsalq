@@ -12,6 +12,7 @@ import br.com.tcc.graduacao.domain.repository.AlunoGraduacaoRepository;
 import br.com.tcc.graduacao.domain.repository.PessoaRepository;
 import br.com.tcc.graduacao.domain.repository.TurmaGraduacaoRepository;
 import br.com.tcc.graduacao.domain.repository.VinculoAcademicoRepository;
+import br.com.tcc.graduacao.kafka.GraduacaoKafkaProducer;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -25,13 +26,16 @@ public class AlunoGraduacaoService {
   private final PessoaRepository pessoaRepository;
   private final TurmaGraduacaoRepository turmaRepository;
   private final VinculoAcademicoRepository vinculoRepository;
+  private final GraduacaoKafkaProducer kafkaProducer;
 
   public AlunoGraduacaoService(AlunoGraduacaoRepository alunoRepository, PessoaRepository pessoaRepository,
-      TurmaGraduacaoRepository turmaRepository, VinculoAcademicoRepository vinculoRepository) {
+      TurmaGraduacaoRepository turmaRepository, VinculoAcademicoRepository vinculoRepository,
+      GraduacaoKafkaProducer kafkaProducer) {
     this.alunoRepository = alunoRepository;
     this.pessoaRepository = pessoaRepository;
     this.turmaRepository = turmaRepository;
     this.vinculoRepository = vinculoRepository;
+    this.kafkaProducer = kafkaProducer;
   }
 
   @Transactional
@@ -71,8 +75,9 @@ public class AlunoGraduacaoService {
         status
     );
     vinculo.setDataConclusao(dataConclusao);
-    vinculoRepository.save(vinculo);
-    
+    VinculoAcademico vinculoSalvo = vinculoRepository.save(vinculo);
+    kafkaProducer.publicarVinculo(vinculoSalvo);
+
     return Optional.of(alunoSalvo);
   }
 
@@ -143,8 +148,9 @@ public class AlunoGraduacaoService {
         ));
 
       vinculo.setDataConclusao(dataConclusao);
-      vinculoRepository.save(vinculo);
-      
+      VinculoAcademico vinculoSalvo = vinculoRepository.save(vinculo);
+      kafkaProducer.publicarVinculo(vinculoSalvo);
+
       return aluno;
     });
   }

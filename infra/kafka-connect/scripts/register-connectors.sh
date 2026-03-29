@@ -6,7 +6,7 @@ CONNECTORS_DIR="${CONNECTORS_DIR:-/connectors}"
 MAX_RETRIES="${CONNECT_MAX_RETRIES:-90}"
 SLEEP_SECONDS="${CONNECT_RETRY_SLEEP_SECONDS:-2}"
 
-CONNECTOR_FILES="${CONNECTOR_FILES:-source-graduacao-pessoa.json source-pos-graduacao-pessoa.json sink-pessoa-diplomas.json sink-pessoa-pos-graduacao.json sink-pessoa-assinatura.json source-graduacao-vinculo.json source-pos-graduacao-vinculo.json sink-vinculo-graduacao-diplomas.json sink-vinculo-graduacao-assinatura.json sink-vinculo-pos-diplomas.json sink-vinculo-pos-assinatura.json}"
+CONNECTOR_FILES="${CONNECTOR_FILES:-source-graduacao-pessoa.json source-pos-graduacao-pessoa.json sink-pessoa-diplomas.json sink-pessoa-pos-graduacao.json sink-pessoa-assinatura.json sink-pessoa-pos-diplomas.json sink-pessoa-pos-assinatura.json source-graduacao-vinculo.json source-pos-graduacao-vinculo.json sink-vinculo-graduacao-diplomas.json sink-vinculo-graduacao-assinatura.json sink-vinculo-pos-diplomas.json sink-vinculo-pos-assinatura.json}"
 
 wait_for_connect() {
   i=1
@@ -79,7 +79,23 @@ main() {
     register_connector "$connector"
   done
 
+  restart_failed_tasks
+
   echo "[connect-init] Bootstrap de conectores concluido."
+}
+
+restart_failed_tasks() {
+  connector_names="$(curl -fsS "$CONNECT_URL/connectors" 2>/dev/null || echo '[]')"
+  names="$(echo "$connector_names" | tr -d '[]"' | tr ',' ' ')"
+
+  for name in $names; do
+    [ -z "$name" ] && continue
+    status="$(curl -fsS "$CONNECT_URL/connectors/$name/status" 2>/dev/null || echo '{}')"
+    if echo "$status" | grep -q '"state":"FAILED"'; then
+      echo "[connect-init] Reiniciando tasks com falha: $name"
+      curl -sS -o /dev/null -X POST "$CONNECT_URL/connectors/$name/tasks/0/restart" || true
+    fi
+  done
 }
 
 main "$@"

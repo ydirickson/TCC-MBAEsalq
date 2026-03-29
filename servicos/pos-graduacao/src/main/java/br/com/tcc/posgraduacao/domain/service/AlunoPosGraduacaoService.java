@@ -14,6 +14,7 @@ import br.com.tcc.posgraduacao.domain.repository.PessoaRepository;
 import br.com.tcc.posgraduacao.domain.repository.ProfessorPosGraduacaoRepository;
 import br.com.tcc.posgraduacao.domain.repository.ProgramaPosRepository;
 import br.com.tcc.posgraduacao.domain.repository.VinculoAcademicoRepository;
+import br.com.tcc.posgraduacao.kafka.PosGraduacaoKafkaProducer;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -28,18 +29,21 @@ public class AlunoPosGraduacaoService {
   private final ProgramaPosRepository programaRepository;
   private final ProfessorPosGraduacaoRepository professorRepository;
   private final VinculoAcademicoRepository vinculoRepository;
+  private final PosGraduacaoKafkaProducer kafkaProducer;
 
   public AlunoPosGraduacaoService(
       AlunoPosGraduacaoRepository alunoRepository,
       PessoaRepository pessoaRepository,
       ProgramaPosRepository programaRepository,
       ProfessorPosGraduacaoRepository professorRepository,
-      VinculoAcademicoRepository vinculoRepository) {
+      VinculoAcademicoRepository vinculoRepository,
+      PosGraduacaoKafkaProducer kafkaProducer) {
     this.alunoRepository = alunoRepository;
     this.pessoaRepository = pessoaRepository;
     this.programaRepository = programaRepository;
     this.professorRepository = professorRepository;
     this.vinculoRepository = vinculoRepository;
+    this.kafkaProducer = kafkaProducer;
   }
 
   @Transactional
@@ -87,7 +91,8 @@ public class AlunoPosGraduacaoService {
         status
     );
     vinculo.setDataConclusao(dataConclusao);
-    vinculoRepository.save(vinculo);
+    VinculoAcademico vinculoSalvo = vinculoRepository.save(vinculo);
+    kafkaProducer.publicarVinculo(vinculoSalvo);
     
     return Optional.of(alunoSalvo);
   }
@@ -163,8 +168,9 @@ public class AlunoPosGraduacaoService {
       ));
       
       vinculo.setDataConclusao(dataConclusao);
-      vinculoRepository.save(vinculo);
-      
+      VinculoAcademico vinculoSalvo = vinculoRepository.save(vinculo);
+      kafkaProducer.publicarVinculo(vinculoSalvo);
+
       return aluno;
     });
   }

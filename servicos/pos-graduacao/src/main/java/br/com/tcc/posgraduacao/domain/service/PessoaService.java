@@ -16,6 +16,7 @@ import br.com.tcc.posgraduacao.domain.repository.ContatoRepository;
 import br.com.tcc.posgraduacao.domain.repository.DocumentoIdentificacaoRepository;
 import br.com.tcc.posgraduacao.domain.repository.EnderecoRepository;
 import br.com.tcc.posgraduacao.domain.repository.PessoaRepository;
+import br.com.tcc.posgraduacao.kafka.PosGraduacaoKafkaProducer;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
@@ -32,10 +33,12 @@ public class PessoaService {
   private final ContatoMapper contatoMapper;
   private final DocumentoIdentificacaoRepository documentoRepository;
   private final DocumentoIdentificacaoMapper documentoMapper;
+  private final PosGraduacaoKafkaProducer kafkaProducer;
 
   public PessoaService(PessoaRepository pessoaRepository, PessoaMapper pessoaMapper, EnderecoRepository enderecoRepository,
       EnderecoMapper enderecoMapper, ContatoRepository contatoRepository, ContatoMapper contatoMapper,
-      DocumentoIdentificacaoRepository documentoRepository, DocumentoIdentificacaoMapper documentoMapper) {
+      DocumentoIdentificacaoRepository documentoRepository, DocumentoIdentificacaoMapper documentoMapper,
+      PosGraduacaoKafkaProducer kafkaProducer) {
     this.pessoaRepository = pessoaRepository;
     this.pessoaMapper = pessoaMapper;
     this.enderecoRepository = enderecoRepository;
@@ -44,11 +47,14 @@ public class PessoaService {
     this.contatoMapper = contatoMapper;
     this.documentoRepository = documentoRepository;
     this.documentoMapper = documentoMapper;
+    this.kafkaProducer = kafkaProducer;
   }
 
   @Transactional
   public Pessoa criar(PessoaRequest request) {
-    return pessoaRepository.save(pessoaMapper.toEntity(request));
+    Pessoa pessoa = pessoaRepository.save(pessoaMapper.toEntity(request));
+    kafkaProducer.publicarPessoa(pessoa);
+    return pessoa;
   }
 
   public List<Pessoa> listar() {
@@ -63,6 +69,7 @@ public class PessoaService {
   public Optional<Pessoa> atualizar(Long id, PessoaRequest request) {
     return pessoaRepository.findById(id).map(pessoa -> {
       pessoaMapper.updateEntityFromRequest(request, pessoa);
+      kafkaProducer.publicarPessoa(pessoa);
       return pessoa;
     });
   }

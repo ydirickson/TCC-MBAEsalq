@@ -1,0 +1,16 @@
+package br.com.tcc.assinatura.kafka;
+
+import java.time.LocalDate;
+
+public record VinculoAcademicoEvent(
+    Long id,
+    Long pessoaId,
+    Long cursoId,
+    String cursoCodigo,
+    String cursoNome,
+    String cursoTipo,
+    String tipoVinculo,
+    LocalDate dataIngresso,
+    LocalDate dataConclusao,
+    String situacao) {
+}

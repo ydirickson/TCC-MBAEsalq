@@ -124,8 +124,8 @@ case "$SCENARIO_INPUT" in
     FILES=("docker-compose-c2a2.yml")
     ;;
   c2a3)
-    ENV_FILE="$ROOT_DIR/.env.c2"
-    FILES=("compose/base.yml" "compose/db.c2.yml" "compose/services.yml" "compose/replication.a3.yml")
+    ENV_FILE="$ROOT_DIR/.env.c2a3"
+    FILES=("docker-compose-c2a3.yml")
     ;;
   c3|c3a1)
     ENV_FILE="$ROOT_DIR/.env.c3"
