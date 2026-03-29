@@ -6,7 +6,7 @@ CONNECTORS_DIR="${CONNECTORS_DIR:-/connectors}"
 MAX_RETRIES="${CONNECT_MAX_RETRIES:-90}"
 SLEEP_SECONDS="${CONNECT_RETRY_SLEEP_SECONDS:-2}"
 
-CONNECTOR_FILES="${CONNECTOR_FILES:-source-graduacao-pessoa.json source-pos-graduacao-pessoa.json sink-pessoa-diplomas.json sink-pessoa-pos-graduacao.json sink-pessoa-assinatura.json sink-pessoa-pos-diplomas.json sink-pessoa-pos-assinatura.json source-graduacao-vinculo.json source-pos-graduacao-vinculo.json sink-vinculo-graduacao-diplomas.json sink-vinculo-graduacao-assinatura.json sink-vinculo-pos-diplomas.json sink-vinculo-pos-assinatura.json}"
+CONNECTOR_FILES="${CONNECTOR_FILES:-source-graduacao-pessoa.json source-pos-graduacao-pessoa.json sink-pessoa-diplomas.json sink-pessoa-pos-graduacao.json sink-pessoa-graduacao.json sink-pessoa-assinatura.json sink-pessoa-pos-diplomas.json sink-pessoa-pos-assinatura.json source-graduacao-vinculo.json source-pos-graduacao-vinculo.json sink-vinculo-graduacao-diplomas.json sink-vinculo-graduacao-assinatura.json sink-vinculo-pos-diplomas.json sink-vinculo-pos-assinatura.json}"
 
 wait_for_connect() {
   i=1

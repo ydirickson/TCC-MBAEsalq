@@ -2,7 +2,17 @@ SET search_path TO pos_graduacao;
 
 SELECT setval(
   pg_get_serial_sequence('pos_graduacao.pessoa', 'id'),
-  COALESCE((SELECT MAX(id) + 1 FROM pos_graduacao.pessoa), 1),
+  COALESCE(
+    (
+      SELECT CASE
+        WHEN MAX(id) IS NULL THEN 2
+        WHEN MOD(MAX(id), 2) = 0 THEN MAX(id) + 2
+        ELSE MAX(id) + 1
+      END
+      FROM pos_graduacao.pessoa
+    ),
+    2
+  ),
   false
 );
 

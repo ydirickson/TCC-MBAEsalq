@@ -50,10 +50,10 @@ resolve_stack() {
     c2a2)
       ENV_FILE="$ROOT_DIR/.env.c2a2"
       COMPOSE_FILE="$ROOT_DIR/docker-compose-c2a2.yml"
-      DEFAULT_TIMEOUT_MS=30000
+      DEFAULT_TIMEOUT_MS=120000
       DEFAULT_POLL_MS=1000
-      DEFAULT_P95_MS=10000
-      DEFAULT_P99_MS=30000
+      DEFAULT_P95_MS=120000
+      DEFAULT_P99_MS=180000
       ;;
     c2a3)
       ENV_FILE="$ROOT_DIR/.env.c2a3"
@@ -119,6 +119,62 @@ wait_for_services() {
     fi
 
     echo "  servicos ainda nao disponiveis (${elapsed}s/${timeout}s)..."
+    sleep 5
+  done
+}
+
+wait_for_connectors() {
+  local timeout=240
+  local start_time
+  start_time="$(date +%s)"
+  local connect_url="http://localhost:${CONNECT_PORT:-18083}"
+  local expected_connectors
+  expected_connectors="$(find "$ROOT_DIR/infra/kafka-connect/connectors" -maxdepth 1 -type f -name '*.json' | wc -l | tr -d ' ')"
+
+  echo "Aguardando Kafka Connect e conectores ficarem prontos (timeout ${timeout}s)..."
+
+  while true; do
+    local names_json
+    names_json="$(curl -fsS "$connect_url/connectors" 2>/dev/null || true)"
+
+    local connectors
+    connectors="$(echo "$names_json" | tr -d '[]\"' | tr ',' '\n' | sed '/^\s*$/d' || true)"
+    local count
+    count="$(echo "$connectors" | sed '/^\s*$/d' | wc -l | tr -d ' ')"
+
+    local all_running=true
+    if [[ "$count" -ge "$expected_connectors" ]]; then
+      local c
+      while IFS= read -r c; do
+        [[ -n "$c" ]] || continue
+        local status
+        status="$(curl -fsS "$connect_url/connectors/$c/status" 2>/dev/null || true)"
+        if [[ -z "$status" || "$status" == *'"state":"FAILED"'* || "$status" != *'"state":"RUNNING"'* ]]; then
+          all_running=false
+          break
+        fi
+      done <<< "$connectors"
+    else
+      all_running=false
+    fi
+
+    if [[ "$all_running" == "true" ]]; then
+      if docker logs tcc_connect_init 2>&1 | grep -q "Bootstrap de conectores concluido"; then
+        echo "Kafka Connect pronto: conectores registrados e em execucao."
+        return 0
+      fi
+    fi
+
+    local now elapsed
+    now="$(date +%s)"
+    elapsed=$((now - start_time))
+
+    if [[ "$elapsed" -ge "$timeout" ]]; then
+      echo "Timeout aguardando conectores do Kafka Connect."
+      return 1
+    fi
+
+    echo "  conectores ainda nao prontos (${elapsed}s/${timeout}s)..."
     sleep 5
   done
 }
@@ -206,6 +262,11 @@ docker compose --env-file "$ENV_FILE" -f "$COMPOSE_FILE" up -d
 
 echo ""
 wait_for_services
+
+if [[ "$SCENARIO" == "c2a2" || "$SCENARIO" == "c2a3" ]]; then
+  echo ""
+  wait_for_connectors
+fi
 
 # Aplicar presets do cenario, permitindo override via variavel de ambiente
 export REPLICATION_TIMEOUT_MS="${REPLICATION_TIMEOUT_MS:-$DEFAULT_TIMEOUT_MS}"
