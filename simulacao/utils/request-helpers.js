@@ -20,6 +20,17 @@ export const postRequest = (url, payload, tags) => {
   );
 }
 
+export const putRequest = (url, payload, tags) => {
+  return http.put(
+    url,
+    JSON.stringify(payload),
+    {
+      headers: { 'Content-Type': 'application/json' },
+      tags: tags
+    }
+  );
+}
+
 export const criarPessoaRequest = (baseUrl, payload, servico) => {
   return postRequest(
     `${baseUrl}/pessoas`,
@@ -39,6 +50,86 @@ export const obterPessoaRequest = (baseUrl, pessoaId, servico) => {
       acao: 'Obter Pessoa',
       servico: servico,
       name: `(${servico}) Obter Pessoa`,
+    }
+  );
+}
+
+export const atualizarPessoaRequest = (baseUrl, pessoaId, payload, servico) => {
+  return putRequest(
+    `${baseUrl}/pessoas/${pessoaId}`,
+    payload,
+    {
+      acao: 'Atualizar Pessoa',
+      servico: servico,
+      name: `(${servico}) Atualizar Pessoa`,
+    }
+  );
+}
+
+export const listarCursosRequest = (baseUrl, servico) => {
+  return getRequest(
+    `${baseUrl}/cursos`,
+    {
+      acao: 'Listar Cursos',
+      servico: servico,
+      name: `(${servico}) Listar Cursos`,
+    }
+  );
+}
+
+export const listarTurmasPorCursoRequest = (baseUrl, cursoId, servico) => {
+  return getRequest(
+    `${baseUrl}/cursos/${cursoId}/turmas`,
+    {
+      acao: 'Listar Turmas por Curso',
+      servico: servico,
+      name: `(${servico}) Listar Turmas por Curso`,
+    }
+  );
+}
+
+export const criarAlunoRequest = (baseUrl, payload, servico) => {
+  return postRequest(
+    `${baseUrl}/alunos`,
+    payload,
+    {
+      acao: 'Criar Aluno',
+      servico: servico,
+      name: `(${servico}) Criar Aluno`,
+    }
+  );
+}
+
+export const atualizarAlunoRequest = (baseUrl, alunoId, payload, servico) => {
+  return putRequest(
+    `${baseUrl}/alunos/${alunoId}`,
+    payload,
+    {
+      acao: 'Atualizar Aluno',
+      servico: servico,
+      name: `(${servico}) Atualizar Aluno`,
+    }
+  );
+}
+
+export const listarVinculosRequest = (baseUrl, servico) => {
+  return getRequest(
+    `${baseUrl}/vinculos`,
+    {
+      acao: 'Listar Vinculos',
+      servico: servico,
+      name: `(${servico}) Listar Vinculos`,
+    }
+  );
+}
+
+export const listarRequerimentosRequest = (baseUrl, servico) => {
+  return getRequest(
+    `${baseUrl}/requerimentos`,
+    {
+      acao: 'Listar Requerimentos',
+      servico: servico,
+      name: `(${servico}) Listar Requerimentos`,
     }
   );
 }

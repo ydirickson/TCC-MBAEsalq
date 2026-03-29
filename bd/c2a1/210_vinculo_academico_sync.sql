@@ -44,8 +44,7 @@ AS $$
 BEGIN
   -- Replicar para diplomas
   INSERT INTO diplomas.vinculo_academico (
-    id,
-    pessoa_id,
+      pessoa_id,
     curso_id,
     curso_codigo,
     curso_nome,
@@ -56,8 +55,7 @@ BEGIN
     situacao
   )
   VALUES (
-    NEW.id,
-    NEW.pessoa_id,
+      NEW.pessoa_id,
     NEW.curso_id,
     NEW.curso_codigo,
     NEW.curso_nome,
@@ -69,8 +67,7 @@ BEGIN
   )
   ON CONFLICT ON CONSTRAINT uq_diplomas_vinculo_pessoa_curso_tipo
   DO UPDATE SET
-    id = EXCLUDED.id,
-    curso_codigo = EXCLUDED.curso_codigo,
+      curso_codigo = EXCLUDED.curso_codigo,
     curso_nome = EXCLUDED.curso_nome,
     curso_tipo = EXCLUDED.curso_tipo,
     data_ingresso = EXCLUDED.data_ingresso,
@@ -79,8 +76,7 @@ BEGIN
 
   -- Replicar para assinatura
   INSERT INTO assinatura.vinculo_academico (
-    id,
-    pessoa_id,
+      pessoa_id,
     curso_id,
     curso_codigo,
     curso_nome,
@@ -91,8 +87,7 @@ BEGIN
     situacao
   )
   VALUES (
-    NEW.id,
-    NEW.pessoa_id,
+      NEW.pessoa_id,
     NEW.curso_id,
     NEW.curso_codigo,
     NEW.curso_nome,
@@ -104,8 +99,7 @@ BEGIN
   )
   ON CONFLICT ON CONSTRAINT uq_assinatura_vinculo_pessoa_curso_tipo
   DO UPDATE SET
-    id = EXCLUDED.id,
-    curso_codigo = EXCLUDED.curso_codigo,
+      curso_codigo = EXCLUDED.curso_codigo,
     curso_nome = EXCLUDED.curso_nome,
     curso_tipo = EXCLUDED.curso_tipo,
     data_ingresso = EXCLUDED.data_ingresso,

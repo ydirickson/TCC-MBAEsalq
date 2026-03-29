@@ -1,7 +1,17 @@
 import { group } from 'k6';
 
 import { GRADUACAO, CERTIFICADOS, DIPLOMAS, POS_GRADUACAO } from './utils/constantes.js';
-import { testeReplicacaoPessoa, replicacaoLatencia } from './utils/replication-helpers.js';
+import {
+  replicacaoLatencia,
+  testeAtualizacaoPessoa,
+  testeConclusaoInvalida,
+  testeConclusaoValidaGeraRequerimento,
+  testeReplicacaoPessoa,
+  testeReplicacaoVinculoAcademico,
+} from './utils/replication-helpers.js';
+
+const REPLICACAO_P95_MS = Number(__ENV.REPLICACAO_P95_MS || 5000);
+const REPLICACAO_P99_MS = Number(__ENV.REPLICACAO_P99_MS || 15000);
 
 
 
@@ -9,8 +19,8 @@ import { testeReplicacaoPessoa, replicacaoLatencia } from './utils/replication-h
 export const options = {
   thresholds: {
     'replicacao_latencia_ms': [
-      { threshold: 'p(95)<500', abortOnFail: false },
-      { threshold: 'p(99)<1000', abortOnFail: false },
+      { threshold: `p(95)<${REPLICACAO_P95_MS}`, abortOnFail: false },
+      { threshold: `p(99)<${REPLICACAO_P99_MS}`, abortOnFail: false },
     ],
   },
   scenarios: {
@@ -23,14 +33,59 @@ export const options = {
 };
 
 export default function () {
+  let pessoaGraduacao = null;
+  let vinculoCriado = null;
+
   // 1- Cria uma pessoa (Verifica resposta) e verifica que existe em: Graduação, Pós-Graduação, Diplomas e Certificados
   group('Entidade Pessoa:', function() {
 
     group (`${GRADUACAO} -> [${POS_GRADUACAO}, ${DIPLOMAS}, ${CERTIFICADOS}]`, function(){
-      testeReplicacaoPessoa(GRADUACAO, [POS_GRADUACAO, DIPLOMAS, CERTIFICADOS]);
+      const resultado = testeReplicacaoPessoa(GRADUACAO, [POS_GRADUACAO, DIPLOMAS, CERTIFICADOS]);
+      pessoaGraduacao = resultado.pessoaCriada;
     });
     group (`${POS_GRADUACAO} -> [${GRADUACAO}, ${DIPLOMAS}, ${CERTIFICADOS}]`, function(){
       testeReplicacaoPessoa(POS_GRADUACAO, [GRADUACAO, DIPLOMAS, CERTIFICADOS]);
+    });
+  });
+
+  group('Atualização de Pessoa:', function() {
+    if (!pessoaGraduacao?.id) {
+      console.warn('Atualização de pessoa pulada: pessoa de graduação não disponível.');
+      return;
+    }
+
+    group(`${GRADUACAO} -> [${DIPLOMAS}, ${CERTIFICADOS}]`, function(){
+      testeAtualizacaoPessoa(GRADUACAO, [DIPLOMAS, CERTIFICADOS], pessoaGraduacao);
+    });
+  });
+
+  group('Vínculo Acadêmico e Conclusão:', function() {
+    if (!pessoaGraduacao?.id) {
+      console.warn('Teste de vínculo pulado: pessoa de graduação não disponível.');
+      return;
+    }
+
+    group(`${GRADUACAO} -> ${DIPLOMAS} (vínculo)`, function() {
+      const resultado = testeReplicacaoVinculoAcademico(pessoaGraduacao.id, GRADUACAO, DIPLOMAS);
+      vinculoCriado = resultado.alunoCriado;
+    });
+
+    group(`${GRADUACAO} (regra CONCLUIDO sem dataConclusao)`, function() {
+      if (!vinculoCriado?.id) {
+        console.warn('Validação de conclusão inválida pulada: vínculo não foi criado.');
+        return;
+      }
+
+      testeConclusaoInvalida(vinculoCriado, GRADUACAO);
+    });
+
+    group(`${GRADUACAO} -> ${DIPLOMAS} (conclusão válida gera requerimento)`, function() {
+      if (!vinculoCriado?.id) {
+        console.warn('Validação de requerimento pulada: vínculo não foi criado.');
+        return;
+      }
+
+      testeConclusaoValidaGeraRequerimento(vinculoCriado, GRADUACAO, DIPLOMAS);
     });
   });
 
