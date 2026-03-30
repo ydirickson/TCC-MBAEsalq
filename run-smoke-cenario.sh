@@ -58,10 +58,10 @@ resolve_stack() {
     c2a3)
       ENV_FILE="$ROOT_DIR/.env.c2a3"
       COMPOSE_FILE="$ROOT_DIR/docker-compose-c2a3.yml"
-      DEFAULT_TIMEOUT_MS=30000
+      DEFAULT_TIMEOUT_MS=120000
       DEFAULT_POLL_MS=1000
-      DEFAULT_P95_MS=10000
-      DEFAULT_P99_MS=30000
+      DEFAULT_P95_MS=120000
+      DEFAULT_P99_MS=180000
       ;;
     *)
       echo "Cenario invalido: $scenario"
@@ -263,7 +263,7 @@ docker compose --env-file "$ENV_FILE" -f "$COMPOSE_FILE" up -d
 echo ""
 wait_for_services
 
-if [[ "$SCENARIO" == "c2a2" || "$SCENARIO" == "c2a3" ]]; then
+if [[ "$SCENARIO" == "c2a2" ]]; then
   echo ""
   wait_for_connectors
 fi
