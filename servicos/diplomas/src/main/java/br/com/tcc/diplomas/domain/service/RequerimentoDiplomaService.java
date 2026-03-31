@@ -68,7 +68,10 @@ public class RequerimentoDiplomaService {
     return requerimento;
   }
 
-  public List<RequerimentoDiploma> listar() {
+  public List<RequerimentoDiploma> listar(Long pessoaId) {
+    if (pessoaId != null) {
+      return repository.findByPessoaId(pessoaId);
+    }
     return repository.findAll();
   }
 

@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -50,9 +51,9 @@ public class RequerimentoDiplomaController {
   }
 
   @GetMapping
-  @Operation(summary = "Listar requerimentos", description = "Retorna a lista de requerimentos registrados.")
-  public List<RequerimentoDiplomaResponse> listar() {
-    var requerimentos = service.listar();
+  @Operation(summary = "Listar requerimentos", description = "Retorna a lista de requerimentos registrados. Filtra por pessoaId quando informado.")
+  public List<RequerimentoDiplomaResponse> listar(@RequestParam(required = false) Long pessoaId) {
+    var requerimentos = service.listar(pessoaId);
     log.info("Listando requerimentos total={}", requerimentos.size());
     return requerimentos.stream().map(mapper::toResponse).collect(Collectors.toList());
   }

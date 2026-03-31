@@ -30,7 +30,10 @@ public class VinculoAcademicoService {
         .map(pessoa -> repository.save(mapper.toEntity(request, pessoa)));
   }
 
-  public List<VinculoAcademico> listar() {
+  public List<VinculoAcademico> listar(Long pessoaId) {
+    if (pessoaId != null) {
+      return repository.findByPessoaId(pessoaId);
+    }
     return repository.findAll();
   }
 

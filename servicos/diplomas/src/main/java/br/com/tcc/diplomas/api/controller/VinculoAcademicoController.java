@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -55,9 +56,9 @@ public class VinculoAcademicoController {
   }
 
   @GetMapping
-  @Operation(summary = "Listar vinculos", description = "Retorna a lista de vinculos academicos cadastrados.")
-  public List<VinculoAcademicoResponse> listar() {
-    var vinculos = service.listar();
+  @Operation(summary = "Listar vinculos", description = "Retorna a lista de vinculos academicos cadastrados. Filtra por pessoaId quando informado.")
+  public List<VinculoAcademicoResponse> listar(@RequestParam(required = false) Long pessoaId) {
+    var vinculos = service.listar(pessoaId);
     log.info("Listando vinculos total={}", vinculos.size());
     return vinculos.stream().map(mapper::toResponse).collect(Collectors.toList());
   }
