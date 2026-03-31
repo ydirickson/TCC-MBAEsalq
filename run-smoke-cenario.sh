@@ -224,7 +224,7 @@ cleanup_all_scenarios
 
 echo ""
 echo "==> Subindo cenario $SCENARIO..."
-docker compose --env-file "$ENV_FILE" -f "$COMPOSE_FILE" up -d --wait
+docker compose --env-file "$ENV_FILE" -f "$COMPOSE_FILE" up -d --build --wait
 
 if [[ "$SCENARIO" == "c2a2" ]]; then
   echo ""

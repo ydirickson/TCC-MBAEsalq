@@ -30,7 +30,7 @@ const parseResponseJson = (response) => {
 };
 
 const logErro = (descricao, response) => {
-  console.error(`[ERRO] ${descricao} — status: ${response?.status} body: ${response?.body}`);
+  console.error(`[ERRO] ${descricao} — status: ${response?.status} url: ${response?.url} body: ${response?.body} error: ${response?.error}`);
 };
 
 const aguardarReplicacao = ({ requestFn, validateFn, timeoutMs = REPLICATION_TIMEOUT_MS, pollIntervalMs = POLL_INTERVAL_MS }) => {

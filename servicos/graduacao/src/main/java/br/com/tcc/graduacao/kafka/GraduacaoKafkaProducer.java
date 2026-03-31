@@ -4,9 +4,11 @@ import br.com.tcc.graduacao.domain.model.Pessoa;
 import br.com.tcc.graduacao.domain.model.VinculoAcademico;
 import br.com.tcc.graduacao.domain.model.SituacaoAcademica;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Component
+@Profile("!no-kafka")
 public class GraduacaoKafkaProducer {
 
   static final String TOPICO_PESSOA = "tcc.graduacao.pessoa";

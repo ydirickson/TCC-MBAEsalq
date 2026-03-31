@@ -10,11 +10,13 @@ import br.com.tcc.assinatura.domain.repository.PessoaRepository;
 import br.com.tcc.assinatura.domain.repository.VinculoAcademicoRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
+@Profile("!no-kafka")
 public class AssinaturaKafkaConsumer {
 
   private static final Logger log = LoggerFactory.getLogger(AssinaturaKafkaConsumer.class);
