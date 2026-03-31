@@ -112,24 +112,24 @@ export const atualizarAlunoRequest = (baseUrl, alunoId, payload, servico) => {
   );
 }
 
-export const listarVinculosRequest = (baseUrl, servico) => {
+export const listarVinculosPorPessoaRequest = (baseUrl, pessoaId, servico) => {
   return getRequest(
-    `${baseUrl}/vinculos`,
+    `${baseUrl}/vinculos?pessoaId=${pessoaId}`,
     {
-      acao: 'Listar Vinculos',
+      acao: 'Listar Vinculos por Pessoa',
       servico: servico,
-      name: `(${servico}) Listar Vinculos`,
+      name: `(${servico}) Listar Vinculos por Pessoa`,
     }
   );
 }
 
-export const listarRequerimentosRequest = (baseUrl, servico) => {
+export const listarRequerimentosPorPessoaRequest = (baseUrl, pessoaId, servico) => {
   return getRequest(
-    `${baseUrl}/requerimentos`,
+    `${baseUrl}/requerimentos?pessoaId=${pessoaId}`,
     {
-      acao: 'Listar Requerimentos',
+      acao: 'Listar Requerimentos por Pessoa',
       servico: servico,
-      name: `(${servico}) Listar Requerimentos`,
+      name: `(${servico}) Listar Requerimentos por Pessoa`,
     }
   );
 }

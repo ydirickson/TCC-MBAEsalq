@@ -82,46 +82,6 @@ resolve_stack() {
   fi
 }
 
-wait_for_services() {
-  local timeout=300
-  local start_time
-  start_time="$(date +%s)"
-  local services=(
-    "http://localhost:8081/actuator/health"
-    "http://localhost:8082/actuator/health"
-    "http://localhost:8083/actuator/health"
-    "http://localhost:8084/actuator/health"
-  )
-
-  echo "Aguardando servicos ficarem saudaveis (timeout ${timeout}s)..."
-
-  while true; do
-    local all_up=true
-    for url in "${services[@]}"; do
-      if ! curl -fsS "$url" >/dev/null 2>&1; then
-        all_up=false
-        break
-      fi
-    done
-
-    if [[ "$all_up" == "true" ]]; then
-      echo "Todos os servicos estao UP."
-      return 0
-    fi
-
-    local now elapsed
-    now="$(date +%s)"
-    elapsed=$((now - start_time))
-
-    if [[ "$elapsed" -ge "$timeout" ]]; then
-      echo "Timeout aguardando healthcheck dos servicos."
-      return 1
-    fi
-
-    echo "  servicos ainda nao disponiveis (${elapsed}s/${timeout}s)..."
-    sleep 5
-  done
-}
 
 wait_for_connectors() {
   local timeout=240
@@ -159,7 +119,7 @@ wait_for_connectors() {
     fi
 
     if [[ "$all_running" == "true" ]]; then
-      if docker logs tcc_connect_init 2>&1 | grep -q "Bootstrap de conectores concluido"; then
+      if docker logs --tail 50 tcc_connect_init 2>&1 | grep -q "Bootstrap de conectores concluido"; then
         echo "Kafka Connect pronto: conectores registrados e em execucao."
         return 0
       fi
@@ -194,32 +154,39 @@ compose_down_safely() {
 cleanup_all_scenarios() {
   echo "==> Limpando stacks de todos os cenarios (containers / networks / volumes)..."
 
-  # Todos os pares env|compose conhecidos
-  local -a stacks=(
-    "$ROOT_DIR/.env.c1|$ROOT_DIR/docker-compose-c1.yml"
-    "$ROOT_DIR/.env.c2|$ROOT_DIR/docker-compose-c2a1.yml"
-    "$ROOT_DIR/.env.c2a2|$ROOT_DIR/docker-compose-c2a2.yml"
-    "$ROOT_DIR/.env.c2a3|$ROOT_DIR/docker-compose-c2a3.yml"
-  )
-
-  # Nomes de projeto usados pelo simulacao.sh e por execucoes anteriores
   local -a known_projects=("tcc-c1" "tcc-c2a1" "tcc-c2a2" "tcc-c2a3")
 
-  local pair
-  for pair in "${stacks[@]}"; do
+  # Identificar quais projetos possuem containers (rodando ou parados)
+  local -a active_projects=()
+  local pr
+  for pr in "${known_projects[@]}"; do
+    local count
+    count="$(docker ps -aq --filter "label=com.docker.compose.project=$pr" 2>/dev/null | wc -l | tr -d ' ')"
+    [[ "$count" -gt 0 ]] && active_projects+=("$pr")
+  done
+
+  if [[ "${#active_projects[@]}" -eq 0 ]]; then
+    echo "    Nenhum container ativo. Pulando cleanup."
+    return 0
+  fi
+
+  # Todos os pares env|compose conhecidos, indexados pelo project-name
+  local -A stack_for_project=(
+    ["tcc-c1"]="$ROOT_DIR/.env.c1|$ROOT_DIR/docker-compose-c1.yml"
+    ["tcc-c2a1"]="$ROOT_DIR/.env.c2|$ROOT_DIR/docker-compose-c2a1.yml"
+    ["tcc-c2a2"]="$ROOT_DIR/.env.c2a2|$ROOT_DIR/docker-compose-c2a2.yml"
+    ["tcc-c2a3"]="$ROOT_DIR/.env.c2a3|$ROOT_DIR/docker-compose-c2a3.yml"
+  )
+
+  for pr in "${active_projects[@]}"; do
+    local pair="${stack_for_project[$pr]}"
     local env_file="${pair%%|*}"
     local compose_file="${pair##*|}"
 
     [[ -f "$env_file" && -f "$compose_file" ]] || continue
 
-    # Derrubar sem project-name (usa nome inferido pelo compose)
     compose_down_safely "$env_file" "$compose_file"
-
-    # Derrubar para cada project-name conhecido (execucoes anteriores com --project-name)
-    local pn
-    for pn in "${known_projects[@]}"; do
-      compose_down_safely "$env_file" "$compose_file" "$pn"
-    done
+    compose_down_safely "$env_file" "$compose_file" "$pr"
   done
 
   # Limpeza residual de networks e volumes por label de projeto
@@ -227,7 +194,6 @@ cleanup_all_scenarios() {
   project_default="$(basename "$ROOT_DIR" | tr '[:upper:]' '[:lower:]' | tr -cd 'a-z0-9_-')"
 
   local -a all_projects=("$project_default" "${known_projects[@]}")
-  local pr
   for pr in "${all_projects[@]}"; do
     docker network ls --filter "label=com.docker.compose.project=$pr" -q \
       | xargs -r docker network rm >/dev/null 2>&1 || true
@@ -258,10 +224,7 @@ cleanup_all_scenarios
 
 echo ""
 echo "==> Subindo cenario $SCENARIO..."
-docker compose --env-file "$ENV_FILE" -f "$COMPOSE_FILE" up -d
-
-echo ""
-wait_for_services
+docker compose --env-file "$ENV_FILE" -f "$COMPOSE_FILE" up -d --wait
 
 if [[ "$SCENARIO" == "c2a2" ]]; then
   echo ""
@@ -284,3 +247,6 @@ echo ""
 
 cd "$ROOT_DIR"
 k6 run simulacao/smoke-test.js
+
+echo ""
+cleanup_all_scenarios

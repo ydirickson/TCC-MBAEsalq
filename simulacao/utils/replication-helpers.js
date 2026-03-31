@@ -5,9 +5,9 @@ import {
   criarAlunoRequest,
   criarPessoaRequest,
   listarCursosRequest,
-  listarRequerimentosRequest,
+  listarRequerimentosPorPessoaRequest,
   listarTurmasPorCursoRequest,
-  listarVinculosRequest,
+  listarVinculosPorPessoaRequest,
   obterPessoaRequest
 } from "./request-helpers.js";
 
@@ -58,6 +58,36 @@ const aguardarReplicacao = ({ requestFn, validateFn, timeoutMs = REPLICATION_TIM
   };
 }
 
+// Polling de múltiplos destinos em paralelo num único loop.
+// Retorna um Map<key, { sucesso, response, data, latenciaMs }>.
+const aguardarReplicacaoParalela = (destinos) => {
+  const destinoMap = new Map(destinos.map((d) => [d.key, d]));
+  const resultados = new Map(
+    destinos.map(({ key }) => [key, { sucesso: false, response: null, data: null, latenciaMs: null }])
+  );
+  const pendentes = new Set(destinos.map(({ key }) => key));
+  const inicio = Date.now();
+
+  while (pendentes.size > 0 && (Date.now() - inicio) <= REPLICATION_TIMEOUT_MS) {
+    for (const key of [...pendentes]) {
+      const { requestFn, validateFn } = destinoMap.get(key);
+      const resp = requestFn();
+      const data = parseResponseJson(resp);
+
+      if (resp.status === 200 && validateFn(data)) {
+        pendentes.delete(key);
+        resultados.set(key, { sucesso: true, response: resp, data, latenciaMs: Date.now() - inicio });
+      } else {
+        resultados.get(key).response = resp;
+      }
+    }
+
+    if (pendentes.size > 0) sleep(POLL_INTERVAL_MS / 1000);
+  }
+
+  return resultados;
+}
+
 export const testeReplicacaoPessoa = (servicoOrigem, servicosDestino) => {
   const pessoaPayload = createPessoaPayload();
   const { url, nome } = SERVICOS[servicoOrigem];
@@ -75,38 +105,43 @@ export const testeReplicacaoPessoa = (servicoOrigem, servicosDestino) => {
   const pessoaCriada = pessoaNova.json();
   let sucessoGlobal = true;
 
-  // 2- Verifica que existe em: Graduação, Pós-Graduação, Diplomas e Certificados
-  for (let servicoDestino of servicosDestino) {
-    const { url: urlDestino, nome: nomeDestino } = SERVICOS[servicoDestino];
-    const resultadoReplicacao = aguardarReplicacao({
-      requestFn: () => obterPessoaRequest(urlDestino, pessoaCriada.id, nomeDestino),
-      validateFn: (pessoaDestino) => {
-        return !!pessoaDestino
-          && pessoaDestino.id === pessoaCriada.id
-          && pessoaDestino.nome === pessoaCriada.nome
-          && pessoaDestino.dataNascimento === pessoaCriada.dataNascimento;
-      },
+  // 2- Verifica que existe em todos os serviços destino (polling paralelo)
+  const resultados = aguardarReplicacaoParalela(
+    servicosDestino.map((servicoDestino) => {
+      const { url: urlDestino, nome: nomeDestino } = SERVICOS[servicoDestino];
+      return {
+        key: servicoDestino,
+        requestFn: () => obterPessoaRequest(urlDestino, pessoaCriada.id, nomeDestino),
+        validateFn: (pessoaDestino) =>
+          !!pessoaDestino &&
+          pessoaDestino.id === pessoaCriada.id &&
+          pessoaDestino.nome === pessoaCriada.nome &&
+          pessoaDestino.dataNascimento === pessoaCriada.dataNascimento,
+      };
+    })
+  );
+
+  for (const [servicoDestino, resultado] of resultados) {
+    const { nome: nomeDestino } = SERVICOS[servicoDestino];
+
+    check(resultado.response || {}, {
+      [`(${nome} -> ${nomeDestino}) Replicação concluída`]: () => resultado.sucesso,
     });
 
-    check(resultadoReplicacao.response || {}, {
-      [`(${nome} -> ${nomeDestino}) Replicação concluída`]: () => resultadoReplicacao.sucesso
-    });
-
-    if (!resultadoReplicacao.sucesso) {
+    if (!resultado.sucesso) {
       sucessoGlobal = false;
       continue;
     }
 
-    const pessoaDestino = resultadoReplicacao.data;
-
     // 3- Medir latência de replicação (replicadoEm - criadoEm)
+    const pessoaDestino = resultado.data;
     if (pessoaDestino.replicadoEm && pessoaDestino.criadoEm) {
       const latenciaMs = new Date(pessoaDestino.replicadoEm) - new Date(pessoaDestino.criadoEm);
       replicacaoLatencia.add(latenciaMs, { origem: nome, destino: nomeDestino });
       console.log(`Latência de replicação ${nome} (${pessoaDestino.criadoEm}) -> ${nomeDestino} (${pessoaDestino.replicadoEm}): ${latenciaMs}ms`);
     } else {
-      replicacaoLatencia.add(resultadoReplicacao.latenciaMs, { origem: nome, destino: nomeDestino });
-      console.log(`Latência de replicação ${nome} -> ${nomeDestino}: ${resultadoReplicacao.latenciaMs}ms`);
+      replicacaoLatencia.add(resultado.latenciaMs, { origem: nome, destino: nomeDestino });
+      console.log(`Latência de replicação ${nome} -> ${nomeDestino}: ${resultado.latenciaMs}ms`);
     }
   }
 
@@ -137,26 +172,30 @@ export const testeAtualizacaoPessoa = (servicoOrigem, servicosDestino, pessoaCri
 
   let sucessoGlobal = true;
 
-  for (let servicoDestino of servicosDestino) {
-    const { url: urlDestino, nome: nomeDestino } = SERVICOS[servicoDestino];
+  const resultados = aguardarReplicacaoParalela(
+    servicosDestino.map((servicoDestino) => {
+      const { url: urlDestino, nome: nomeDestino } = SERVICOS[servicoDestino];
+      return {
+        key: servicoDestino,
+        requestFn: () => obterPessoaRequest(urlDestino, pessoaCriada.id, nomeDestino),
+        validateFn: (pessoaDestino) => !!pessoaDestino && pessoaDestino.nomeSocial === nomeSocialAtualizado,
+      };
+    })
+  );
 
-    const resultadoReplicacao = aguardarReplicacao({
-      requestFn: () => obterPessoaRequest(urlDestino, pessoaCriada.id, nomeDestino),
-      validateFn: (pessoaDestino) => {
-        return !!pessoaDestino && pessoaDestino.nomeSocial === nomeSocialAtualizado;
-      }
+  for (const [servicoDestino, resultado] of resultados) {
+    const { nome: nomeDestino } = SERVICOS[servicoDestino];
+
+    check(resultado.response || {}, {
+      [`(${nomeOrigem} -> ${nomeDestino}) Atualização replicada`]: () => resultado.sucesso,
     });
 
-    check(resultadoReplicacao.response || {}, {
-      [`(${nomeOrigem} -> ${nomeDestino}) Atualização replicada`]: () => resultadoReplicacao.sucesso
-    });
-
-    if (!resultadoReplicacao.sucesso) {
+    if (!resultado.sucesso) {
       sucessoGlobal = false;
       continue;
     }
 
-    replicacaoLatencia.add(resultadoReplicacao.latenciaMs, { origem: nomeOrigem, destino: nomeDestino });
+    replicacaoLatencia.add(resultado.latenciaMs, { origem: nomeOrigem, destino: nomeDestino });
   }
 
   return { sucessoGlobal, nomeSocialAtualizado };
@@ -220,17 +259,8 @@ export const testeReplicacaoVinculoAcademico = (pessoaId, servicoOrigem, servico
 
   const alunoCriado = parseResponseJson(alunoResponse);
   const resultadoReplicacao = aguardarReplicacao({
-    requestFn: () => listarVinculosRequest(urlDestino, nomeDestino),
-    validateFn: (vinculos) => {
-      if (!Array.isArray(vinculos)) {
-        return false;
-      }
-
-      return vinculos.some((v) => {
-        const pessoaVinculoId = v.pessoaId ?? v.pessoa?.id;
-        return pessoaVinculoId === pessoaId;
-      });
-    }
+    requestFn: () => listarVinculosPorPessoaRequest(urlDestino, pessoaId, nomeDestino),
+    validateFn: (vinculos) => Array.isArray(vinculos) && vinculos.length > 0,
   });
 
   check(resultadoReplicacao.response || {}, {
@@ -281,13 +311,11 @@ export const testeConclusaoValidaGeraRequerimento = (alunoCriado, servicoOrigem,
     status: 'CONCLUIDO',
   };
 
-  const requerimentosAntesResponse = listarRequerimentosRequest(urlDestino, nomeDestino);
+  const requerimentosAntesResponse = listarRequerimentosPorPessoaRequest(urlDestino, alunoCriado.pessoaId, nomeDestino);
   const requerimentosAntes = requerimentosAntesResponse.status === 200
     ? (parseResponseJson(requerimentosAntesResponse) || [])
     : [];
-  const quantidadeAntesPessoa = Array.isArray(requerimentosAntes)
-    ? requerimentosAntes.filter((r) => r.pessoaId === alunoCriado.pessoaId).length
-    : 0;
+  const quantidadeAntesPessoa = Array.isArray(requerimentosAntes) ? requerimentosAntes.length : 0;
 
   const atualizacao = atualizarAlunoRequest(urlOrigem, alunoCriado.id, payloadValido, nomeOrigem);
   check(atualizacao, {
@@ -299,18 +327,9 @@ export const testeConclusaoValidaGeraRequerimento = (alunoCriado, servicoOrigem,
   }
 
   const resultadoReplicacao = aguardarReplicacao({
-    requestFn: () => listarRequerimentosRequest(urlDestino, nomeDestino),
-    validateFn: (requerimentos) => {
-      if (!Array.isArray(requerimentos)) {
-        return false;
-      }
-
-      const quantidadeAtualPessoa = requerimentos
-        .filter((r) => r.pessoaId === alunoCriado.pessoaId)
-        .length;
-
-      return quantidadeAtualPessoa > quantidadeAntesPessoa;
-    }
+    requestFn: () => listarRequerimentosPorPessoaRequest(urlDestino, alunoCriado.pessoaId, nomeDestino),
+    validateFn: (requerimentos) =>
+      Array.isArray(requerimentos) && requerimentos.length > quantidadeAntesPessoa,
   });
 
   check(resultadoReplicacao.response || {}, {
