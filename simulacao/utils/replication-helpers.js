@@ -29,6 +29,10 @@ const parseResponseJson = (response) => {
   }
 };
 
+const logErro = (descricao, response) => {
+  console.error(`[ERRO] ${descricao} — status: ${response?.status} body: ${response?.body}`);
+};
+
 const aguardarReplicacao = ({ requestFn, validateFn, timeoutMs = REPLICATION_TIMEOUT_MS, pollIntervalMs = POLL_INTERVAL_MS }) => {
   const inicio = Date.now();
   let ultimaResposta = null;
@@ -93,12 +97,12 @@ export const testeReplicacaoPessoa = (servicoOrigem, servicosDestino) => {
   const { url, nome } = SERVICOS[servicoOrigem];
   // 1- Cria uma pessoa (Verifica resposta) no serviço de origem
   const pessoaNova = criarPessoaRequest(url, pessoaPayload, nome);
-  console.log(`Resposta da criação da pessoa: ${pessoaNova.status} - ${pessoaNova.body}`);
   check(pessoaNova, {
     [`(Criar Pessoa - ${nome}) Status 201`]: (r) => r.status === 201,
   });
 
   if (pessoaNova.status !== 201) {
+    logErro(`Criar Pessoa - ${nome}`, pessoaNova);
     return { sucessoGlobal: false, pessoaCriada: null };
   }
 
@@ -167,6 +171,7 @@ export const testeAtualizacaoPessoa = (servicoOrigem, servicosDestino, pessoaCri
   });
 
   if (atualizacao.status !== 200) {
+    logErro(`Atualizar Pessoa - ${nomeOrigem}`, atualizacao);
     return { sucessoGlobal: false };
   }
 
@@ -211,6 +216,7 @@ export const testeReplicacaoVinculoAcademico = (pessoaId, servicoOrigem, servico
   });
 
   if (cursosResponse.status !== 200) {
+    logErro(`Listar cursos - ${nomeOrigem}`, cursosResponse);
     return { sucesso: false, alunoCriado: null };
   }
 
@@ -229,6 +235,7 @@ export const testeReplicacaoVinculoAcademico = (pessoaId, servicoOrigem, servico
   });
 
   if (turmasResponse.status !== 200) {
+    logErro(`Listar turmas - ${nomeOrigem}`, turmasResponse);
     return { sucesso: false, alunoCriado: null };
   }
 
@@ -254,6 +261,7 @@ export const testeReplicacaoVinculoAcademico = (pessoaId, servicoOrigem, servico
   });
 
   if (alunoResponse.status !== 201) {
+    logErro(`Criar aluno - ${nomeOrigem}`, alunoResponse);
     return { sucesso: false, alunoCriado: null };
   }
 
@@ -323,6 +331,7 @@ export const testeConclusaoValidaGeraRequerimento = (alunoCriado, servicoOrigem,
   });
 
   if (atualizacao.status !== 200) {
+    logErro(`Atualizar aluno para CONCLUIDO - ${nomeOrigem}`, atualizacao);
     return false;
   }
 
