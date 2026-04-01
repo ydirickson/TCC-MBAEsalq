@@ -2,13 +2,21 @@ import { createPessoaPayload } from "./payload-factory.js";
 import {
   atualizarAlunoRequest,
   atualizarPessoaRequest,
+  atualizarSolicitacaoAssinaturaRequest,
   criarAlunoRequest,
+  criarDocumentoDiplomaRequest,
+  criarDiplomaRequest,
   criarPessoaRequest,
+  criarSolicitacaoAssinaturaRequest,
   listarCursosRequest,
+  listarDocumentosAssinaveis,
+  listarProgramasRequest,
   listarRequerimentosPorPessoaRequest,
+  listarSolicitacoesRequest,
   listarTurmasPorCursoRequest,
   listarVinculosPorPessoaRequest,
-  obterPessoaRequest
+  obterPessoaRequest,
+  obterStatusEmissaoRequest,
 } from "./request-helpers.js";
 
 
@@ -349,5 +357,323 @@ export const testeConclusaoValidaGeraRequerimento = (alunoCriado, servicoOrigem,
     replicacaoLatencia.add(resultadoReplicacao.latenciaMs, { origem: nomeOrigem, destino: nomeDestino });
   }
 
+  const requerimento = resultadoReplicacao.sucesso
+    ? ((resultadoReplicacao.data || []).slice(quantidadeAntesPessoa)[0] || null)
+    : null;
+  return { sucesso: resultadoReplicacao.sucesso, requerimento };
+}
+
+// Verifica que um vínculo de uma pessoa já existente replicou para o serviço destino.
+// Usar quando o vínculo foi criado em outro passo do teste e não precisa criar um novo aluno.
+export const testeVerificarVinculoReplicado = (pessoaId, servicoDestino) => {
+  const { url: urlDestino, nome: nomeDestino } = SERVICOS[servicoDestino];
+
+  const resultadoReplicacao = aguardarReplicacao({
+    requestFn: () => listarVinculosPorPessoaRequest(urlDestino, pessoaId, nomeDestino),
+    validateFn: (vinculos) => Array.isArray(vinculos) && vinculos.length > 0,
+  });
+
+  check(resultadoReplicacao.response || {}, {
+    [`(-> ${nomeDestino}) Vínculo replicado`]: () => resultadoReplicacao.sucesso,
+  });
+
+  if (resultadoReplicacao.sucesso) {
+    replicacaoLatencia.add(resultadoReplicacao.latenciaMs, { destino: nomeDestino });
+  }
+
   return resultadoReplicacao.sucesso;
+}
+
+// Equivalente a testeReplicacaoVinculoAcademico para Pós-Graduação.
+// Usa GET /programas (não /cursos) e cria aluno com programaId (não turmaId).
+export const testeReplicacaoVinculoPosGraduacao = (pessoaId, servicoOrigem, servicoDestino) => {
+  const { url: urlOrigem, nome: nomeOrigem } = SERVICOS[servicoOrigem];
+  const { url: urlDestino, nome: nomeDestino } = SERVICOS[servicoDestino];
+
+  const programasResponse = listarProgramasRequest(urlOrigem, nomeOrigem);
+  check(programasResponse, {
+    [`(${nomeOrigem}) Listar programas Status 200`]: (r) => r.status === 200,
+  });
+
+  if (programasResponse.status !== 200) {
+    logErro(`Listar programas - ${nomeOrigem}`, programasResponse);
+    return { sucesso: false, alunoCriado: null };
+  }
+
+  const programas = parseResponseJson(programasResponse) || [];
+  if (!Array.isArray(programas) || programas.length === 0) {
+    check(programasResponse, {
+      [`(${nomeOrigem}) Possui programas para teste`]: () => false,
+    });
+    return { sucesso: false, alunoCriado: null };
+  }
+
+  const programa = programas[0];
+  const alunoPayload = {
+    pessoaId,
+    programaId: programa.id,
+    dataMatricula: new Date().toISOString().split('T')[0],
+    status: 'ATIVO',
+  };
+
+  const alunoResponse = criarAlunoRequest(urlOrigem, alunoPayload, nomeOrigem);
+  check(alunoResponse, {
+    [`(${nomeOrigem}) Criar aluno Status 201`]: (r) => r.status === 201,
+  });
+
+  if (alunoResponse.status !== 201) {
+    logErro(`Criar aluno - ${nomeOrigem}`, alunoResponse);
+    return { sucesso: false, alunoCriado: null };
+  }
+
+  const alunoCriado = parseResponseJson(alunoResponse);
+  const resultadoReplicacao = aguardarReplicacao({
+    requestFn: () => listarVinculosPorPessoaRequest(urlDestino, pessoaId, nomeDestino),
+    validateFn: (vinculos) => Array.isArray(vinculos) && vinculos.length > 0,
+  });
+
+  check(resultadoReplicacao.response || {}, {
+    [`(${nomeOrigem} -> ${nomeDestino}) Vínculo replicado`]: () => resultadoReplicacao.sucesso,
+  });
+
+  if (resultadoReplicacao.sucesso) {
+    replicacaoLatencia.add(resultadoReplicacao.latenciaMs, { origem: nomeOrigem, destino: nomeDestino });
+  }
+
+  return { sucesso: resultadoReplicacao.sucesso, alunoCriado };
+}
+// Equivalente a testeConclusaoInvalida para Pós-Graduação.
+// Verifica que status CONCLUIDO sem dataConclusao é rejeitado (4xx) pelo serviço.
+export const testeConclusaoInvalidaPosGraduacao = (alunoCriado, servicoOrigem) => {
+  if (!alunoCriado || !alunoCriado.id) {
+    return false;
+  }
+
+  const { url: urlOrigem, nome: nomeOrigem } = SERVICOS[servicoOrigem];
+  const payloadInvalido = {
+    pessoaId: alunoCriado.pessoaId,
+    programaId: alunoCriado.programaId,
+    orientadorId: alunoCriado.orientadorId,
+    dataMatricula: alunoCriado.dataMatricula,
+    dataConclusao: null,
+    status: 'CONCLUIDO',
+  };
+
+  const resposta = atualizarAlunoRequest(urlOrigem, alunoCriado.id, payloadInvalido, nomeOrigem);
+  check(resposta, {
+    [`(${nomeOrigem}) CONCLUIDO sem dataConclusao falha`]: (r) => r.status >= 400 && r.status < 500,
+  });
+
+  return resposta.status >= 400 && resposta.status < 500;
+}
+
+// Equivalente a testeConclusaoValidaGeraRequerimento para Pós-Graduação.
+// Atualiza aluno para CONCLUIDO e verifica que um RequerimentoDiploma é gerado em servicoDestino.
+export const testeConclusaoValidaGeraRequerimentoPosGraduacao = (alunoCriado, servicoOrigem, servicoDestino) => {
+  if (!alunoCriado || !alunoCriado.id) {
+    return false;
+  }
+
+  const { url: urlOrigem, nome: nomeOrigem } = SERVICOS[servicoOrigem];
+  const { url: urlDestino, nome: nomeDestino } = SERVICOS[servicoDestino];
+
+  const requerimentosAntesResponse = listarRequerimentosPorPessoaRequest(urlDestino, alunoCriado.pessoaId, nomeDestino);
+  const requerimentosAntes = requerimentosAntesResponse.status === 200
+    ? (parseResponseJson(requerimentosAntesResponse) || [])
+    : [];
+  const quantidadeAntesPessoa = Array.isArray(requerimentosAntes) ? requerimentosAntes.length : 0;
+
+  const payloadValido = {
+    pessoaId: alunoCriado.pessoaId,
+    programaId: alunoCriado.programaId,
+    orientadorId: alunoCriado.orientadorId,
+    dataMatricula: alunoCriado.dataMatricula,
+    dataConclusao: new Date().toISOString().split('T')[0],
+    status: 'CONCLUIDO',
+  };
+
+  const atualizacao = atualizarAlunoRequest(urlOrigem, alunoCriado.id, payloadValido, nomeOrigem);
+  check(atualizacao, {
+    [`(${nomeOrigem}) Atualizar aluno para CONCLUIDO Status 200`]: (r) => r.status === 200,
+  });
+
+  if (atualizacao.status !== 200) {
+    logErro(`Atualizar aluno para CONCLUIDO - ${nomeOrigem}`, atualizacao);
+    return false;
+  }
+
+  const resultadoReplicacao = aguardarReplicacao({
+    requestFn: () => listarRequerimentosPorPessoaRequest(urlDestino, alunoCriado.pessoaId, nomeDestino),
+    validateFn: (requerimentos) =>
+      Array.isArray(requerimentos) && requerimentos.length > quantidadeAntesPessoa,
+  });
+
+  check(resultadoReplicacao.response || {}, {
+    [`(${nomeOrigem} -> ${nomeDestino}) Requerimento gerado após conclusão`]: () => resultadoReplicacao.sucesso,
+  });
+
+  if (resultadoReplicacao.sucesso) {
+    replicacaoLatencia.add(resultadoReplicacao.latenciaMs, { origem: nomeOrigem, destino: nomeDestino });
+  }
+
+  const requerimento = resultadoReplicacao.sucesso
+    ? ((resultadoReplicacao.data || []).slice(quantidadeAntesPessoa)[0] || null)
+    : null;
+  return { sucesso: resultadoReplicacao.sucesso, requerimento };
+}
+
+// Cria Diploma + DocumentoDiploma a partir do requerimento e verifica que Assinatura
+// auto-cria um DocumentoAssinavel (via trigger em C1 ou evento em A2/A3).
+export const testeDocumentoAssinavel = (requerimento, servicoOrigem, servicoDestino) => {
+  if (!requerimento?.id) {
+    return { sucesso: false, documentoDiploma: null, documentoAssinavelId: null };
+  }
+
+  const { url: urlOrigem, nome: nomeOrigem } = SERVICOS[servicoOrigem];
+  const { url: urlDestino, nome: nomeDestino } = SERVICOS[servicoDestino];
+
+  const diplomaPayload = {
+    requerimentoId: requerimento.id,
+    numeroRegistro: `REG-${Date.now()}`,
+    dataEmissao: new Date().toISOString().split('T')[0],
+  };
+  const diplomaResponse = criarDiplomaRequest(urlOrigem, diplomaPayload, nomeOrigem);
+  check(diplomaResponse, {
+    [`(${nomeOrigem}) Criar Diploma Status 201`]: (r) => r.status === 201,
+  });
+
+  if (diplomaResponse.status !== 201) {
+    logErro(`Criar Diploma - ${nomeOrigem}`, diplomaResponse);
+    return { sucesso: false, documentoDiploma: null, documentoAssinavelId: null };
+  }
+
+  const diploma = parseResponseJson(diplomaResponse);
+
+  const documentoPayload = {
+    versao: 1,
+    dataGeracao: new Date().toISOString().split('T')[0],
+    urlArquivo: `https://arquivos.tcc/${diploma.id}/v1.pdf`,
+    hashDocumento: `hash-${diploma.id}-${Date.now()}`,
+  };
+  const documentoDiplomaResponse = criarDocumentoDiplomaRequest(urlOrigem, diploma.id, documentoPayload, nomeOrigem);
+  check(documentoDiplomaResponse, {
+    [`(${nomeOrigem}) Criar DocumentoDiploma Status 201`]: (r) => r.status === 201,
+  });
+
+  if (documentoDiplomaResponse.status !== 201) {
+    logErro(`Criar DocumentoDiploma - ${nomeOrigem}`, documentoDiplomaResponse);
+    return { sucesso: false, documentoDiploma: null, documentoAssinavelId: null };
+  }
+
+  const documentoDiploma = parseResponseJson(documentoDiplomaResponse);
+
+  const resultadoReplicacao = aguardarReplicacao({
+    requestFn: () => listarDocumentosAssinaveis(urlDestino, nomeDestino),
+    validateFn: (docs) => Array.isArray(docs) && docs.some((d) => d.documentoDiplomaId === documentoDiploma.id),
+  });
+
+  check(resultadoReplicacao.response || {}, {
+    [`(${nomeOrigem} -> ${nomeDestino}) DocumentoAssinavel gerado`]: () => resultadoReplicacao.sucesso,
+  });
+
+  if (!resultadoReplicacao.sucesso) {
+    return { sucesso: false, documentoDiploma, documentoAssinavelId: null };
+  }
+
+  replicacaoLatencia.add(resultadoReplicacao.latenciaMs, { origem: nomeOrigem, destino: nomeDestino });
+
+  const documentoAssinavel = (resultadoReplicacao.data || []).find((d) => d.documentoDiplomaId === documentoDiploma.id);
+  return { sucesso: true, documentoDiploma, documentoAssinavelId: documentoAssinavel.id };
+}
+
+// Verifica que uma SolicitacaoAssinatura com status PENDENTE foi criada automaticamente
+// para o documentoAssinavelId informado (via trigger em C1 ou evento em A2/A3).
+export const testeSolicitacaoAssinatura = (documentoAssinavelId, servicoDestino) => {
+  if (!documentoAssinavelId) {
+    return { sucesso: false, solicitacao: null };
+  }
+
+  const { url: urlDestino, nome: nomeDestino } = SERVICOS[servicoDestino];
+
+  const resultadoReplicacao = aguardarReplicacao({
+    requestFn: () => listarSolicitacoesRequest(urlDestino, documentoAssinavelId, nomeDestino),
+    validateFn: (solicitacoes) => Array.isArray(solicitacoes) && solicitacoes.some((s) => s.status === 'PENDENTE'),
+  });
+
+  check(resultadoReplicacao.response || {}, {
+    [`(${nomeDestino}) SolicitacaoAssinatura PENDENTE criada`]: () => resultadoReplicacao.sucesso,
+  });
+
+  if (!resultadoReplicacao.sucesso) {
+    return { sucesso: false, solicitacao: null };
+  }
+
+  const solicitacao = (resultadoReplicacao.data || []).find((s) => s.status === 'PENDENTE');
+  return { sucesso: true, solicitacao };
+}
+
+// Verifica que uma segunda tentativa de criar SolicitacaoAssinatura para o mesmo
+// documentoAssinavelId retorna 409 CONFLICT (regra de não-duplicidade).
+export const testeNaoDuplicidadeAssinatura = (documentoAssinavelId, servicoDestino) => {
+  if (!documentoAssinavelId) {
+    return { sucesso: false };
+  }
+
+  const { url: urlDestino, nome: nomeDestino } = SERVICOS[servicoDestino];
+
+  const payload = {
+    status: 'PENDENTE',
+    dataSolicitacao: new Date().toISOString(),
+  };
+
+  const resposta = criarSolicitacaoAssinaturaRequest(urlDestino, documentoAssinavelId, payload, nomeDestino);
+  check(resposta, {
+    [`(${nomeDestino}) Segunda solicitacao retorna 409 CONFLICT`]: (r) => r.status === 409,
+  });
+
+  return { sucesso: resposta.status === 409 };
+}
+
+// Conclui a assinatura (PUT solicitacao → CONCLUIDA) e verifica que o StatusEmissao
+// em Diplomas é atualizado para ASSINADO (via trigger em C1 ou evento em A2/A3).
+export const testeRetornoAssinatura = (solicitacao, documentoAssinavelId, requerimento, servicoAssinatura, servicoDiplomas) => {
+  if (!solicitacao?.id || !documentoAssinavelId || !requerimento?.statusEmissaoId) {
+    return { sucesso: false };
+  }
+
+  const { url: urlAssinatura, nome: nomeAssinatura } = SERVICOS[servicoAssinatura];
+  const { url: urlDiplomas, nome: nomeDiplomas } = SERVICOS[servicoDiplomas];
+
+  const payload = {
+    status: 'CONCLUIDA',
+    dataSolicitacao: solicitacao.dataSolicitacao,
+    dataConclusao: new Date().toISOString(),
+  };
+
+  const atualizacao = atualizarSolicitacaoAssinaturaRequest(
+    urlAssinatura, documentoAssinavelId, solicitacao.id, payload, nomeAssinatura
+  );
+  check(atualizacao, {
+    [`(${nomeAssinatura}) Atualizar SolicitacaoAssinatura para CONCLUIDA Status 200`]: (r) => r.status === 200,
+  });
+
+  if (atualizacao.status !== 200) {
+    logErro(`Atualizar SolicitacaoAssinatura - ${nomeAssinatura}`, atualizacao);
+    return { sucesso: false };
+  }
+
+  const resultadoReplicacao = aguardarReplicacao({
+    requestFn: () => obterStatusEmissaoRequest(urlDiplomas, requerimento.statusEmissaoId, nomeDiplomas),
+    validateFn: (statusEmissao) => statusEmissao?.status === 'ASSINADO',
+  });
+
+  check(resultadoReplicacao.response || {}, {
+    [`(${nomeAssinatura} -> ${nomeDiplomas}) StatusEmissao atualizado para ASSINADO`]: () => resultadoReplicacao.sucesso,
+  });
+
+  if (resultadoReplicacao.sucesso) {
+    replicacaoLatencia.add(resultadoReplicacao.latenciaMs, { origem: nomeAssinatura, destino: nomeDiplomas });
+  }
+
+  return { sucesso: resultadoReplicacao.sucesso };
 }

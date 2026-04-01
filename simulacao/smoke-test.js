@@ -1,21 +1,26 @@
-import { check, group } from 'k6';
+import { group } from 'k6';
 
 import { GRADUACAO, ASSINATURA, DIPLOMAS, POS_GRADUACAO } from './utils/constantes.js';
 import {
   replicacaoLatencia,
   testeAtualizacaoPessoa,
   testeConclusaoInvalida,
+  testeConclusaoInvalidaPosGraduacao,
   testeConclusaoValidaGeraRequerimento,
+  testeConclusaoValidaGeraRequerimentoPosGraduacao,
+  testeDocumentoAssinavel,
+  testeNaoDuplicidadeAssinatura,
   testeReplicacaoPessoa,
   testeReplicacaoVinculoAcademico,
+  testeReplicacaoVinculoPosGraduacao,
+  testeRetornoAssinatura,
+  testeSolicitacaoAssinatura,
+  testeVerificarVinculoReplicado,
 } from './utils/replication-helpers.js';
 
 const REPLICACAO_P95_MS = Number(__ENV.REPLICACAO_P95_MS || 5000);
 const REPLICACAO_P99_MS = Number(__ENV.REPLICACAO_P99_MS || 15000);
 
-const pendente = (descricao) => {
-  check({}, { [`[PENDENTE] ${descricao}`]: () => false });
-};
 
 export const options = {
   thresholds: {
@@ -35,7 +40,12 @@ export const options = {
 
 export default function () {
   let pessoaGraduacao = null;
+  let pessoaPosGraduacao = null;
   let vinculoCriado = null;
+  let vinculoPosGraduacao = null;
+  let requerimentoGraduacao = null;
+  let documentoAssinavelId = null;
+  let solicitacaoAssinatura = null;
 
   // Replicações globais — Pessoa (fan-out de todos os produtores para todos os consumidores)
   group('Entidade Pessoa:', function() {
@@ -46,7 +56,8 @@ export default function () {
     });
 
     group(`${POS_GRADUACAO} -> [${GRADUACAO}, ${DIPLOMAS}, ${ASSINATURA}]`, function(){
-      testeReplicacaoPessoa(POS_GRADUACAO, [GRADUACAO, DIPLOMAS, ASSINATURA]);
+      const resultado = testeReplicacaoPessoa(POS_GRADUACAO, [GRADUACAO, DIPLOMAS, ASSINATURA]);
+      pessoaPosGraduacao = resultado.pessoaCriada;
     });
   });
 
@@ -57,16 +68,17 @@ export default function () {
       return;
     }
 
-    group(`${GRADUACAO} -> [${DIPLOMAS}, ${ASSINATURA}]`, function(){
-      testeAtualizacaoPessoa(GRADUACAO, [DIPLOMAS, ASSINATURA], pessoaGraduacao);
-    });
-
-    group(`${GRADUACAO} -> ${POS_GRADUACAO}`, function(){
-      pendente(`Atualização de Pessoa: ${GRADUACAO} -> ${POS_GRADUACAO}`);
+    group(`${GRADUACAO} -> [${POS_GRADUACAO}, ${DIPLOMAS}, ${ASSINATURA}]`, function(){
+      testeAtualizacaoPessoa(GRADUACAO, [POS_GRADUACAO, DIPLOMAS, ASSINATURA], pessoaGraduacao);
     });
 
     group(`${POS_GRADUACAO} -> [${GRADUACAO}, ${DIPLOMAS}, ${ASSINATURA}]`, function(){
-      pendente(`Atualização de Pessoa: ${POS_GRADUACAO} -> [${GRADUACAO}, ${DIPLOMAS}, ${ASSINATURA}]`);
+      if (!pessoaPosGraduacao?.id) {
+        console.warn('Atualização de pessoa pulada: pessoa de pós-graduação não disponível.');
+        return;
+      }
+
+      testeAtualizacaoPessoa(POS_GRADUACAO, [GRADUACAO, DIPLOMAS, ASSINATURA], pessoaPosGraduacao);
     });
   });
 
@@ -83,15 +95,31 @@ export default function () {
     });
 
     group(`${GRADUACAO} -> ${ASSINATURA} (vínculo)`, function() {
-      pendente(`Vínculo Acadêmico: ${GRADUACAO} -> ${ASSINATURA}`);
+      if (!vinculoCriado?.id) {
+        console.warn('Verificação de vínculo em Assinatura pulada: vínculo de graduação não disponível.');
+        return;
+      }
+
+      testeVerificarVinculoReplicado(pessoaGraduacao.id, ASSINATURA);
     });
 
     group(`${POS_GRADUACAO} -> ${DIPLOMAS} (vínculo)`, function() {
-      pendente(`Vínculo Acadêmico: ${POS_GRADUACAO} -> ${DIPLOMAS}`);
+      if (!pessoaPosGraduacao?.id) {
+        console.warn('Vínculo de pós-graduação pulado: pessoa de pós-graduação não disponível.');
+        return;
+      }
+
+      const resultado = testeReplicacaoVinculoPosGraduacao(pessoaPosGraduacao.id, POS_GRADUACAO, DIPLOMAS);
+      vinculoPosGraduacao = resultado.alunoCriado;
     });
 
     group(`${POS_GRADUACAO} -> ${ASSINATURA} (vínculo)`, function() {
-      pendente(`Vínculo Acadêmico: ${POS_GRADUACAO} -> ${ASSINATURA}`);
+      if (!pessoaPosGraduacao?.id || !vinculoPosGraduacao?.id) {
+        console.warn('Verificação de vínculo em Assinatura pulada: vínculo de pós-graduação não disponível.');
+        return;
+      }
+
+      testeVerificarVinculoReplicado(pessoaPosGraduacao.id, ASSINATURA);
     });
 
     group(`${GRADUACAO} (regra CONCLUIDO sem dataConclusao)`, function() {
@@ -104,7 +132,12 @@ export default function () {
     });
 
     group(`${POS_GRADUACAO} (regra CONCLUIDO sem dataConclusao)`, function() {
-      pendente(`Regra de negócio: ${POS_GRADUACAO} CONCLUIDO sem dataConclusao rejeitado`);
+      if (!vinculoPosGraduacao?.id) {
+        console.warn('Validação de conclusão inválida pulada: vínculo de pós-graduação não foi criado.');
+        return;
+      }
+
+      testeConclusaoInvalidaPosGraduacao(vinculoPosGraduacao, POS_GRADUACAO);
     });
 
     group(`${GRADUACAO} -> ${DIPLOMAS} (conclusão válida gera requerimento)`, function() {
@@ -113,33 +146,61 @@ export default function () {
         return;
       }
 
-      testeConclusaoValidaGeraRequerimento(vinculoCriado, GRADUACAO, DIPLOMAS);
+      const resultado = testeConclusaoValidaGeraRequerimento(vinculoCriado, GRADUACAO, DIPLOMAS);
+      requerimentoGraduacao = resultado.requerimento;
     });
 
     group(`${POS_GRADUACAO} -> ${DIPLOMAS} (conclusão válida gera requerimento)`, function() {
-      pendente(`Conclusão válida: ${POS_GRADUACAO} -> ${DIPLOMAS} gera RequerimentoDiploma`);
+      if (!vinculoPosGraduacao?.id) {
+        console.warn('Validação de requerimento pulada: vínculo de pós-graduação não foi criado.');
+        return;
+      }
+
+      testeConclusaoValidaGeraRequerimentoPosGraduacao(vinculoPosGraduacao, POS_GRADUACAO, DIPLOMAS);
     });
   });
 
   // Fluxo de comunicação — Diplomas → Assinatura
   group('Diplomas -> Assinatura:', function() {
     group(`${DIPLOMAS} -> ${ASSINATURA} (DocumentoDiploma gera DocumentoAssinavel)`, function() {
-      pendente(`${DIPLOMAS} -> ${ASSINATURA}: DocumentoDiploma emitido gera DocumentoAssinavel`);
+      if (!requerimentoGraduacao?.id) {
+        console.warn('Teste de DocumentoAssinavel pulado: requerimento de graduação não disponível.');
+        return;
+      }
+
+      const resultado = testeDocumentoAssinavel(requerimentoGraduacao, DIPLOMAS, ASSINATURA);
+      documentoAssinavelId = resultado.documentoAssinavelId;
     });
 
     group(`${DIPLOMAS} -> ${ASSINATURA} (SolicitacaoAssinatura criada como PENDENTE)`, function() {
-      pendente(`${DIPLOMAS} -> ${ASSINATURA}: SolicitacaoAssinatura criada com Assinatura PENDENTE`);
+      if (!documentoAssinavelId) {
+        console.warn('Teste de SolicitacaoAssinatura pulado: documentoAssinavelId não disponível.');
+        return;
+      }
+
+      const resultado = testeSolicitacaoAssinatura(documentoAssinavelId, ASSINATURA);
+      solicitacaoAssinatura = resultado.solicitacao;
     });
 
     group(`${ASSINATURA} (regra não-duplicidade de SolicitacaoAssinatura)`, function() {
-      pendente(`Regra de negócio: segunda solicitação para mesmo documento não abre nova SolicitacaoAssinatura ativa`);
+      if (!documentoAssinavelId) {
+        console.warn('Teste de não-duplicidade pulado: documentoAssinavelId não disponível.');
+        return;
+      }
+
+      testeNaoDuplicidadeAssinatura(documentoAssinavelId, ASSINATURA);
     });
   });
 
   // Fluxo de retorno — Assinatura → Diplomas
   group('Assinatura -> Diplomas:', function() {
     group(`${ASSINATURA} -> ${DIPLOMAS} (StatusEmissao = ASSINADO)`, function() {
-      pendente(`${ASSINATURA} -> ${DIPLOMAS}: conclusão de assinatura atualiza StatusEmissao para ASSINADO`);
+      if (!solicitacaoAssinatura?.id || !documentoAssinavelId || !requerimentoGraduacao?.statusEmissaoId) {
+        console.warn('Teste de retorno de assinatura pulado: solicitação ou requerimento não disponíveis.');
+        return;
+      }
+
+      testeRetornoAssinatura(solicitacaoAssinatura, documentoAssinavelId, requerimentoGraduacao, ASSINATURA, DIPLOMAS);
     });
   });
 
