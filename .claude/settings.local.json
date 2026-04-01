@@ -3,7 +3,9 @@
     "allow": [
       "Bash(xargs grep:*)",
       "Bash(docker volume:*)",
-      "Bash(docker ps:*)"
+      "Bash(docker ps:*)",
+      "Bash(ls -la /home/ydirickson/Development/TCC-MBAEsalq/*.yml /home/ydirickson/Development/TCC-MBAEsalq/*.env*)",
+      "Bash(ls -lh /home/ydirickson/Development/TCC-MBAEsalq/docker-compose*.yml)"
     ]
   }
 }

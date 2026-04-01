@@ -1,12 +1,12 @@
 export const GRADUACAO_URL = 'http://localhost:8081'
 export const POS_GRADUACAO_URL = 'http://localhost:8082'
 export const DIPLOMAS_URL = 'http://localhost:8083'
-export const CERTIFICADOS_URL = 'http://localhost:8084'
+export const ASSINATURA_URL = 'http://localhost:8084'
 
 export const GRADUACAO = 'GRADUACAO';
 export const POS_GRADUACAO = 'POS_GRADUACAO';
 export const DIPLOMAS = 'DIPLOMAS';
-export const CERTIFICADOS = 'CERTIFICADOS';
+export const ASSINATURA = 'ASSINATURA';
 
 export const SERVICOS = {
   [GRADUACAO]: {
@@ -21,8 +21,8 @@ export const SERVICOS = {
     url: DIPLOMAS_URL,
     nome: 'Diplomas'
   },
-  [CERTIFICADOS]: {
-    url: CERTIFICADOS_URL,
-    nome: 'Certificados'
+  [ASSINATURA]: {
+    url: ASSINATURA_URL,
+    nome: 'Assinatura'
   }
 }
