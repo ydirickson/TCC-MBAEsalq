@@ -5,6 +5,7 @@ import br.com.tcc.diplomas.api.mapper.DocumentoDiplomaMapper;
 import br.com.tcc.diplomas.domain.model.DocumentoDiploma;
 import br.com.tcc.diplomas.domain.repository.DiplomaRepository;
 import br.com.tcc.diplomas.domain.repository.DocumentoDiplomaRepository;
+import br.com.tcc.diplomas.kafka.DiplomasKafkaProducer;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
@@ -16,12 +17,14 @@ public class DocumentoDiplomaService {
   private final DocumentoDiplomaRepository repository;
   private final DiplomaRepository diplomaRepository;
   private final DocumentoDiplomaMapper mapper;
+  private final DiplomasKafkaProducer kafkaProducer;
 
   public DocumentoDiplomaService(DocumentoDiplomaRepository repository, DiplomaRepository diplomaRepository,
-      DocumentoDiplomaMapper mapper) {
+      DocumentoDiplomaMapper mapper, DiplomasKafkaProducer kafkaProducer) {
     this.repository = repository;
     this.diplomaRepository = diplomaRepository;
     this.mapper = mapper;
+    this.kafkaProducer = kafkaProducer;
   }
 
   @Transactional
@@ -30,13 +33,21 @@ public class DocumentoDiplomaService {
       return Optional.empty();
     }
     return diplomaRepository.findById(request.diplomaId())
-        .map(diploma -> repository.save(mapper.toEntity(request, diploma)));
+        .map(diploma -> {
+          DocumentoDiploma salvo = repository.save(mapper.toEntity(request, diploma));
+          kafkaProducer.publicarDocumentoDiploma(salvo);
+          return salvo;
+        });
   }
 
   @Transactional
   public Optional<DocumentoDiploma> criar(Long diplomaId, DocumentoDiplomaRequest request) {
     return diplomaRepository.findById(diplomaId)
-        .map(diploma -> repository.save(mapper.toEntity(request, diploma)));
+        .map(diploma -> {
+          DocumentoDiploma salvo = repository.save(mapper.toEntity(request, diploma));
+          kafkaProducer.publicarDocumentoDiploma(salvo);
+          return salvo;
+        });
   }
 
   public List<DocumentoDiploma> listar() {

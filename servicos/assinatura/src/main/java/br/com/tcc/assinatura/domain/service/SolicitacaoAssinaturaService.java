@@ -9,6 +9,7 @@ import br.com.tcc.assinatura.domain.model.StatusSolicitacaoAssinatura;
 import br.com.tcc.assinatura.domain.repository.AssinaturaRepository;
 import br.com.tcc.assinatura.domain.repository.DocumentoAssinavelRepository;
 import br.com.tcc.assinatura.domain.repository.SolicitacaoAssinaturaRepository;
+import br.com.tcc.assinatura.kafka.AssinaturaKafkaProducer;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -22,14 +23,16 @@ public class SolicitacaoAssinaturaService {
   private final DocumentoAssinavelRepository documentoAssinavelRepository;
   private final AssinaturaRepository assinaturaRepository;
   private final SolicitacaoAssinaturaMapper mapper;
+  private final AssinaturaKafkaProducer kafkaProducer;
 
   public SolicitacaoAssinaturaService(SolicitacaoAssinaturaRepository repository,
       DocumentoAssinavelRepository documentoAssinavelRepository, AssinaturaRepository assinaturaRepository,
-      SolicitacaoAssinaturaMapper mapper) {
+      SolicitacaoAssinaturaMapper mapper, AssinaturaKafkaProducer kafkaProducer) {
     this.repository = repository;
     this.documentoAssinavelRepository = documentoAssinavelRepository;
     this.assinaturaRepository = assinaturaRepository;
     this.mapper = mapper;
+    this.kafkaProducer = kafkaProducer;
   }
 
   @Transactional
@@ -91,6 +94,7 @@ public class SolicitacaoAssinaturaService {
     }
     return repository.findById(id).map(solicitacao -> {
       mapper.updateEntityFromRequest(request, solicitacao, documentoOpt.get());
+      publicarSeConcluidaOuRejeitada(solicitacao);
       return solicitacao;
     });
   }
@@ -104,8 +108,16 @@ public class SolicitacaoAssinaturaService {
     }
     return repository.findByIdAndDocumentoAssinavelId(id, documentoAssinavelId).map(solicitacao -> {
       mapper.updateEntityFromRequest(request, solicitacao, documentoOpt.get());
+      publicarSeConcluidaOuRejeitada(solicitacao);
       return solicitacao;
     });
+  }
+
+  private void publicarSeConcluidaOuRejeitada(SolicitacaoAssinatura solicitacao) {
+    if (solicitacao.getStatus() == StatusSolicitacaoAssinatura.CONCLUIDA
+        || solicitacao.getStatus() == StatusSolicitacaoAssinatura.REJEITADA) {
+      kafkaProducer.publicarSolicitacaoConcluida(solicitacao);
+    }
   }
 
   @Transactional
