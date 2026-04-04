@@ -677,3 +677,47 @@ export const testeRetornoAssinatura = (solicitacao, documentoAssinavelId, requer
 
   return { sucesso: resultadoReplicacao.sucesso };
 }
+
+// Marca uma SolicitacaoAssinatura como REJEITADA e verifica que o StatusEmissao
+// em Diplomas é atualizado para REJEITADO (path alternativo ao CONCLUIDA → ASSINADO).
+export const testeRejeicaoAssinatura = (solicitacao, documentoAssinavelId, requerimento, servicoAssinatura, servicoDiplomas) => {
+  if (!solicitacao?.id || !documentoAssinavelId || !requerimento?.statusEmissaoId) {
+    return { sucesso: false };
+  }
+
+  const { url: urlAssinatura, nome: nomeAssinatura } = SERVICOS[servicoAssinatura];
+  const { url: urlDiplomas, nome: nomeDiplomas } = SERVICOS[servicoDiplomas];
+
+  const payload = {
+    status: 'REJEITADA',
+    dataSolicitacao: solicitacao.dataSolicitacao,
+    dataConclusao: new Date().toISOString(),
+  };
+
+  const atualizacao = atualizarSolicitacaoAssinaturaRequest(
+    urlAssinatura, documentoAssinavelId, solicitacao.id, payload, nomeAssinatura
+  );
+  check(atualizacao, {
+    [`(${nomeAssinatura}) Atualizar SolicitacaoAssinatura para REJEITADA Status 200`]: (r) => r.status === 200,
+  });
+
+  if (atualizacao.status !== 200) {
+    logErro(`Atualizar SolicitacaoAssinatura para REJEITADA - ${nomeAssinatura}`, atualizacao);
+    return { sucesso: false };
+  }
+
+  const resultadoReplicacao = aguardarReplicacao({
+    requestFn: () => obterStatusEmissaoRequest(urlDiplomas, requerimento.statusEmissaoId, nomeDiplomas),
+    validateFn: (statusEmissao) => statusEmissao?.status === 'REJEITADO',
+  });
+
+  check(resultadoReplicacao.response || {}, {
+    [`(${nomeAssinatura} -> ${nomeDiplomas}) StatusEmissao atualizado para REJEITADO`]: () => resultadoReplicacao.sucesso,
+  });
+
+  if (resultadoReplicacao.sucesso) {
+    replicacaoLatencia.add(resultadoReplicacao.latenciaMs, { origem: nomeAssinatura, destino: nomeDiplomas });
+  }
+
+  return { sucesso: resultadoReplicacao.sucesso };
+}

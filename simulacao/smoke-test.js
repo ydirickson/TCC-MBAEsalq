@@ -10,6 +10,7 @@ import {
   testeConclusaoValidaGeraRequerimentoPosGraduacao,
   testeDocumentoAssinavel,
   testeNaoDuplicidadeAssinatura,
+  testeRejeicaoAssinatura,
   testeReplicacaoPessoa,
   testeReplicacaoVinculoAcademico,
   testeReplicacaoVinculoPosGraduacao,
@@ -45,8 +46,11 @@ export default function () {
   let vinculoCriado = null;
   let vinculoPosGraduacao = null;
   let requerimentoGraduacao = null;
+  let requerimentoPosGraduacao = null;
   let documentoAssinavelId = null;
+  let documentoAssinavelIdPosGraduacao = null;
   let solicitacaoAssinatura = null;
+  let solicitacaoPosGraduacao = null;
 
   // Replicações globais — Pessoa (fan-out de todos os produtores para todos os consumidores)
   group('Entidade Pessoa:', function() {
@@ -157,7 +161,8 @@ export default function () {
         return;
       }
 
-      testeConclusaoValidaGeraRequerimentoPosGraduacao(vinculoPosGraduacao, POS_GRADUACAO, DIPLOMAS);
+      const resultado = testeConclusaoValidaGeraRequerimentoPosGraduacao(vinculoPosGraduacao, POS_GRADUACAO, DIPLOMAS);
+      requerimentoPosGraduacao = resultado?.requerimento;
     });
   });
 
@@ -191,6 +196,26 @@ export default function () {
 
       testeNaoDuplicidadeAssinatura(documentoAssinavelId, ASSINATURA);
     });
+
+    group(`${POS_GRADUACAO} -> ${DIPLOMAS} -> ${ASSINATURA} (DocumentoDiploma para rejeição)`, function() {
+      if (!requerimentoPosGraduacao?.id) {
+        console.warn('Teste de rejeição pulado: requerimento de pós-graduação não disponível.');
+        return;
+      }
+
+      const resultado = testeDocumentoAssinavel(requerimentoPosGraduacao, DIPLOMAS, ASSINATURA);
+      documentoAssinavelIdPosGraduacao = resultado.documentoAssinavelId;
+    });
+
+    group(`${ASSINATURA} (SolicitacaoAssinatura PENDENTE para rejeição)`, function() {
+      if (!documentoAssinavelIdPosGraduacao) {
+        console.warn('Teste de rejeição pulado: documentoAssinavelIdPosGraduacao não disponível.');
+        return;
+      }
+
+      const resultado = testeSolicitacaoAssinatura(documentoAssinavelIdPosGraduacao, ASSINATURA);
+      solicitacaoPosGraduacao = resultado.solicitacao;
+    });
   });
 
   // Fluxo de retorno — Assinatura → Diplomas
@@ -202,6 +227,15 @@ export default function () {
       }
 
       testeRetornoAssinatura(solicitacaoAssinatura, documentoAssinavelId, requerimentoGraduacao, ASSINATURA, DIPLOMAS);
+    });
+
+    group(`${ASSINATURA} -> ${DIPLOMAS} (StatusEmissao = REJEITADO)`, function() {
+      if (!solicitacaoPosGraduacao?.id || !documentoAssinavelIdPosGraduacao || !requerimentoPosGraduacao?.statusEmissaoId) {
+        console.warn('Teste de rejeição pulado: solicitação ou requerimento de pós-graduação não disponíveis.');
+        return;
+      }
+
+      testeRejeicaoAssinatura(solicitacaoPosGraduacao, documentoAssinavelIdPosGraduacao, requerimentoPosGraduacao, ASSINATURA, DIPLOMAS);
     });
   });
 

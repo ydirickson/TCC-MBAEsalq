@@ -68,24 +68,9 @@ public class AssinaturaKafkaConsumer {
   public void consumirVinculoAcademico(String payload) throws Exception {
     VinculoAcademicoEvent event = objectMapper.readValue(payload, VinculoAcademicoEvent.class);
     log.debug("Replicando VinculoAcademico em assinatura: id={}", event.id());
-    Pessoa pessoa = pessoaRepository.findById(event.pessoaId())
-        .orElseThrow(() -> new IllegalStateException("Pessoa nao encontrada para vinculo: pessoaId=" + event.pessoaId()));
-
-    CursoProgramaReferencia curso = new CursoProgramaReferencia(
-        event.cursoId(),
-        event.cursoCodigo(),
-        event.cursoNome(),
-        TipoCursoPrograma.valueOf(event.cursoTipo()));
-
-    VinculoAcademico vinculo = vinculoRepository.findById(event.id()).orElseGet(VinculoAcademico::new);
-    vinculo.setId(event.id());
-    vinculo.setPessoa(pessoa);
-    vinculo.setCurso(curso);
-    vinculo.setTipoVinculo(TipoVinculo.valueOf(event.tipoVinculo()));
-    vinculo.setDataIngresso(event.dataIngresso());
-    vinculo.setDataConclusao(event.dataConclusao());
-    vinculo.setSituacao(SituacaoAcademica.valueOf(event.situacao()));
-    vinculoRepository.save(vinculo);
+    vinculoRepository.upsert(event.id(), event.pessoaId(), event.cursoId(),
+        event.cursoCodigo(), event.cursoNome(), event.cursoTipo(),
+        event.tipoVinculo(), event.dataIngresso(), event.dataConclusao(), event.situacao());
   }
 
   @KafkaListener(topics = "tcc.diplomas.documento_diploma", groupId = "${spring.application.name}")
@@ -94,14 +79,10 @@ public class AssinaturaKafkaConsumer {
     DocumentoDiplomaEvent event = objectMapper.readValue(payload, DocumentoDiplomaEvent.class);
     log.debug("Processando DocumentoDiploma em assinatura: id={}", event.id());
 
-    DocumentoDiploma documentoDiploma = documentoDiplomaRepository.findById(event.id()).orElseGet(DocumentoDiploma::new);
-    documentoDiploma.setId(event.id());
-    documentoDiploma.setDiplomaId(event.diplomaId());
-    documentoDiploma.setVersao(event.versao());
-    documentoDiploma.setDataGeracao(event.dataGeracao());
-    documentoDiploma.setUrlArquivo(event.urlArquivo());
-    documentoDiploma.setHashDocumento(event.hashDocumento());
-    documentoDiplomaRepository.save(documentoDiploma);
+    documentoDiplomaRepository.upsert(event.id(), event.diplomaId(), event.versao(),
+        event.dataGeracao(), event.urlArquivo(), event.hashDocumento());
+    DocumentoDiploma documentoDiploma = documentoDiplomaRepository.findById(event.id())
+        .orElseThrow(() -> new IllegalStateException("DocumentoDiploma nao encontrado apos upsert: id=" + event.id()));
 
     DocumentoAssinavel documentoAssinavel = documentoAssinavelRepository
         .findByDocumentoDiplomaId(event.id())

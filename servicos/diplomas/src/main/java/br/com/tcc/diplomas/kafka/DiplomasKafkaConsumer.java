@@ -1,13 +1,16 @@
 package br.com.tcc.diplomas.kafka;
 
+import br.com.tcc.diplomas.domain.model.BaseEmissaoDiploma;
 import br.com.tcc.diplomas.domain.model.CursoProgramaReferencia;
 import br.com.tcc.diplomas.domain.model.Pessoa;
 import br.com.tcc.diplomas.domain.model.RequerimentoDiploma;
 import br.com.tcc.diplomas.domain.model.SituacaoAcademica;
+import br.com.tcc.diplomas.domain.model.StatusEmissao;
 import br.com.tcc.diplomas.domain.model.StatusEmissaoTipo;
 import br.com.tcc.diplomas.domain.model.TipoCursoPrograma;
 import br.com.tcc.diplomas.domain.model.TipoVinculo;
 import br.com.tcc.diplomas.domain.model.VinculoAcademico;
+import br.com.tcc.diplomas.domain.repository.BaseEmissaoDiplomaRepository;
 import br.com.tcc.diplomas.domain.repository.PessoaRepository;
 import br.com.tcc.diplomas.domain.repository.RequerimentoDiplomaRepository;
 import br.com.tcc.diplomas.domain.repository.StatusEmissaoRepository;
@@ -31,6 +34,7 @@ public class DiplomasKafkaConsumer {
   private final PessoaRepository pessoaRepository;
   private final VinculoAcademicoRepository vinculoRepository;
   private final RequerimentoDiplomaRepository requerimentoRepository;
+  private final BaseEmissaoDiplomaRepository baseEmissaoRepository;
   private final StatusEmissaoRepository statusEmissaoRepository;
   private final ObjectMapper objectMapper;
 
@@ -38,11 +42,13 @@ public class DiplomasKafkaConsumer {
       PessoaRepository pessoaRepository,
       VinculoAcademicoRepository vinculoRepository,
       RequerimentoDiplomaRepository requerimentoRepository,
+      BaseEmissaoDiplomaRepository baseEmissaoRepository,
       StatusEmissaoRepository statusEmissaoRepository,
       ObjectMapper objectMapper) {
     this.pessoaRepository = pessoaRepository;
     this.vinculoRepository = vinculoRepository;
     this.requerimentoRepository = requerimentoRepository;
+    this.baseEmissaoRepository = baseEmissaoRepository;
     this.statusEmissaoRepository = statusEmissaoRepository;
     this.objectMapper = objectMapper;
   }
@@ -60,24 +66,9 @@ public class DiplomasKafkaConsumer {
   public void consumirVinculoAcademico(String payload) throws Exception {
     VinculoAcademicoEvent event = objectMapper.readValue(payload, VinculoAcademicoEvent.class);
     log.debug("Replicando VinculoAcademico em diplomas: id={}", event.id());
-    Pessoa pessoa = pessoaRepository.findById(event.pessoaId())
-        .orElseThrow(() -> new IllegalStateException("Pessoa nao encontrada para vinculo: pessoaId=" + event.pessoaId()));
-
-    CursoProgramaReferencia curso = new CursoProgramaReferencia(
-        event.cursoId(),
-        event.cursoCodigo(),
-        event.cursoNome(),
-        TipoCursoPrograma.valueOf(event.cursoTipo()));
-
-    VinculoAcademico vinculo = vinculoRepository.findById(event.id()).orElseGet(VinculoAcademico::new);
-    vinculo.setId(event.id());
-    vinculo.setPessoa(pessoa);
-    vinculo.setCurso(curso);
-    vinculo.setTipoVinculo(TipoVinculo.valueOf(event.tipoVinculo()));
-    vinculo.setDataIngresso(event.dataIngresso());
-    vinculo.setDataConclusao(event.dataConclusao());
-    vinculo.setSituacao(SituacaoAcademica.valueOf(event.situacao()));
-    vinculoRepository.save(vinculo);
+    vinculoRepository.upsert(event.id(), event.pessoaId(), event.cursoId(),
+        event.cursoCodigo(), event.cursoNome(), event.cursoTipo(),
+        event.tipoVinculo(), event.dataIngresso(), event.dataConclusao(), event.situacao());
   }
 
   @KafkaListener(topics = {"tcc.graduacao.conclusao", "tcc.pos_graduacao.conclusao"}, groupId = "${spring.application.name}")
@@ -95,8 +86,26 @@ public class DiplomasKafkaConsumer {
         .orElseThrow(() -> new IllegalStateException("VinculoAcademico nao encontrado: id=" + event.vinculoAcademicoId()));
 
     RequerimentoDiploma requerimento = new RequerimentoDiploma(pessoa, vinculo, LocalDate.now());
-    requerimentoRepository.save(requerimento);
-    log.debug("RequerimentoDiploma criado: vinculoId={}", event.vinculoAcademicoId());
+    requerimento = requerimentoRepository.save(requerimento);
+
+    BaseEmissaoDiploma base = new BaseEmissaoDiploma();
+    base.setRequerimento(requerimento);
+    base.setPessoaId(pessoa.getId());
+    base.setPessoaNome(pessoa.getNome());
+    base.setPessoaNomeSocial(pessoa.getNomeSocial());
+    base.setPessoaDataNascimento(pessoa.getDataNascimento());
+    base.setCursoCodigo(vinculo.getCurso().getCodigo());
+    base.setCursoNome(vinculo.getCurso().getNome());
+    base.setCursoTipo(vinculo.getCurso().getTipo());
+    base.setDataConclusao(event.dataConclusao());
+    baseEmissaoRepository.save(base);
+
+    StatusEmissao status = new StatusEmissao(requerimento, StatusEmissaoTipo.SOLICITADO, LocalDateTime.now());
+    statusEmissaoRepository.save(status);
+
+    requerimento.setBaseEmissao(base);
+    requerimento.setStatusEmissao(status);
+    log.debug("RequerimentoDiploma criado com base e status: vinculoId={}", event.vinculoAcademicoId());
   }
 
   @KafkaListener(topics = "tcc.assinatura.solicitacao_concluida", groupId = "${spring.application.name}")
