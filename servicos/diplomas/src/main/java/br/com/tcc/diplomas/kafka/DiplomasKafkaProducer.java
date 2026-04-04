@@ -1,12 +1,10 @@
 package br.com.tcc.diplomas.kafka;
 
 import br.com.tcc.diplomas.domain.model.DocumentoDiploma;
-import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
-@Profile("!no-kafka")
 public class DiplomasKafkaProducer {
 
   static final String TOPICO_DOCUMENTO_DIPLOMA = "tcc.diplomas.documento_diploma";

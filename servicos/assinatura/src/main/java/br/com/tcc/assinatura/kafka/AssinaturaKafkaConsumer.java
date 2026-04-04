@@ -18,6 +18,7 @@ import br.com.tcc.assinatura.domain.repository.DocumentoDiplomaRepository;
 import br.com.tcc.assinatura.domain.repository.PessoaRepository;
 import br.com.tcc.assinatura.domain.repository.SolicitacaoAssinaturaRepository;
 import br.com.tcc.assinatura.domain.repository.VinculoAcademicoRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.slf4j.Logger;
@@ -39,33 +40,33 @@ public class AssinaturaKafkaConsumer {
   private final DocumentoAssinavelRepository documentoAssinavelRepository;
   private final SolicitacaoAssinaturaRepository solicitacaoRepository;
   private final AssinaturaRepository assinaturaRepository;
+  private final ObjectMapper objectMapper;
 
   public AssinaturaKafkaConsumer(PessoaRepository pessoaRepository, VinculoAcademicoRepository vinculoRepository,
       DocumentoDiplomaRepository documentoDiplomaRepository, DocumentoAssinavelRepository documentoAssinavelRepository,
-      SolicitacaoAssinaturaRepository solicitacaoRepository, AssinaturaRepository assinaturaRepository) {
+      SolicitacaoAssinaturaRepository solicitacaoRepository, AssinaturaRepository assinaturaRepository,
+      ObjectMapper objectMapper) {
     this.pessoaRepository = pessoaRepository;
     this.vinculoRepository = vinculoRepository;
     this.documentoDiplomaRepository = documentoDiplomaRepository;
     this.documentoAssinavelRepository = documentoAssinavelRepository;
     this.solicitacaoRepository = solicitacaoRepository;
     this.assinaturaRepository = assinaturaRepository;
+    this.objectMapper = objectMapper;
   }
 
   @KafkaListener(topics = {"tcc.graduacao.pessoa", "tcc.pos_graduacao.pessoa"}, groupId = "${spring.application.name}")
   @Transactional
-  public void consumirPessoa(PessoaEvent event) {
+  public void consumirPessoa(String payload) throws Exception {
+    PessoaEvent event = objectMapper.readValue(payload, PessoaEvent.class);
     log.debug("Replicando Pessoa em assinatura: id={}", event.id());
-    Pessoa pessoa = pessoaRepository.findById(event.id()).orElseGet(Pessoa::new);
-    pessoa.setId(event.id());
-    pessoa.setNome(event.nome());
-    pessoa.setDataNascimento(event.dataNascimento());
-    pessoa.setNomeSocial(event.nomeSocial());
-    pessoaRepository.save(pessoa);
+    pessoaRepository.upsert(event.id(), event.nome(), event.dataNascimento(), event.nomeSocial());
   }
 
   @KafkaListener(topics = {"tcc.graduacao.vinculo_academico", "tcc.pos_graduacao.vinculo_academico"}, groupId = "${spring.application.name}")
   @Transactional
-  public void consumirVinculoAcademico(VinculoAcademicoEvent event) {
+  public void consumirVinculoAcademico(String payload) throws Exception {
+    VinculoAcademicoEvent event = objectMapper.readValue(payload, VinculoAcademicoEvent.class);
     log.debug("Replicando VinculoAcademico em assinatura: id={}", event.id());
     Pessoa pessoa = pessoaRepository.findById(event.pessoaId())
         .orElseThrow(() -> new IllegalStateException("Pessoa nao encontrada para vinculo: pessoaId=" + event.pessoaId()));
@@ -89,10 +90,10 @@ public class AssinaturaKafkaConsumer {
 
   @KafkaListener(topics = "tcc.diplomas.documento_diploma", groupId = "${spring.application.name}")
   @Transactional
-  public void consumirDocumentoDiploma(DocumentoDiplomaEvent event) {
+  public void consumirDocumentoDiploma(String payload) throws Exception {
+    DocumentoDiplomaEvent event = objectMapper.readValue(payload, DocumentoDiplomaEvent.class);
     log.debug("Processando DocumentoDiploma em assinatura: id={}", event.id());
 
-    // Replica DocumentoDiploma como read model (idempotente pelo id)
     DocumentoDiploma documentoDiploma = documentoDiplomaRepository.findById(event.id()).orElseGet(DocumentoDiploma::new);
     documentoDiploma.setId(event.id());
     documentoDiploma.setDiplomaId(event.diplomaId());
@@ -102,7 +103,6 @@ public class AssinaturaKafkaConsumer {
     documentoDiploma.setHashDocumento(event.hashDocumento());
     documentoDiplomaRepository.save(documentoDiploma);
 
-    // Cria DocumentoAssinavel se ainda não existir para este documento
     DocumentoAssinavel documentoAssinavel = documentoAssinavelRepository
         .findByDocumentoDiplomaId(event.id())
         .orElseGet(() -> {
@@ -113,7 +113,6 @@ public class AssinaturaKafkaConsumer {
           return documentoAssinavelRepository.save(novo);
         });
 
-    // Cria SolicitacaoAssinatura PENDENTE se não existir ativa/concluída
     boolean jaExisteSolicitacao = solicitacaoRepository.existsByDocumentoAssinavelIdAndStatusIn(
         documentoAssinavel.getId(),
         List.of(StatusSolicitacaoAssinatura.PENDENTE, StatusSolicitacaoAssinatura.PARCIAL,

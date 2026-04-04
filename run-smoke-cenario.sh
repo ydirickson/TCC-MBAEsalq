@@ -58,10 +58,10 @@ resolve_stack() {
     c2a3)
       ENV_FILE="$ROOT_DIR/.env.c2a3"
       COMPOSE_FILE="$ROOT_DIR/docker-compose-c2a3.yml"
-      DEFAULT_TIMEOUT_MS=120000
-      DEFAULT_POLL_MS=1000
-      DEFAULT_P95_MS=120000
-      DEFAULT_P99_MS=180000
+      DEFAULT_TIMEOUT_MS=10000
+      DEFAULT_POLL_MS=200
+      DEFAULT_P95_MS=5000
+      DEFAULT_P99_MS=10000
       ;;
     *)
       echo "Cenario invalido: $scenario"

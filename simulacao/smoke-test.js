@@ -34,6 +34,7 @@ export const options = {
       executor: 'per-vu-iterations',
       vus: 1,
       iterations: 1,
+      maxDuration: '25m',
     }
   }
 };

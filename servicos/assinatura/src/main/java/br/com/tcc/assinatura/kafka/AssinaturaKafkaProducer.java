@@ -2,12 +2,10 @@ package br.com.tcc.assinatura.kafka;
 
 import br.com.tcc.assinatura.domain.model.DocumentoAssinavel;
 import br.com.tcc.assinatura.domain.model.SolicitacaoAssinatura;
-import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
-@Profile("!no-kafka")
 public class AssinaturaKafkaProducer {
 
   static final String TOPICO_SOLICITACAO_CONCLUIDA = "tcc.assinatura.solicitacao_concluida";

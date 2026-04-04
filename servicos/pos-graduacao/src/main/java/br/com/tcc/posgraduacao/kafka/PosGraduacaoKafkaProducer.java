@@ -4,11 +4,9 @@ import br.com.tcc.posgraduacao.domain.model.Pessoa;
 import br.com.tcc.posgraduacao.domain.model.SituacaoAcademica;
 import br.com.tcc.posgraduacao.domain.model.VinculoAcademico;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Component
-@Profile("!no-kafka")
 public class PosGraduacaoKafkaProducer {
 
   static final String TOPICO_PESSOA = "tcc.pos_graduacao.pessoa";

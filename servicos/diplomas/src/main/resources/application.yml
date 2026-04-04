@@ -7,7 +7,7 @@ spring:
   main:
     banner-mode: off
   datasource:
-    url: jdbc:postgresql://${PGR_POSTGRES_HOST:localhost}:${PGR_POSTGRES_PORT:5432}/${PGR_POSTGRES_DB:tccdb}
+    url: jdbc:postgresql://${PGR_POSTGRES_HOST:localhost}:${PGR_POSTGRES_PORT:5432}/${PGR_POSTGRES_DB:tccdb}?currentSchema=${PGR_DEFAULT_SCHEMA:public}
     driver-class-name: org.postgresql.Driver
     username: ${PGR_POSTGRES_USER:tcc}
     password: ${PGR_POSTGRES_PASSWORD:tcc123}
@@ -31,7 +31,6 @@ spring:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
-        spring.json.trusted.packages: "*"
         auto.offset.reset: earliest
 
 logging:
