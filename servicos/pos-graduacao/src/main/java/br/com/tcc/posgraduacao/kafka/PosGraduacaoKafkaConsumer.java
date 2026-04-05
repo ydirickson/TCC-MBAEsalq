@@ -30,5 +30,6 @@ public class PosGraduacaoKafkaConsumer {
     PessoaEvent event = objectMapper.readValue(payload, PessoaEvent.class);
     log.debug("Recebendo Pessoa de graduacao: id={}", event.id());
     pessoaRepository.upsert(event.id(), event.nome(), event.dataNascimento(), event.nomeSocial());
+    pessoaRepository.syncSequence(event.id());
   }
 }

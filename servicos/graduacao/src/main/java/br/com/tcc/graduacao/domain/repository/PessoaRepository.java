@@ -23,4 +23,12 @@ public interface PessoaRepository extends JpaRepository<Pessoa, Long> {
       @Param("nome") String nome,
       @Param("dataNascimento") LocalDate dataNascimento,
       @Param("nomeSocial") String nomeSocial);
+
+  @Query(nativeQuery = true, value = """
+      SELECT setval(
+        pg_get_serial_sequence('pessoa', 'id'),
+        GREATEST((SELECT last_value FROM pessoa_id_seq), :id)
+      )
+      """)
+  Long syncSequence(@Param("id") Long id);
 }
